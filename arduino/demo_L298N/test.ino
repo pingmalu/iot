@@ -1,6 +1,8 @@
 /**
  * L298N模块，调速测试
  * 参考教程 https://blog.csdn.net/ace0perfect/article/details/79221628
+ * https://blog.csdn.net/baidu_35679960/article/details/78961590
+ * https://blog.csdn.net/ling3ye/article/details/51351115
  */
 
 int IN1 = 4;
