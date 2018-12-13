@@ -15,9 +15,12 @@
 #define TURNRIGHT 4
 
 // 电机速度定义
-#define SPEED_1 80
+#define SPEED_1 120
 #define SPEED_2 110
 #define SPEED_3 150
+
+// 矫正舵机中位
+#define SERVO_1 100
 
 Servo myServo;  // 舵机
 
@@ -27,8 +30,8 @@ int TrigPin=3;  // 发出超声波
 
 int leftMotor1 = 4;  // 左边轮子
 int leftMotor2 = 5;
-int rightMotor1 = 6;  // 右边轮子
-int rightMotor2 = 7;
+int rightMotor1 = 7;  // 右边轮子
+int rightMotor2 = 6;
 
 int servoPin = 8;  // 舵机针脚，棕色为地，红色为电源正，橙色为信号线
 
@@ -83,47 +86,43 @@ void loop() {
     case 1:
       avoidance();
       break;
-    case 2:
-      motorRun(STOP,0);
-      break;
     case 3:
-      runtag = 2;
       motor_f();
-      delay(1000);
       break;
     case 4:
-      runtag = 2;
       motor_l();
-      delay(200);
       break;
     case 5:
-      runtag = 2;
       motor_r();
-      delay(200);
       break;
     case 6:
-      runtag = 2;
       motor_b();
-      delay(1000);
       break;
     default:
       motorRun(STOP,0);
       break;
   }
-
 }
 
 void motor_f(){
   motorRun(FORWARD,SPEED_1);
+  delay(500);
+  runtag = 2;
 }
 void motor_l(){
   motorRun(TURNLEFT,SPEED_1);
+  delay(300);
+  runtag = 2;
 }
 void motor_r(){
   motorRun(TURNRIGHT,SPEED_1);
+  delay(300);
+  runtag = 2;
 }
 void motor_b(){
   motorRun(BACKWARD,SPEED_1);
+  delay(500);
+  runtag = 2;
 }
 
 void motorRun(int cmd,int value) {
@@ -144,17 +143,17 @@ void motorRun(int cmd,int value) {
       break;
     case TURNLEFT:
       Serial.println("TURN  LEFT"); //输出状态
-      digitalWrite(leftMotor1, LOW);
-      analogWrite(leftMotor2, value);
-      digitalWrite(rightMotor1, HIGH);
-      analogWrite(rightMotor2, 255-value);
-      break;
-    case TURNRIGHT:
-      Serial.println("TURN  RIGHT"); //输出状态
       digitalWrite(leftMotor1, HIGH);
       analogWrite(leftMotor2, 255-value);
       digitalWrite(rightMotor1, LOW);
       analogWrite(rightMotor2, value);
+      break;
+    case TURNRIGHT:
+      Serial.println("TURN  RIGHT"); //输出状态
+      digitalWrite(leftMotor1, LOW);
+      analogWrite(leftMotor2, value);
+      digitalWrite(rightMotor1, HIGH);
+      analogWrite(rightMotor2, 255-value);
       break;
     default:
       Serial.println("STOP"); //输出状态
@@ -169,36 +168,38 @@ void avoidance() {
   int pos;  // 舵机角度
   int dis[3];  // 距离
 
-  myServo.write(90);
+  myServo.write(SERVO_1);
   dis[1] = getDistance(); //中间
 
   if(dis[1]<10){ //判断障碍物距离，距离太近
     motorRun(BACKWARD,SPEED_1); //后退
     delay(500); //后退时间
+    motorRun(STOP,0);
+    return;
   }
 
   if(dis[1]<30 && dis[1]>=10) {
     motorRun(STOP,0);
-    for (pos = 90; pos <= 150; pos += 1) 
+    for (pos = SERVO_1; pos <= (SERVO_1+60); pos += 1) 
     {
       myServo.write(pos);    // tell servo to go to position in variable 'pos'
-      delay(15);             // waits 15ms for the servo to reach the position
+      delay(5);             // waits 15ms for the servo to reach the position
     }
     dis[2]=getDistance(); //左边
 
-    for (pos = 150; pos >= 30; pos -= 1)
+    for (pos = (SERVO_1+60); pos >= (SERVO_1-60); pos -= 1)
     {
       myServo.write(pos);    // tell servo to go to position in variable 'pos'
-      delay(15);             // waits 15ms for the servo to reach the position
+      delay(5);             // waits 15ms for the servo to reach the position
       if(pos==90)
         dis[1]=getDistance(); //中间
     }
 
     dis[0]=getDistance();  //右边
-    for (pos = 30; pos <= 90; pos += 1) 
+    for (pos = (SERVO_1-60); pos <= SERVO_1; pos += 1) 
     {
       myServo.write(pos);    // tell servo to go to position in variable 'pos'
-      delay(15);             // waits 15ms for the servo to reach the position
+      delay(5);             // waits 15ms for the servo to reach the position
     }
 
     if(dis[0]<dis[2]) //右边距离障碍的距离比左边近
