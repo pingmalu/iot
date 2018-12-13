@@ -6,12 +6,18 @@
  */
 
 #include <Servo.h>
+#include <IRremote.h>
 
 #define STOP      0
 #define FORWARD   1
 #define BACKWARD  2
 #define TURNLEFT  3
 #define TURNRIGHT 4
+
+// 电机速度定义
+#define SPEED_1 80
+#define SPEED_2 110
+#define SPEED_3 150
 
 Servo myServo;  // 舵机
 
@@ -26,6 +32,14 @@ int rightMotor2 = 7;
 
 int servoPin = 8;  // 舵机针脚，棕色为地，红色为电源正，橙色为信号线
 
+int irPin = 9;  // 红外接收
+
+// 红外初始化
+IRrecv irrecv(irPin);
+decode_results results;
+
+int runtag = 0;
+
 void setup() {
   // 串口初始化
   Serial.begin(9600);
@@ -39,41 +53,101 @@ void setup() {
   pinMode(leftMotor2, OUTPUT);
   pinMode(rightMotor1, OUTPUT);
   pinMode(rightMotor2, OUTPUT);
+  // 红外引脚初始化
+  irrecv.enableIRIn();
 }
 
 void loop() {
-  avoidance();
+
+  if (irrecv.decode(&results)) {
+    Serial.println(results.value,HEX);
+    irrecv.resume();
+  }
+
+  if(results.value==439282747) runtag = 1;  // 自动驾驶
+  if(results.value==973849187) runtag = 2;  // 停止
+
+  if(results.value==0xBDFF627F) runtag = 3;  // 前
+  if(results.value==0x2708443F) runtag = 4;  // 左
+  if(results.value==0x153F9403) runtag = 5;  // 右
+  if(results.value==0xC8F3BB43) runtag = 6;  // 后
+
+  switch(runtag) {
+    case 1:
+      avoidance();
+      break;
+    case 2:
+      motorRun(STOP,0);
+      break;
+    case 3:
+      runtag = 2;
+      motor_f();
+      delay(1000);
+      break;
+    case 4:
+      runtag = 2;
+      motor_l();
+      delay(200);
+      break;
+    case 5:
+      runtag = 2;
+      motor_r();
+      delay(200);
+      break;
+    case 6:
+      runtag = 2;
+      motor_b();
+      delay(1000);
+      break;
+    default:
+      motorRun(STOP,0);
+      break;
+  }
+
+}
+
+void motor_f(){
+  motorRun(FORWARD,SPEED_1);
+}
+void motor_l(){
+  motorRun(TURNLEFT,SPEED_1);
+}
+void motor_r(){
+  motorRun(TURNRIGHT,SPEED_1);
+}
+void motor_b(){
+  motorRun(BACKWARD,SPEED_1);
 }
 
 void motorRun(int cmd,int value) {
   switch(cmd) {
     case FORWARD:
       Serial.println("FORWARD"); //输出状态
-      digitalWrite(leftMotor1, HIGH);
-      digitalWrite(leftMotor2, LOW);
-      digitalWrite(rightMotor1, HIGH);
-      digitalWrite(rightMotor2, LOW);
+      digitalWrite(leftMotor1, LOW);
+      analogWrite(leftMotor2, value);
+      digitalWrite(rightMotor1, LOW);
+      analogWrite(rightMotor2, value);
       break;
     case BACKWARD:
       Serial.println("BACKWARD"); //输出状态
-      digitalWrite(leftMotor1, LOW);
-      digitalWrite(leftMotor2, HIGH);
-      digitalWrite(rightMotor1, LOW);
-      digitalWrite(rightMotor2, HIGH);
+      digitalWrite(leftMotor1, HIGH);
+      analogWrite(leftMotor2, 255-value);
+      digitalWrite(rightMotor1, HIGH);
+      analogWrite(rightMotor2, 255-value);
       break;
     case TURNLEFT:
       Serial.println("TURN  LEFT"); //输出状态
-      digitalWrite(leftMotor1, HIGH);
-      digitalWrite(leftMotor2, LOW);
-      digitalWrite(rightMotor1, LOW);
-      digitalWrite(rightMotor2, HIGH);
+      digitalWrite(leftMotor1, LOW);
+      analogWrite(leftMotor2, value);
+      digitalWrite(rightMotor1, HIGH);
+      analogWrite(rightMotor2, 255-value);
       break;
     case TURNRIGHT:
       Serial.println("TURN  RIGHT"); //输出状态
-      digitalWrite(leftMotor1, LOW);
-      digitalWrite(leftMotor2, HIGH);
-      digitalWrite(rightMotor1, HIGH);
-      digitalWrite(rightMotor2, LOW);
+      digitalWrite(leftMotor1, HIGH);
+      analogWrite(leftMotor2, 255-value);
+      digitalWrite(rightMotor1, LOW);
+      analogWrite(rightMotor2, value);
       break;
     default:
       Serial.println("STOP"); //输出状态
@@ -92,7 +166,7 @@ void avoidance() {
   dis[1] = getDistance(); //中间
 
   if(dis[1]<10){ //判断障碍物距离，距离太近
-    motorRun(BACKWARD,250); //后退
+    motorRun(BACKWARD,SPEED_1); //后退
     delay(500); //后退时间
   }
 
@@ -123,21 +197,21 @@ void avoidance() {
     if(dis[0]<dis[2]) //右边距离障碍的距离比左边近
     {
       //左转
-      motorRun(TURNLEFT,250);
+      motorRun(TURNLEFT,SPEED_2);
       delay(500);
     }
     else  //右边距离障碍的距离比左边远
     {
       //右转
-      motorRun(TURNRIGHT,250);
+      motorRun(TURNRIGHT,SPEED_2);
       delay(500);
     } 
   }
 
   if(dis[1]>200) {
-    motorRun(FORWARD,200);  //高速前进
+    motorRun(FORWARD,SPEED_3);  //高速前进
   }else{
-    motorRun(FORWARD,150);  //前进
+    motorRun(FORWARD,SPEED_1);  //前进
   }
 }
 
