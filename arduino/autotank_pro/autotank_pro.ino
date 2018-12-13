@@ -64,13 +64,20 @@ void loop() {
     irrecv.resume();
   }
 
-  if(results.value==439282747) runtag = 1;  // 自动驾驶
-  if(results.value==973849187) runtag = 2;  // 停止
-
-  if(results.value==0xBDFF627F) runtag = 3;  // 前
-  if(results.value==0x2708443F) runtag = 4;  // 左
-  if(results.value==0x153F9403) runtag = 5;  // 右
-  if(results.value==0xC8F3BB43) runtag = 6;  // 后
+  if(results.value==439282747) {
+    runtag = 1;  // 自动驾驶
+  }else if(results.value==973849187) {
+    runtag = 2;  // 停止
+  }else if(results.value==0xBDFF627F) {
+    runtag = 3;  // 前
+  }else if(results.value==0x2708443F) {
+    runtag = 4;  // 左
+  }else if(results.value==0x153F9403) {
+    runtag = 5;  // 右
+  }else if(results.value==0xC8F3BB43) {
+    runtag = 6;  // 后
+  }
+  results.value = 0;
 
   switch(runtag) {
     case 1:
