@@ -43,6 +43,9 @@ decode_results results;
 
 int runtag = 0;
 
+// 随机数
+long randNumber;
+
 void setup() {
   // 串口初始化
   Serial.begin(9600);
@@ -162,11 +165,12 @@ void motorRun(int cmd,int value) {
       analogWrite(rightMotor2, 255-value);
       break;
     default:
-      Serial.println("STOP"); //输出状态
+      Serial.print("."); //输出状态
       digitalWrite(leftMotor1, LOW);
       digitalWrite(leftMotor2, LOW);
       digitalWrite(rightMotor1, LOW);
       digitalWrite(rightMotor2, LOW);
+      delay(50);
   }
 }
 
@@ -179,7 +183,7 @@ void avoidance() {
 
   if(dis[1]<10){ //判断障碍物距离，距离太近
     motorRun(BACKWARD,SPEED_2); //后退
-    delay(500); //后退时间
+    delay(300); //后退时间
     motorRun(STOP,0);
     return;
   }
@@ -188,37 +192,51 @@ void avoidance() {
     motorRun(STOP,0);
     for (pos = SERVO_1; pos <= (SERVO_1+60); pos += 1) 
     {
-      myServo.write(pos);    // tell servo to go to position in variable 'pos'
-      delay(5);             // waits 15ms for the servo to reach the position
+      myServo.write(pos);
+      delay(5);
     }
     dis[2]=getDistance(); //左边
 
     for (pos = (SERVO_1+60); pos >= (SERVO_1-60); pos -= 1)
     {
-      myServo.write(pos);    // tell servo to go to position in variable 'pos'
-      delay(5);             // waits 15ms for the servo to reach the position
-      if(pos==90)
-        dis[1]=getDistance(); //中间
+      myServo.write(pos);
+      delay(5);
+      // if(pos==90)
+      //   dis[1]=getDistance(); //中间
     }
-
     dis[0]=getDistance();  //右边
-    for (pos = (SERVO_1-60); pos <= SERVO_1; pos += 1) 
-    {
-      myServo.write(pos);    // tell servo to go to position in variable 'pos'
-      delay(5);             // waits 15ms for the servo to reach the position
-    }
+
+    randNumber = random(1, 10);
 
     if(dis[0]<dis[2]) //右边距离障碍的距离比左边近
     {
       //左转
       motorRun(TURNLEFT,SPEED_2);
-      delay(500);
+
+      // 回中
+      for (pos = (SERVO_1-60); pos <= SERVO_1; pos += 1) 
+      {
+        myServo.write(pos);
+        delay(5);
+      }
+
+      delay(200+(100*randNumber));
+      return;
     }
     else  //右边距离障碍的距离比左边远
     {
       //右转
       motorRun(TURNRIGHT,SPEED_2);
-      delay(500);
+
+      // 回中
+      for (pos = (SERVO_1-60); pos <= SERVO_1; pos += 1) 
+      {
+        myServo.write(pos);
+        delay(5);
+      }
+
+      delay(200+(100*randNumber));
+      return;
     } 
   }
 
