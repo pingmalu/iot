@@ -15,8 +15,8 @@
 #define TURNRIGHT 4
 
 // 电机速度定义
-#define SPEED_1 120
-#define SPEED_2 110
+#define SPEED_1 200
+#define SPEED_2 100
 #define SPEED_3 150
 
 // 矫正舵机中位
@@ -65,64 +65,70 @@ void loop() {
   if (irrecv.decode(&results)) {
     Serial.println(results.value,HEX);
     irrecv.resume();
-  }
 
-  if(results.value==439282747) {
-    runtag = 1;  // 自动驾驶
-  }else if(results.value==973849187) {
-    runtag = 2;  // 停止
-  }else if(results.value==0xBDFF627F) {
-    runtag = 3;  // 前
-  }else if(results.value==0x2708443F) {
-    runtag = 4;  // 左
-  }else if(results.value==0x153F9403) {
-    runtag = 5;  // 右
-  }else if(results.value==0xC8F3BB43) {
-    runtag = 6;  // 后
-  }
-  results.value = 0;
+    if(results.value!=0xFFFFFFFF && results.value!=0) {
+      if(results.value==0xF377C5B7) {
+        runtag = 1;  // 自动驾驶
+      }else if(results.value==0xD538681B) {
+        runtag = 2;  // 停止
+      }else if(results.value==0x488F3CBB) {
+        runtag = 3;  // 前
+      }else if(results.value==0x410109DB) {
+        runtag = 4;  // 左
+      }else if(results.value==0x7EC31EF7) {
+        runtag = 5;  // 右
+      }else if(results.value==0xA23C94BF) {
+        runtag = 6;  // 后
+      }
+    }
+    results.value = 0;
 
-  switch(runtag) {
-    case 1:
+    switch(runtag) {
+      case 1:
+        avoidance();
+        break;
+      case 3:
+        motor_f();
+        break;
+      case 4:
+        motor_l();
+        break;
+      case 5:
+        motor_r();
+        break;
+      case 6:
+        motor_b();
+        break;
+      default:
+        motorRun(STOP,0);
+        break;
+    }
+  }else{  // 没有接到信号
+    if(runtag==1){
       avoidance();
-      break;
-    case 3:
-      motor_f();
-      break;
-    case 4:
-      motor_l();
-      break;
-    case 5:
-      motor_r();
-      break;
-    case 6:
-      motor_b();
-      break;
-    default:
+    }else{
       motorRun(STOP,0);
-      break;
+    }
   }
+
+
 }
 
 void motor_f(){
   motorRun(FORWARD,SPEED_1);
-  delay(500);
-  runtag = 2;
+  delay(100);
 }
 void motor_l(){
   motorRun(TURNLEFT,SPEED_1);
-  delay(300);
-  runtag = 2;
+  delay(100);
 }
 void motor_r(){
   motorRun(TURNRIGHT,SPEED_1);
-  delay(300);
-  runtag = 2;
+  delay(100);
 }
 void motor_b(){
   motorRun(BACKWARD,SPEED_1);
-  delay(500);
-  runtag = 2;
+  delay(100);
 }
 
 void motorRun(int cmd,int value) {
@@ -172,7 +178,7 @@ void avoidance() {
   dis[1] = getDistance(); //中间
 
   if(dis[1]<10){ //判断障碍物距离，距离太近
-    motorRun(BACKWARD,SPEED_1); //后退
+    motorRun(BACKWARD,SPEED_2); //后退
     delay(500); //后退时间
     motorRun(STOP,0);
     return;
@@ -219,7 +225,7 @@ void avoidance() {
   if(dis[1]>200) {
     motorRun(FORWARD,SPEED_3);  //高速前进
   }else{
-    motorRun(FORWARD,SPEED_1);  //前进
+    motorRun(FORWARD,SPEED_2);  //前进
   }
 }
 
