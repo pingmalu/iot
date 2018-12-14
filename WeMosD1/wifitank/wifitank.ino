@@ -8,7 +8,7 @@
 #include <ESP8266WiFi.h>
 
 #include <Servo.h>
-#include <IRremote.h>
+//#include <IRremote.h>
 
 #define STOP      0
 #define FORWARD   1
@@ -17,7 +17,7 @@
 #define TURNRIGHT 4
 
 // 电机速度定义
-#define SPEED_1 200
+#define SPEED_1 800
 #define SPEED_2 100
 #define SPEED_3 150
 
@@ -40,8 +40,8 @@ int servoPin = D8;  // 舵机针脚，棕色为地，红色为电源正，橙色
 int irPin = D9;  // 红外接收
 
 // 红外初始化
-IRrecv irrecv(irPin);
-decode_results results;
+//IRrecv irrecv(irPin);
+//decode_results results;
 
 int runtag = 0;
 
@@ -65,6 +65,7 @@ IPAddress dns(192, 168, 0, 1);
 // Create an instance of the server
 // specify the port to listen on as an argument
 WiFiServer server(80);
+int val;
 
 void setup() {
   Serial.begin(9600);
@@ -109,12 +110,13 @@ void setup() {
   pinMode(rightMotor1, OUTPUT);
   pinMode(rightMotor2, OUTPUT);
   // 红外引脚初始化
-  irrecv.enableIRIn();
+//  irrecv.enableIRIn();
 
 
 }
 
 void loop() {
+//  return;
 
   // if (irrecv.decode(&results)) {
   //   Serial.println(results.value,HEX);
@@ -138,14 +140,21 @@ void loop() {
   Serial.println(req);
 
   // Match the request
-  int val;
   if (req.indexOf(F("/gpio/0")) != -1) {
     val = 0;
   } else if (req.indexOf(F("/gpio/1")) != -1) {
     val = 1;
+  } else if (req.indexOf(F("/gpio/2")) != -1) {
+    val = 2;
+  } else if (req.indexOf(F("/gpio/3")) != -1) {
+    val = 3;
+  } else if (req.indexOf(F("/gpio/4")) != -1) {
+    val = 4;
+  } else if (req.indexOf(F("/gpio/5")) != -1) {
+    val = 5;
   } else {
     Serial.println(F("invalid request"));
-    val = digitalRead(LED_BUILTIN);
+//    val = digitalRead(LED_BUILTIN);
   }
 
   // Set LED according to the request
@@ -161,36 +170,51 @@ void loop() {
   // Send the response to the client
   // it is OK for multiple small client.print/write,
   // because nagle algorithm will group them into one single packet
-  client.print(F("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html>\r\nGPIO is now "));
-  client.print((val) ? F("high") : F("low"));
-  client.print(F("<br><br>Click <a href='http://"));
+  client.print(F("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html><head><meta http-equiv=Content-Type content=\"text/html;charset=utf-8\"></head>\r\n "));
+  client.print(F("<style>body { font-size: 100px;}</style>"));
+  client.print((val));
+  client.print(F("<br>"));
+  
+  client.print(F("<a href='http://"));
   client.print(WiFi.localIP());
-  client.print(F("/gpio/1'>here</a> to switch LED GPIO off, or <a href='http://"));
+  client.print(F("/gpio/1'>前进</a>  "));
+
+  client.print(F("<a href='http://"));
   client.print(WiFi.localIP());
-  client.print(F("/gpio/0'>here</a> to switch LED GPIO on.</html>"));
+  client.print(F("/gpio/2'>←</a>  "));
+
+  client.print(F("<a href='http://"));
+  client.print(WiFi.localIP());
+  client.print(F("/gpio/3'>→</a>  "));
+
+  client.print(F("<a href='http://"));
+  client.print(WiFi.localIP());
+  client.print(F("/gpio/4'>后退</a>  "));
+
+  client.print(F("<a href='http://"));
+  client.print(WiFi.localIP());
+  client.print(F("/gpio/0'>停止</a> </html>"));
 
   // The client will actually be *flushed* then disconnected
   // when the function returns and 'client' object is destroyed (out-of-scope)
   // flush = ensure written data are received by the other side
   Serial.println(F("Disconnecting from client"));
   
-  client.print(F(val));
 
   switch(val) {
-    case 2:
-      avoidance();
+    case 9:
+//      avoidance();
       break;
     case 1:
-      client.print(F(" FRONT "));
       motor_f();
       break;
-    case 4:
+    case 2:
       motor_l();
       break;
-    case 5:
+    case 3:
       motor_r();
       break;
-    case 6:
+    case 4:
       motor_b();
       break;
     default:
@@ -201,19 +225,15 @@ void loop() {
 
 void motor_f(){
   motorRun(FORWARD,SPEED_1);
-  delay(10000);
 }
 void motor_l(){
   motorRun(TURNLEFT,SPEED_1);
-  delay(100);
 }
 void motor_r(){
   motorRun(TURNRIGHT,SPEED_1);
-  delay(100);
 }
 void motor_b(){
   motorRun(BACKWARD,SPEED_1);
-  delay(100);
 }
 
 
@@ -229,14 +249,14 @@ void motorRun(int cmd,int value) {
     case BACKWARD:
       Serial.println("BACKWARD"); //输出状态
       digitalWrite(leftMotor1, HIGH);
-      analogWrite(leftMotor2, 255-value);
+      analogWrite(leftMotor2, 1023-value);
       digitalWrite(rightMotor1, HIGH);
-      analogWrite(rightMotor2, 255-value);
+      analogWrite(rightMotor2, 1023-value);
       break;
     case TURNLEFT:
       Serial.println("TURN  LEFT"); //输出状态
       digitalWrite(leftMotor1, HIGH);
-      analogWrite(leftMotor2, 255-value);
+      analogWrite(leftMotor2, 1023-value);
       digitalWrite(rightMotor1, LOW);
       analogWrite(rightMotor2, value);
       break;
@@ -245,7 +265,7 @@ void motorRun(int cmd,int value) {
       digitalWrite(leftMotor1, LOW);
       analogWrite(leftMotor2, value);
       digitalWrite(rightMotor1, HIGH);
-      analogWrite(rightMotor2, 255-value);
+      analogWrite(rightMotor2, 1023-value);
       break;
     default:
       Serial.print("."); //输出状态
