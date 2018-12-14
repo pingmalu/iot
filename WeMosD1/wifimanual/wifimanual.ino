@@ -10,17 +10,17 @@
 #include <ESP8266WiFi.h>
 
 #ifndef STASSID
-#define STASSID "ssid"
+#define STASSID "M2"
 #define STAPSK  "passwd"
 #endif
 
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
-IPAddress ip(192, 168, 11, 246);
-IPAddress gateway(192, 168, 11, 2);
+IPAddress ip(192, 168, 0, 40);
+IPAddress gateway(192, 168, 0, 1);
 IPAddress subnet(255, 255, 255, 0);
-IPAddress dns(221,6,4,66);
+IPAddress dns(192, 168, 0, 1);
 
 // Create an instance of the server
 // specify the port to listen on as an argument
