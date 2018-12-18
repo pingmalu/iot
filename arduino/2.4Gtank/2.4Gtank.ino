@@ -30,20 +30,22 @@
 #define SPEED_Y 0.10  // 微调转弯半径
 #define SPEED_Z 0.30  // 微调转弯半径
 
-int pwm_v1;       // 1左右 脉冲值
-int pwm_PIN1 = 8; // 1左右 引脚
+int pwm_v1;           // 1左右 脉冲值
+int pwm_PIN1 = 8;     // 1左右 引脚
 int pwm_speed1 = 0;
-int pwm_v2;       // 2上下 脉冲值
-int pwm_PIN2 = 9; // 2上下 引脚
+int pwm_v2;           // 2上下 脉冲值
+int pwm_PIN2 = 9;     // 2上下 引脚
 int pwm_speed2 = 0;
+int pwm_PIN3 = 10;    // 6CH 引脚
+int pwm_v3;           // 6CH 脉冲值
 
-int START_SPEED = 60; //起始驱动速度
-int MAX_SPEED = 200;  //最大速度
-int M_of_S = 500;     //信号跨度
+int START_SPEED = 60; // 起始驱动速度
+int MAX_SPEED = 200;  // 最大速度
+int M_of_S = 500;     // 信号跨度
 
-int leftMotor1 = 4; // 左边轮子 引脚
+int leftMotor1 = 4;   // 左边轮子 引脚
 int leftMotor2 = 5;
-int rightMotor1 = 7; // 右边轮子 引脚
+int rightMotor1 = 7;  // 右边轮子 引脚
 int rightMotor2 = 6;
 
 float leftspeed = 0;
@@ -67,6 +69,15 @@ void loop()
   // show_speed(-1423.1,-THRESHOLD);return;
   pwm_v1 = pulseIn(pwm_PIN1, HIGH); //读取引脚上的高电平脉冲，最大脉冲时间间隔为1秒，并且把结果返回 返回时间单位为微秒
   pwm_v2 = pulseIn(pwm_PIN2, HIGH); //读取引脚上的高电平脉冲，最大脉冲时间间隔为1秒，并且把结果返回 返回时间单位为微秒
+
+  // 探照灯
+  pwm_v3 = pulseIn(pwm_PIN3, HIGH);
+  if(pwm_v3>1300){
+    // Serial.println(150);
+    analogWrite(12, 150);
+  }else{
+    digitalWrite(12, LOW);
+  }
 
   show_pwm(pwm_v1, pwm_v2);
 
