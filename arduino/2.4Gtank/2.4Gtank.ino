@@ -170,6 +170,8 @@ void motorRun(int cmd, int valuel, int valuer)
   {
   case FORWARD:
     Serial.println("FORWARD");
+    valuel = valuel<UNO_OR_D1?valuel:UNO_OR_D1;
+    valuer = valuer<UNO_OR_D1?valuer:UNO_OR_D1;
     show_speed(valuel, valuer);
     digitalWrite(leftMotor1, LOW);
     analogWrite(leftMotor2, valuel);
@@ -178,6 +180,8 @@ void motorRun(int cmd, int valuel, int valuer)
     break;
   case BACKWARD:
     Serial.println("BACKWARD");
+    valuel = valuel<UNO_OR_D1?valuel:UNO_OR_D1;
+    valuer = valuer<UNO_OR_D1?valuer:UNO_OR_D1;
     show_speed(-valuel, -valuer);
     digitalWrite(leftMotor1, HIGH);
     analogWrite(leftMotor2, UNO_OR_D1 - valuel);
