@@ -1,34 +1,9 @@
-int D;  //定义duration变量为无符号长整数型变量
-
-#define STOP      0
-#define FORWARD   1
-#define BACKWARD  2
-#define TURNLEFT  3
-#define TURNRIGHT 4
-
-int pwm_PIN1 = 8;
-int START_SPEED = 70;  //起始驱动速度
-int MAX_SPEED = 200;  //最大速度
-int M_of_S = 500;  //信号跨度
-
-int leftMotor1 = 4;  // 左边轮子
-int leftMotor2 = 5;
-int rightMotor1 = 7;  // 右边轮子
-int rightMotor2 = 6;
-
-int Dspeed = 0;
-float leftspeed = 0;
-
-
-void setup()
-{
-  Serial.begin(9600);  //串口波特率为9600
-  pinMode(pwm_PIN1, INPUT); //设置引脚为输入模式
-
-  // 电机驱动引脚初始化
-  pinMode(leftMotor1, OUTPUT);
-  pinMode(leftMotor2, OUTPUT);
-} 
+/**
+ * 遥控坦克
+ * BY: Malu
+ * https://malu.me
+ * 2018.12.18
+ */
 
 // pulseIn(pin, value, timeout)
 // 1左右 脉冲范围 中：1621  低：2096  高：1113  抖动：50
@@ -40,76 +15,202 @@ void setup()
 // D/R 舵量
 
 // 电机启动速度 100-200
+// analogWrite(pin, value)  UNO:0-255  D1 Wifi:0-1023
+
+#define UNO_OR_D1 255
+
+#define STOP 0
+#define FORWARD 1
+#define BACKWARD 2
+#define TURNLEFT 3
+#define TURNRIGHT 4
+
+#define THRESHOLD 50
+#define SPEED_X 0.26
+
+int pwm_v1;       // 1左右 脉冲值
+int pwm_PIN1 = 8; // 1左右 引脚
+int pwm_speed1 = 0;
+int pwm_v2;       // 2上下 脉冲值
+int pwm_PIN2 = 9; // 2上下 引脚
+int pwm_speed2 = 0;
+
+int START_SPEED = 70; //起始驱动速度
+int MAX_SPEED = 200;  //最大速度
+int M_of_S = 500;     //信号跨度
+
+int leftMotor1 = 4; // 左边轮子 引脚
+int leftMotor2 = 5;
+int rightMotor1 = 7; // 右边轮子 引脚
+int rightMotor2 = 6;
+
+float leftspeed = 0;
+float rightspeed = 0;
+
+char show_v[8];      //串口输出用
+
+void setup()
+{
+  Serial.begin(9600);       //串口波特率为9600
+  pinMode(pwm_PIN1, INPUT); //设置引脚为输入模式
+  pinMode(pwm_PIN2, INPUT); //设置引脚为输入模式
+
+  // 电机驱动引脚初始化
+  pinMode(leftMotor1, OUTPUT);
+  pinMode(leftMotor2, OUTPUT);
+}
 
 void loop()
 {
-  D = pulseIn(pwm_PIN1, HIGH); //读取引脚上的高电平脉冲，最大脉冲时间间隔为1秒，并且把结果赋值给duration变量 返回时间单位为微秒
-  Serial.println(D);
+  // show_speed(-1423.1,-THRESHOLD);return;
+  pwm_v1 = pulseIn(pwm_PIN1, HIGH); //读取引脚上的高电平脉冲，最大脉冲时间间隔为1秒，并且把结果返回 返回时间单位为微秒
+  pwm_v2 = pulseIn(pwm_PIN2, HIGH); //读取引脚上的高电平脉冲，最大脉冲时间间隔为1秒，并且把结果返回 返回时间单位为微秒
 
-  Dspeed = (D-1471);  // 中位1471
+  show_pwm(pwm_v1,pwm_v2);
 
-  if(abs(Dspeed)>800){  // 最大信号阈值不要超过800
-    motorRun(STOP,0);
-    return;  
-  }
+  // return;
 
-  if(abs(Dspeed)<50){
-    motorRun(STOP,0);
+  pwm_speed1 = (pwm_v1 - 1471); // 1左右 中位1471
+  pwm_speed2 = (pwm_v2 - 1471); // 2上下 中位1471
+
+  if (abs(pwm_speed1) > 800 || abs(pwm_speed2) > 800)
+  { // 最大信号阈值不要超过800
+    motorRun(STOP, 0, 0);
     return;
-  }else if((Dspeed)>0){
-    //前进
-    leftspeed = (abs(Dspeed)*0.26)+START_SPEED;
-    Serial.println(leftspeed);
-    motorRun(FORWARD,leftspeed);
-  }else{
-    //后退
-    leftspeed = (abs(Dspeed)*0.26)+START_SPEED;
-    Serial.println(leftspeed);
-    motorRun(BACKWARD,leftspeed);
   }
 
-//  Serial.print(duration/1000000.0); //通过串口输出duration变量
-//  Serial.println(" s");
+  if (abs(pwm_speed1) < THRESHOLD && abs(pwm_speed2) < THRESHOLD)
+  {
+    //停止
+    motorRun(STOP, 0, 0);
+    return;
+  }
+  else if (abs(pwm_speed1) < THRESHOLD && pwm_speed2 >= THRESHOLD)
+  {
+    //前进
+    leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
+    show_speed(leftspeed,leftspeed);
+    motorRun(FORWARD, leftspeed, leftspeed);
+    return;
+  }
+  else if (abs(pwm_speed1) < THRESHOLD && pwm_speed2 <= -THRESHOLD)
+  {
+    //后退
+    leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
+    show_speed(-leftspeed,-leftspeed);
+    motorRun(BACKWARD, leftspeed, leftspeed);
+    return;
+  }
+  else if (abs(pwm_speed2) < THRESHOLD && pwm_speed1 >= THRESHOLD)
+  {
+    //左转  pwm_speed1 正值
+    leftspeed = (abs(pwm_speed1) * SPEED_X) + START_SPEED;
+    show_speed(-leftspeed,leftspeed);
+    motorRun(TURNLEFT, leftspeed, leftspeed);
+    return;
+  }
+  else if (abs(pwm_speed2) < THRESHOLD && pwm_speed1 <= -THRESHOLD)
+  {
+    //右转 pwm_speed1 负值
+    leftspeed = (abs(pwm_speed1) * SPEED_X) + START_SPEED;
+    show_speed(leftspeed,-leftspeed);
+    motorRun(TURNRIGHT, leftspeed, leftspeed);
+    return;
+  }
+
+  else if (pwm_speed1 >= THRESHOLD && pwm_speed2 >= THRESHOLD)
+  {
+    //左前
+    leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
+    rightspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
+    show_speed(leftspeed,rightspeed);
+    motorRun(FORWARD, leftspeed, rightspeed);
+    return;
+  }
+  else if (pwm_speed1 <= THRESHOLD && pwm_speed2 >= THRESHOLD)
+  {
+    //右前
+    leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
+    rightspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
+    show_speed(leftspeed,rightspeed);
+    motorRun(FORWARD, leftspeed, rightspeed);
+    return;
+  }
+  else if (pwm_speed1 >= THRESHOLD && pwm_speed2 <= THRESHOLD)
+  {
+    //左后
+    leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
+    rightspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
+    show_speed(-leftspeed,-rightspeed);
+    motorRun(BACKWARD, leftspeed, rightspeed);
+    return;
+  }
+  else if (pwm_speed1 <= THRESHOLD && pwm_speed2 >= THRESHOLD)
+  {
+    //右后
+    leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
+    rightspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
+    show_speed(-leftspeed,-rightspeed);
+    motorRun(BACKWARD, leftspeed, rightspeed);
+    return;
+  }
 }
 
+void show_pwm(int A, int B)
+{
+  Serial.print("pwm_PIN1:");
+  Serial.print(A);
+  Serial.print(" pwm_PIN2:");
+  Serial.println(B);
+}
 
+void show_speed(float left_s, float right_s)
+{
+  Serial.print("L:");
+  Serial.print(left_s);
+  Serial.print(" R:");
+  Serial.println(right_s);
+}
 
-void motorRun(int cmd,int value) {
-  switch(cmd) {
-    case FORWARD:
-      Serial.println("FORWARD"); //输出状态
-      digitalWrite(leftMotor1, LOW);
-      analogWrite(leftMotor2, value);
-      digitalWrite(rightMotor1, LOW);
-      analogWrite(rightMotor2, value);
-      break;
-    case BACKWARD:
-      Serial.println("BACKWARD"); //输出状态
-      digitalWrite(leftMotor1, HIGH);
-      analogWrite(leftMotor2, 1023-value);
-      digitalWrite(rightMotor1, HIGH);
-      analogWrite(rightMotor2, 1023-value);
-      break;
-    case TURNLEFT:
-      Serial.println("TURN  LEFT"); //输出状态
-      digitalWrite(leftMotor1, HIGH);
-      analogWrite(leftMotor2, 1023-value);
-      digitalWrite(rightMotor1, LOW);
-      analogWrite(rightMotor2, value);
-      break;
-    case TURNRIGHT:
-      Serial.println("TURN  RIGHT"); //输出状态
-      digitalWrite(leftMotor1, LOW);
-      analogWrite(leftMotor2, value);
-      digitalWrite(rightMotor1, HIGH);
-      analogWrite(rightMotor2, 1023-value);
-      break;
-    default:
-      Serial.print("."); //输出状态
-      digitalWrite(leftMotor1, LOW);
-      digitalWrite(leftMotor2, LOW);
-      digitalWrite(rightMotor1, LOW);
-      digitalWrite(rightMotor2, LOW);
-      delay(50);
+void motorRun(int cmd, int valuel, int valuer)
+{
+  switch (cmd)
+  {
+  case FORWARD:
+    Serial.println("FORWARD"); //输出状态
+    digitalWrite(leftMotor1, LOW);
+    analogWrite(leftMotor2, valuel);
+    digitalWrite(rightMotor1, LOW);
+    analogWrite(rightMotor2, valuer);
+    break;
+  case BACKWARD:
+    Serial.println("BACKWARD"); //输出状态
+    digitalWrite(leftMotor1, HIGH);
+    analogWrite(leftMotor2, UNO_OR_D1 - valuel);
+    digitalWrite(rightMotor1, HIGH);
+    analogWrite(rightMotor2, UNO_OR_D1 - valuer);
+    break;
+  case TURNLEFT:
+    Serial.println("LEFT"); //输出状态
+    digitalWrite(leftMotor1, HIGH);
+    analogWrite(leftMotor2, UNO_OR_D1 - valuel);
+    digitalWrite(rightMotor1, LOW);
+    analogWrite(rightMotor2, valuer);
+    break;
+  case TURNRIGHT:
+    Serial.println("TURN  RIGHT"); //输出状态
+    digitalWrite(leftMotor1, LOW);
+    analogWrite(leftMotor2, valuel);
+    digitalWrite(rightMotor1, HIGH);
+    analogWrite(rightMotor2, UNO_OR_D1 - valuer);
+    break;
+  default:
+    Serial.print("."); //输出状态
+    digitalWrite(leftMotor1, LOW);
+    digitalWrite(leftMotor2, LOW);
+    digitalWrite(rightMotor1, LOW);
+    digitalWrite(rightMotor2, LOW);
+    delay(50);
+    break;
   }
 }
