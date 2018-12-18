@@ -70,8 +70,8 @@ void loop()
 
   // return;
 
-  pwm_speed1 = (pwm_v1 - 1471); // 1左右 中位1471
-  pwm_speed2 = (pwm_v2 - 1471); // 2上下 中位1471
+  pwm_speed1 = (pwm_v1 - 1480); // 1左右 中位1480
+  pwm_speed2 = (pwm_v2 - 1485); // 2上下 中位1485
 
   if (abs(pwm_speed1) > 800 || abs(pwm_speed2) > 800)
   { // 最大信号阈值不要超过800
@@ -130,7 +130,7 @@ void loop()
     motorRun(FORWARD, leftspeed, rightspeed);
     return;
   }
-  else if (pwm_speed1 >= THRESHOLD && pwm_speed2 <= THRESHOLD)
+  else if (pwm_speed1 >= THRESHOLD && pwm_speed2 <= -THRESHOLD)
   {
     //左后
     leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
@@ -138,7 +138,7 @@ void loop()
     motorRun(BACKWARD, leftspeed, rightspeed);
     return;
   }
-  else if (pwm_speed1 <= THRESHOLD && pwm_speed2 >= THRESHOLD)
+  else if (pwm_speed1 <= -THRESHOLD && pwm_speed2 <= -THRESHOLD)
   {
     //右后
     leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
