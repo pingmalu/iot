@@ -26,7 +26,7 @@
 #define TURNRIGHT 4
 
 #define THRESHOLD 50
-#define SPEED_X 0.26
+#define SPEED_X 0.26  // (信号/信号跨度)*(最大速度-起始驱动速度)
 
 int pwm_v1;       // 1左右 脉冲值
 int pwm_PIN1 = 8; // 1左右 引脚
@@ -47,7 +47,7 @@ int rightMotor2 = 6;
 float leftspeed = 0;
 float rightspeed = 0;
 
-char show_v[8];      //串口输出用
+char show_v[8]; //串口输出用
 
 void setup()
 {
@@ -66,7 +66,7 @@ void loop()
   pwm_v1 = pulseIn(pwm_PIN1, HIGH); //读取引脚上的高电平脉冲，最大脉冲时间间隔为1秒，并且把结果返回 返回时间单位为微秒
   pwm_v2 = pulseIn(pwm_PIN2, HIGH); //读取引脚上的高电平脉冲，最大脉冲时间间隔为1秒，并且把结果返回 返回时间单位为微秒
 
-  show_pwm(pwm_v1,pwm_v2);
+  show_pwm(pwm_v1, pwm_v2);
 
   // return;
 
@@ -89,7 +89,6 @@ void loop()
   {
     //前进
     leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
-    show_speed(leftspeed,leftspeed);
     motorRun(FORWARD, leftspeed, leftspeed);
     return;
   }
@@ -97,23 +96,20 @@ void loop()
   {
     //后退
     leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
-    show_speed(-leftspeed,-leftspeed);
     motorRun(BACKWARD, leftspeed, leftspeed);
     return;
   }
   else if (abs(pwm_speed2) < THRESHOLD && pwm_speed1 >= THRESHOLD)
   {
-    //左转  pwm_speed1 正值
+    //左转  pwm_PIN1 高电平
     leftspeed = (abs(pwm_speed1) * SPEED_X) + START_SPEED;
-    show_speed(-leftspeed,leftspeed);
     motorRun(TURNLEFT, leftspeed, leftspeed);
     return;
   }
   else if (abs(pwm_speed2) < THRESHOLD && pwm_speed1 <= -THRESHOLD)
   {
-    //右转 pwm_speed1 负值
+    //右转
     leftspeed = (abs(pwm_speed1) * SPEED_X) + START_SPEED;
-    show_speed(leftspeed,-leftspeed);
     motorRun(TURNRIGHT, leftspeed, leftspeed);
     return;
   }
@@ -123,7 +119,6 @@ void loop()
     //左前
     leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
     rightspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
-    show_speed(leftspeed,rightspeed);
     motorRun(FORWARD, leftspeed, rightspeed);
     return;
   }
@@ -132,7 +127,6 @@ void loop()
     //右前
     leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
     rightspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
-    show_speed(leftspeed,rightspeed);
     motorRun(FORWARD, leftspeed, rightspeed);
     return;
   }
@@ -141,7 +135,6 @@ void loop()
     //左后
     leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
     rightspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
-    show_speed(-leftspeed,-rightspeed);
     motorRun(BACKWARD, leftspeed, rightspeed);
     return;
   }
@@ -150,7 +143,6 @@ void loop()
     //右后
     leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
     rightspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
-    show_speed(-leftspeed,-rightspeed);
     motorRun(BACKWARD, leftspeed, rightspeed);
     return;
   }
@@ -177,35 +169,39 @@ void motorRun(int cmd, int valuel, int valuer)
   switch (cmd)
   {
   case FORWARD:
-    Serial.println("FORWARD"); //输出状态
+    Serial.println("FORWARD");
+    show_speed(valuel, valuer);
     digitalWrite(leftMotor1, LOW);
     analogWrite(leftMotor2, valuel);
     digitalWrite(rightMotor1, LOW);
     analogWrite(rightMotor2, valuer);
     break;
   case BACKWARD:
-    Serial.println("BACKWARD"); //输出状态
+    Serial.println("BACKWARD");
+    show_speed(-valuel, -valuer);
     digitalWrite(leftMotor1, HIGH);
     analogWrite(leftMotor2, UNO_OR_D1 - valuel);
     digitalWrite(rightMotor1, HIGH);
     analogWrite(rightMotor2, UNO_OR_D1 - valuer);
     break;
   case TURNLEFT:
-    Serial.println("LEFT"); //输出状态
+    Serial.println("LEFT");
+    show_speed(-valuel, valuer);
     digitalWrite(leftMotor1, HIGH);
     analogWrite(leftMotor2, UNO_OR_D1 - valuel);
     digitalWrite(rightMotor1, LOW);
     analogWrite(rightMotor2, valuer);
     break;
   case TURNRIGHT:
-    Serial.println("TURN  RIGHT"); //输出状态
+    Serial.println("RIGHT");
+    show_speed(valuel, -valuer);
     digitalWrite(leftMotor1, LOW);
     analogWrite(leftMotor2, valuel);
     digitalWrite(rightMotor1, HIGH);
     analogWrite(rightMotor2, UNO_OR_D1 - valuer);
     break;
   default:
-    Serial.print("."); //输出状态
+    Serial.print(".");
     digitalWrite(leftMotor1, LOW);
     digitalWrite(leftMotor2, LOW);
     digitalWrite(rightMotor1, LOW);
