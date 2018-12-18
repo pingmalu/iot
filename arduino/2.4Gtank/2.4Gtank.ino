@@ -25,8 +25,10 @@
 #define TURNLEFT 3
 #define TURNRIGHT 4
 
-#define THRESHOLD 50
+#define THRESHOLD 30  // 启动信号阈值
 #define SPEED_X 0.26  // (信号/信号跨度)*(最大速度-起始驱动速度)
+#define SPEED_Y 0.10  // 微调转弯半径
+#define SPEED_Z 0.30  // 微调转弯半径
 
 int pwm_v1;       // 1左右 脉冲值
 int pwm_PIN1 = 8; // 1左右 引脚
@@ -35,7 +37,7 @@ int pwm_v2;       // 2上下 脉冲值
 int pwm_PIN2 = 9; // 2上下 引脚
 int pwm_speed2 = 0;
 
-int START_SPEED = 70; //起始驱动速度
+int START_SPEED = 60; //起始驱动速度
 int MAX_SPEED = 200;  //最大速度
 int M_of_S = 500;     //信号跨度
 
@@ -117,32 +119,32 @@ void loop()
   else if (pwm_speed1 >= THRESHOLD && pwm_speed2 >= THRESHOLD)
   {
     //左前
-    leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
-    rightspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
+    leftspeed = (abs(pwm_speed2) * SPEED_Y) + START_SPEED;
+    rightspeed = (abs(pwm_speed2) * SPEED_Y) + START_SPEED + (abs(pwm_speed1) * SPEED_Z);
     motorRun(FORWARD, leftspeed, rightspeed);
     return;
   }
   else if (pwm_speed1 <= THRESHOLD && pwm_speed2 >= THRESHOLD)
   {
     //右前
-    leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
-    rightspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
+    leftspeed = (abs(pwm_speed2) * SPEED_Y) + START_SPEED + (abs(pwm_speed1) * SPEED_Z);
+    rightspeed = (abs(pwm_speed2) * SPEED_Y) + START_SPEED;
     motorRun(FORWARD, leftspeed, rightspeed);
     return;
   }
   else if (pwm_speed1 >= THRESHOLD && pwm_speed2 <= -THRESHOLD)
   {
     //左后
-    leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
-    rightspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
+    leftspeed = (abs(pwm_speed2) * SPEED_Y) + START_SPEED;
+    rightspeed = (abs(pwm_speed2) * SPEED_Y) + START_SPEED + (abs(pwm_speed1) * SPEED_Z);
     motorRun(BACKWARD, leftspeed, rightspeed);
     return;
   }
   else if (pwm_speed1 <= -THRESHOLD && pwm_speed2 <= -THRESHOLD)
   {
     //右后
-    leftspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED + (abs(pwm_speed1) * SPEED_X);
-    rightspeed = (abs(pwm_speed2) * SPEED_X) + START_SPEED;
+    leftspeed = (abs(pwm_speed2) * SPEED_Y) + START_SPEED + (abs(pwm_speed1) * SPEED_Z);
+    rightspeed = (abs(pwm_speed2) * SPEED_Y) + START_SPEED;
     motorRun(BACKWARD, leftspeed, rightspeed);
     return;
   }
