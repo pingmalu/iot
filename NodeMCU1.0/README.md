@@ -4,7 +4,7 @@
 
 https://github.com/nodemcu/nodemcu-flasher
 
-## 获取固件包
+## 获取nodemcu固件包
 
 https://nodemcu-build.com/index.php
 
@@ -20,3 +20,9 @@ https://esp8266.ru/esplorer/
 ## 接口定义参考文档
 
 https://www.jianshu.com/p/cf5bd5820a08
+
+
+CE-50-E3-5B-53-20
+CE-50-E3-5B-53-07
+CC-50-E3-5B-53-20
+CC-50-E3-5B-53-07
