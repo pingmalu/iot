@@ -26,9 +26,9 @@
 #define TURNRIGHT 4
 
 #define THRESHOLD 30  // 启动信号阈值
-#define SPEED_X 0.26  // (信号/信号跨度)*(最大速度-起始驱动速度)
+#define SPEED_X 0.40  // (信号/信号跨度)*(最大速度-起始驱动速度)
 #define SPEED_Y 0.10  // 微调转弯半径
-#define SPEED_Z 0.30  // 微调转弯半径
+#define SPEED_Z 0.40  // 微调转弯半径
 
 int pwm_v1;           // 1左右 脉冲值
 int pwm_PIN1 = 8;     // 1左右 引脚
