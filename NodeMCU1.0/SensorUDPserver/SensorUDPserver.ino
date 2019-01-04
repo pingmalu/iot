@@ -2,6 +2,8 @@
 #include <WiFiUdp.h>
 // 3.32   11.248
 
+const char *ssid = "wifi";
+const char *password = "passwd";
 
 WiFiUDP Udp;
 unsigned int port = 9999;
