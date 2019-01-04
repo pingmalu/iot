@@ -1,18 +1,12 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
-#include <Servo.h>
 
-const char *ssid = "16988";
-const char *password = "bric16988";
+const char *ssid = "malu";
+const char *password = "pass";
 
 WiFiUDP Udp;
 unsigned int port = 9999;
 char packet[UDP_TX_PACKET_MAX_SIZE];
-
-Servo myservo;
-Servo myservo2;
-int servoPin = D4;  // 舵机针脚，棕色为地，红色为电源正，橙色为信号线
-int servoPin2 = D3;
 
 void setup()
 {
@@ -30,10 +24,8 @@ void setup()
     Udp.begin(port);
     Serial.printf("Listener started at IP % s, at port % d\n", WiFi.localIP().toString().c_str(), port);
 
-    myservo.attach(servoPin);
-    myservo2.attach(servoPin2);
-    // pinMode(D4, OUTPUT);
-    // digitalWrite(D4, 0);
+    pinMode(D4, OUTPUT);
+    digitalWrite(D4, 0);
 }
 
 // 传感器偏移位对应表：
@@ -65,11 +57,6 @@ void setup()
 
 
 int orientation_X;
-int orientation_X_tmp;
-int orientation_Y;
-int orientation_Y_tmp;
-int orientation_Z;
-int32_t bigEndianValue;
 
 void loop()
 {
@@ -80,24 +67,18 @@ void loop()
 
         if (len > 0)
         {
+            int32_t bigEndianValue;
             memcpy(&bigEndianValue, &packet[36], 4);
-            orientation_X = ntohf(bigEndianValue)+180;
-
-            memcpy(&bigEndianValue, &packet[40], 4);
-            orientation_Y = ntohf(bigEndianValue)+180;
-
-            memcpy(&bigEndianValue, &packet[44], 4);
-            orientation_Z = ntohf(bigEndianValue)+180;
-            // orientation_X = orientation_X*100;
+            orientation_X = ntohf(bigEndianValue);
+            orientation_X = orientation_X+180;
             // Serial.printf("orientation_X: %1.4f\n",orientation_X);
-
-            Serial.printf("orientation: %d %d %d\n",orientation_X,orientation_Y,orientation_Z);
-            if(orientation_Z>150 && orientation_Z<210){
-                myservo.write(90);
-                myservo2.write(90);
-            }else{
-
-            }
+            Serial.printf("orientation_X: %d\n",orientation_X);
+            analogWrite(D4,orientation_X*2048/360);
+            // if(orientation_X>100){
+            //     digitalWrite(D4, 1);
+            // }else{
+            //     digitalWrite(D4, 0);
+            // }
         }
     }
 }
