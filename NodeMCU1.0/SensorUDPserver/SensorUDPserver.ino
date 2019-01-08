@@ -89,6 +89,12 @@ bool button_tag = false;
 bool button_tag_X = false;
 bool button_tag_Y = false;
 
+// 计数器,缓冲器减缓抖动
+int cut_count = 10;
+int Buffer_count = 0;
+int Buffer_X = 0;
+int Buffer_Y = 0;
+
 void loop()
 {
     int packetSize = Udp.parsePacket();
@@ -189,12 +195,20 @@ void loop()
                 }
             }
 
-            myservo.write(servo_X);
-            myservo2.write(servo_Y);
-            Serial.printf("orientation: %d %d %d",orientation_X,orientation_Y,orientation_Z);
-            Serial.printf("  but:%d %d",button_1,button_tag);
-            Serial.printf("  servo:%d %d",servo_X,servo_Y);
-            Serial.printf("  tmp:%d %d\n",orientation_X_tmp,orientation_Y_tmp);
+            Buffer_count++;
+            Buffer_X+=servo_X;
+            Buffer_Y+=servo_Y;
+            if(Buffer_count>=cut_count){
+                myservo.write(Buffer_X/cut_count);
+                myservo2.write(Buffer_Y/cut_count);
+                Serial.printf("orientation: %d %d %d",orientation_X,orientation_Y,orientation_Z);
+                Serial.printf("  but:%d %d",button_1,button_tag);
+                Serial.printf("  servo:%d %d",Buffer_X/cut_count,Buffer_Y/cut_count);
+                Serial.printf("  tmp:%d %d\n",orientation_X_tmp,orientation_Y_tmp);
+                Buffer_count=0;
+                Buffer_X=0;
+                Buffer_Y=0;
+            }
         }
     }
 }
