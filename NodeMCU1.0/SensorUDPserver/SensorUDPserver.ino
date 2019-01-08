@@ -90,10 +90,13 @@ bool button_tag_X = false;
 bool button_tag_Y = false;
 
 // 计数器,缓冲器减缓抖动
-int cut_count = 10;
+int cut_count = 25;
 int Buffer_count = 0;
 int Buffer_X = 0;
+int Buffer_X_last = 0;  //上次位置
+int Buffer_X_num = 0;   //步进次数
 int Buffer_Y = 0;
+int Buffer_Y_last = 0;  //上次位置
 
 void loop()
 {
@@ -190,7 +193,7 @@ void loop()
                 }else{
                     servo_Y = 90-servo_Y;
                 }
-                if(button_tag_Y){
+                if(!button_tag_Y){
                     servo_Y = 180-servo_Y;  //舵机反转
                 }
             }
@@ -199,12 +202,32 @@ void loop()
             Buffer_X+=servo_X;
             Buffer_Y+=servo_Y;
             if(Buffer_count>=cut_count){
+                // Buffer_X_num = (Buffer_X_last-(Buffer_X/cut_count));
+                // if( Buffer_X_num < 0 ){
+                //     for(int i=Buffer_X_last;i<=(Buffer_X/cut_count);i++){
+                //         // Serial.printf("%d %d\n",i,Buffer_X_num);
+                //         myservo.write(i);
+                //         delay(10);
+                //     }
+                // }else{
+                //     for(int i=Buffer_X_last;i>=(Buffer_X/cut_count);i--){
+                //         myservo.write(i);
+                //         // Serial.printf("%d \n",i);
+                //         delay(10);
+                //     }
+                // }
+                
                 myservo.write(Buffer_X/cut_count);
                 myservo2.write(Buffer_Y/cut_count);
                 Serial.printf("orientation: %d %d %d",orientation_X,orientation_Y,orientation_Z);
                 Serial.printf("  but:%d %d",button_1,button_tag);
                 Serial.printf("  servo:%d %d",Buffer_X/cut_count,Buffer_Y/cut_count);
                 Serial.printf("  tmp:%d %d\n",orientation_X_tmp,orientation_Y_tmp);
+
+
+                Buffer_X_last = Buffer_X/cut_count;
+                Buffer_Y_last = Buffer_Y/cut_count;
+                // Serial.printf("  Buffer_X_last:%d %d\n",Buffer_X_last,Buffer_Y_last);
                 Buffer_count=0;
                 Buffer_X=0;
                 Buffer_Y=0;
