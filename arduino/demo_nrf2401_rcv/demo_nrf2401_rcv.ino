@@ -21,11 +21,11 @@
 #include <nRF24L01.h>
 #include <MirfHardwareSpiDriver.h>
 
-byte joyStick[2];
+byte joyStick[3];
 
 void setup() {
   
-  Serial.begin(9600);
+  Serial.begin(115200);
   Mirf.spi = &MirfHardwareSpi;
   Mirf.init();     
   Mirf.setRADDR((byte *)"serv1");   
@@ -58,6 +58,7 @@ void loop() {
   
   int vx=joyStick[0];
   int vy=joyStick[1];
+  int sw=joyStick[2];
 
   if (vx < 130) {
     
@@ -74,7 +75,9 @@ void loop() {
   if (vy > 123) {  
   } // step right
   
-  Serial.print("X:");
+  Serial.print("SW:");
+  Serial.print(sw);
+  Serial.print(" X:");
   Serial.print(vx);
   Serial.print(" Y:");
   Serial.println(vy);  
