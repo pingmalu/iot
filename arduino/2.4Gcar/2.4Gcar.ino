@@ -21,16 +21,33 @@
 #include <nRF24L01.h>
 #include <MirfHardwareSpiDriver.h>
 
+#define STOP      0
+#define FORWARD   1
+#define BACKWARD  2
+#define TURNLEFT  3
+#define TURNRIGHT 4
+
+// 电机速度定义
+#define SPEED_1 200
+#define SPEED_2 100
+#define SPEED_3 150
+
+int leftMotor1 = 2;  // 左边轮子
+int leftMotor2 = 3;
+int rightMotor1 = 4;  // 右边轮子
+int rightMotor2 = 5;
+
 byte joyStick[3];
 
 void setup() {
   
   Serial.begin(115200);
 
-  pinMode(OA1, OUTPUT);
-  pinMode(OB1, OUTPUT);
-  pinMode(OA2, OUTPUT);
-  pinMode(OB2, OUTPUT);
+  // 电机驱动引脚初始化
+  pinMode(leftMotor1, OUTPUT);
+  pinMode(leftMotor2, OUTPUT);
+  pinMode(rightMotor1, OUTPUT);
+  pinMode(rightMotor2, OUTPUT);
 
   Mirf.spi = &MirfHardwareSpi;
   Mirf.init();     
@@ -67,25 +84,28 @@ void loop() {
   int sw=joyStick[2];
 
   if (vx < 100) {
-    digitalWrite(OA1,LOW);
-    digitalWrite(OB1,HIGH);
-    digitalWrite(OA2,LOW);
-    digitalWrite(OB2,HIGH);
+    motor_f();
   }   // step forward
   
-  if (vx > 160) {
-    digitalWrite(OA1,HIGH);
-    digitalWrite(OB1,LOW);
-    digitalWrite(OA2,HIGH);
-    digitalWrite(OB2,LOW);
+  else if (vx > 160) {
+    motor_b();
   }  // step backward
+
+  else {
+    motorRun(STOP,0);
+  }  // step stop
  
   if (vy < 100) {  
-
+        motor_l();
   } // step left
   
-  if (vy > 160) {  
+  else if (vy > 160) {  
+        motor_r();
   } // step right
+
+  else {
+    motorRun(STOP,0);
+  }  // step stop
   
   Serial.print("SW:");
   Serial.print(sw);
@@ -94,4 +114,60 @@ void loop() {
   Serial.print(" Y:");
   Serial.println(vy);  
 
+}
+void motor_f(){
+  motorRun(FORWARD,SPEED_1);
+  // delay(100);
+}
+void motor_l(){
+  motorRun(TURNLEFT,SPEED_1);
+  // delay(100);
+}
+void motor_r(){
+  motorRun(TURNRIGHT,SPEED_1);
+  // delay(100);
+}
+void motor_b(){
+  motorRun(BACKWARD,SPEED_1);
+  // delay(100);
+}
+
+void motorRun(int cmd,int value) {
+  switch(cmd) {
+    case FORWARD:
+      Serial.println("FORWARD"); //输出状态
+      digitalWrite(leftMotor1, LOW);
+      analogWrite(leftMotor2, value);
+      digitalWrite(rightMotor1, LOW);
+      analogWrite(rightMotor2, value);
+      break;
+    case BACKWARD:
+      Serial.println("BACKWARD"); //输出状态
+      digitalWrite(leftMotor1, HIGH);
+      analogWrite(leftMotor2, 255-value);
+      digitalWrite(rightMotor1, HIGH);
+      analogWrite(rightMotor2, 255-value);
+      break;
+    case TURNLEFT:
+      Serial.println("TURN  LEFT"); //输出状态
+      digitalWrite(leftMotor1, HIGH);
+      analogWrite(leftMotor2, 255-value);
+      digitalWrite(rightMotor1, LOW);
+      analogWrite(rightMotor2, value);
+      break;
+    case TURNRIGHT:
+      Serial.println("TURN  RIGHT"); //输出状态
+      digitalWrite(leftMotor1, LOW);
+      analogWrite(leftMotor2, value);
+      digitalWrite(rightMotor1, HIGH);
+      analogWrite(rightMotor2, 255-value);
+      break;
+    default:
+      Serial.print("."); //输出状态
+      digitalWrite(leftMotor1, LOW);
+      digitalWrite(leftMotor2, LOW);
+      digitalWrite(rightMotor1, LOW);
+      digitalWrite(rightMotor2, LOW);
+      // delay(50);
+  }
 }
