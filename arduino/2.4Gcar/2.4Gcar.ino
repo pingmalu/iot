@@ -28,7 +28,7 @@
 #define TURNRIGHT 4
 
 // 电机速度定义
-#define SPEED_1 200
+#define SPEED_1 1023
 #define SPEED_2 100
 #define SPEED_3 150
 
@@ -115,6 +115,7 @@ void loop() {
   Serial.println(vy);  
 
 }
+
 void motor_f(){
   motorRun(FORWARD,SPEED_1);
   // delay(100);
@@ -144,14 +145,14 @@ void motorRun(int cmd,int value) {
     case BACKWARD:
       Serial.println("BACKWARD"); //输出状态
       digitalWrite(leftMotor1, HIGH);
-      analogWrite(leftMotor2, 255-value);
+      analogWrite(leftMotor2, SPEED_1-value);
       digitalWrite(rightMotor1, HIGH);
-      analogWrite(rightMotor2, 255-value);
+      analogWrite(rightMotor2, SPEED_1-value);
       break;
     case TURNLEFT:
       Serial.println("TURN  LEFT"); //输出状态
       digitalWrite(leftMotor1, HIGH);
-      analogWrite(leftMotor2, 255-value);
+      analogWrite(leftMotor2, SPEED_1-value);
       digitalWrite(rightMotor1, LOW);
       analogWrite(rightMotor2, value);
       break;
@@ -160,7 +161,7 @@ void motorRun(int cmd,int value) {
       digitalWrite(leftMotor1, LOW);
       analogWrite(leftMotor2, value);
       digitalWrite(rightMotor1, HIGH);
-      analogWrite(rightMotor2, 255-value);
+      analogWrite(rightMotor2, SPEED_1-value);
       break;
     default:
       Serial.print("."); //输出状态
