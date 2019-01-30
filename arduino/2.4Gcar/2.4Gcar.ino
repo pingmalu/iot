@@ -83,29 +83,30 @@ void loop() {
   int vy=joyStick[1];
   int sw=joyStick[2];
 
-  if (vx < 100) {
-    motor_f();
+  if (vy < 94) {
+    motor_b();
   }   // step forward
   
-  else if (vx > 160) {
-    motor_b();
+  else if (vy > 100) {
+    motor_f();
   }  // step backward
 
   else {
-    motorRun(STOP,0);
+    // motorRun(STOP,0);
+      if (vx < 94) {  
+            motor_r();
+      } // step left
+      
+      else if (vx > 100) {  
+            motor_l();
+      } // step right
+
+      else {
+        motorRun(STOP,0);
+      }  // step stop
   }  // step stop
  
-  if (vy < 100) {  
-        motor_l();
-  } // step left
-  
-  else if (vy > 160) {  
-        motor_r();
-  } // step right
 
-  else {
-    motorRun(STOP,0);
-  }  // step stop
   
   Serial.print("SW:");
   Serial.print(sw);
@@ -138,9 +139,11 @@ void motorRun(int cmd,int value) {
     case FORWARD:
       Serial.println("FORWARD"); //输出状态
       digitalWrite(leftMotor1, LOW);
-      analogWrite(leftMotor2, value);
+      digitalWrite(leftMotor2, HIGH);
+      // analogWrite(leftMotor2, value);
       digitalWrite(rightMotor1, LOW);
-      analogWrite(rightMotor2, value);
+      digitalWrite(rightMotor2, HIGH);
+      // analogWrite(rightMotor2, value);
       break;
     case BACKWARD:
       Serial.println("BACKWARD"); //输出状态
