@@ -189,7 +189,7 @@ void loop() {
                     Mouse.release(MOUSE_RIGHT);
                 }
             } else if(Z_TYPE==2) {
-                Keyboard.write(KEY_HOME);
+                Keyboard.write(KEY_RIGHT_GUI);
             }
         }
 
