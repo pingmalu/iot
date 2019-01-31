@@ -24,6 +24,8 @@ float AX=0;
 float AY=0;
 float AZ=0;
 
+float AY_TMP=999; // AY首次按下初始位置
+
 void setup() {
 
     Serial.begin(115200);
@@ -56,9 +58,9 @@ void loop() {
         if (Z==0) {
             if(Z_NUM<=0){
                 Z_TYPE=0;
-            }else if(Z_NUM>0 && Z_NUM<200){
+            }else if(Z_NUM>0 && Z_NUM<=200){
                 Z_TYPE=1;  // 1:short 2:long
-            }else{
+            }else if(Z_NUM>200){
                 Z_TYPE=2;
             }
             Z_NUM=0;
@@ -72,14 +74,30 @@ void loop() {
                 delay(5);
                 return;
             }
-        }else{ // Z 按下慢移动
-            if(X!=0 || Y!=0){
+            AY_TMP=999;
+        }else if(AX>=-250){ // Z 按下,且非左斜放状态
+            if(X!=0 || Y!=0){  // 慢移动
                 if(X<0)X=-1;
                 if(X>0)X=1;
                 if(Y<0)Y=-1;
                 if(Y>0)Y=1;
                 Mouse.move(X, Y, 0);
                 delay(10);
+                return;
+            }
+
+            // 鼠标滚轮
+            if(AY_TMP==999){  //记录第一次按下Z时的位置
+                AY_TMP=AY;
+                return;
+            }
+            if(AY>(AY_TMP+50)){
+                Mouse.move(0, 0, 1);
+                delay(100);
+                return;
+            }else if(AY<(AY_TMP-50)){
+                Mouse.move(0, 0, -1);
+                delay(100);
                 return;
             }
         }
@@ -96,15 +114,17 @@ void loop() {
             }
         }
 
-        if (Z_TYPE==1) {
-            // if the mouse is not pressed, press it:
-            if (!Mouse.isPressed(MOUSE_RIGHT)) {
-                Mouse.press(MOUSE_RIGHT);
-            }
-        } else if(Z_TYPE==0) {                           // else the mouse button is not pressed:
-            // if the mouse is pressed, release it:
-            if (Mouse.isPressed(MOUSE_RIGHT)) {
-                Mouse.release(MOUSE_RIGHT);
+        if(AX<-250){  // 左斜放时，单机右键
+            if (Z_TYPE==1) {
+                // if the mouse is not pressed, press it:
+                if (!Mouse.isPressed(MOUSE_RIGHT)) {
+                    Mouse.press(MOUSE_RIGHT);
+                }
+            } else if(Z_TYPE==0) {                           // else the mouse button is not pressed:
+                // if the mouse is pressed, release it:
+                if (Mouse.isPressed(MOUSE_RIGHT)) {
+                    Mouse.release(MOUSE_RIGHT);
+                }
             }
         }
 
