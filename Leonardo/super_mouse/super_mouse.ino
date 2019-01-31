@@ -74,13 +74,19 @@ void loop() {
             if(X!=0 || Y!=0){
                 if(AX<-250 && C==0){ //左斜放时下移
                     if(Y!=0){
-
-                        if(Y_ALL<200 && Y_ALL>-200){
+                        Serial.print(Y_ALL);
+                        if(Y_ALL<100 && Y_ALL>-100){
                             if (!Mouse.isPressed(MOUSE_LEFT)) {
                                 Mouse.press(MOUSE_LEFT);
-                                delay(100);
+                                delay(50);
                                 return;
                             }
+                            // Y=(Y*0.1);
+                            // if(Y>0){
+                            //     Y=1;
+                            // }else{
+                            //     Y=-1;
+                            // }
                             Mouse.move(0, Y, 0);
                             delay(5);
                             Y_ALL=Y_ALL+Y;
@@ -92,18 +98,25 @@ void loop() {
                                 return;
                             }
                             // delay(200);
-                            Y_ALL+=Y_ALL;
-                            // if(Y_ALL>0){
-                            //     Y_ALL=Y_ALL+50;
-                            // }else{
-                            //     Y_ALL=Y_ALL-50;
-                            //     // Y_ALL-=Y_ALL;
-                            // }
+                            // Y_ALL+=Y_ALL;
+                            if(Y_ALL>0){ // 下正  正往下
+                                // Y_ALL=Y_ALL+50;
+                                // Mouse.move(0, -100, 0);
+                                Mouse.move(0, -90, 0);
+                                // Mouse.move(0, -127, 0);
+                                // Mouse.move(0, -20, 0);
+                                // Mouse.move(0, -(Y_ALL-100), 0);
+                            }else{ // 上 上偏+  下偏-
+                                // Y_ALL=Y_ALL-50;
+                                // Y_ALL-=Y_ALL;
+                                // Mouse.move(0, 100, 0);
+                                Mouse.move(0, 90, 0);
+                            }
                             // Mouse.move(0, Y_ALL, 0);
-                            // delay(1000);
-                            Mouse.move(0, Y_ALL, 0);
-                            Mouse.move(0, Y_ALL, 0);
-                            delay(200);
+                            // delay(10);
+                            // Mouse.move(0, Y_ALL, 0);
+                            // Mouse.move(0, Y_ALL, 0);
+                            // delay(200);
                             Y_ALL=0;
                             return;
                         }
