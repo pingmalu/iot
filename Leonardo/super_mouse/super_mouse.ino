@@ -70,14 +70,16 @@ void loop() {
             Z_NUM++;
         }
 
-        if (Z==0 && C==0) { // Z C 都释放的时候
+        if (Z==0) { // Z C 都释放的时候
             if(X!=0 || Y!=0){
-                if(AX<-250){ //左斜放时下移
+                if(AX<-250 && C==0){ //左斜放时下移
                     if(Y!=0){
 
                         if(Y_ALL<200 && Y_ALL>-200){
                             if (!Mouse.isPressed(MOUSE_LEFT)) {
                                 Mouse.press(MOUSE_LEFT);
+                                delay(100);
+                                return;
                             }
                             Mouse.move(0, Y, 0);
                             delay(5);
@@ -86,19 +88,22 @@ void loop() {
                         }else{
                             if (Mouse.isPressed(MOUSE_LEFT)) {
                                 Mouse.release(MOUSE_LEFT);
-                                delay(100);
+                                // delay(100);
                                 return;
                             }
-                            delay(200);
+                            // delay(200);
                             Y_ALL+=Y_ALL;
-                            if(Y_ALL>0){
-                                Y_ALL+=50;
-                            }else{
-                                Y_ALL+=-50;
-                                // Y_ALL-=Y_ALL;
-                            }
+                            // if(Y_ALL>0){
+                            //     Y_ALL=Y_ALL+50;
+                            // }else{
+                            //     Y_ALL=Y_ALL-50;
+                            //     // Y_ALL-=Y_ALL;
+                            // }
+                            // Mouse.move(0, Y_ALL, 0);
+                            // delay(1000);
                             Mouse.move(0, Y_ALL, 0);
-                            delay(1000);
+                            Mouse.move(0, Y_ALL, 0);
+                            delay(200);
                             Y_ALL=0;
                             return;
                         }
