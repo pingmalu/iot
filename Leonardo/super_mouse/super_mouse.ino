@@ -74,21 +74,31 @@ void loop() {
             if(X!=0 || Y!=0){
                 if(AX<-250){ //左斜放时下移
                     if(Y!=0){
-                        if (!Mouse.isPressed(MOUSE_LEFT)) {
-                            Mouse.press(MOUSE_LEFT);
-                        }
+
                         if(Y_ALL<200 && Y_ALL>-200){
+                            if (!Mouse.isPressed(MOUSE_LEFT)) {
+                                Mouse.press(MOUSE_LEFT);
+                            }
                             Mouse.move(0, Y, 0);
-                            Y_ALL=Y_ALL+Y;
                             delay(5);
+                            Y_ALL=Y_ALL+Y;
                             return;
                         }else{
                             if (Mouse.isPressed(MOUSE_LEFT)) {
                                 Mouse.release(MOUSE_LEFT);
+                                delay(100);
+                                return;
                             }
-                            delay(50);
-                            Mouse.move(0, -Y_ALL, 0);
-                            delay(100);
+                            delay(200);
+                            Y_ALL+=Y_ALL;
+                            if(Y_ALL>0){
+                                Y_ALL+=50;
+                            }else{
+                                Y_ALL+=-50;
+                                // Y_ALL-=Y_ALL;
+                            }
+                            Mouse.move(0, Y_ALL, 0);
+                            delay(1000);
                             Y_ALL=0;
                             return;
                         }
