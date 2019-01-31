@@ -68,11 +68,26 @@ void loop() {
             Z_NUM++;
         }
 
-        if (Z==0) {
+        if (Z==0 && C==0) { // Z C 都释放的时候
             if(X!=0 || Y!=0){
+                if(AX<-250){ //左斜放时下移
+                    if(Y!=0){
+                        if (!Mouse.isPressed(MOUSE_LEFT)) {
+                            Mouse.press(MOUSE_LEFT);
+                        }
+                    }
+                }
                 Mouse.move(X, Y, 0);
                 delay(5);
                 return;
+            }else{
+                if(AX<-250){
+                    if(Y==0){
+                        if (Mouse.isPressed(MOUSE_LEFT)) {
+                            Mouse.release(MOUSE_LEFT);
+                        }
+                    }
+                }
             }
             AY_TMP=999;
         }else if(AX>=-250){ // Z 按下,且非左斜放状态
@@ -125,6 +140,8 @@ void loop() {
                 if (Mouse.isPressed(MOUSE_RIGHT)) {
                     Mouse.release(MOUSE_RIGHT);
                 }
+            } else if(Z_TYPE==2) {
+                Keyboard.write(KEY_HOME);
             }
         }
 
