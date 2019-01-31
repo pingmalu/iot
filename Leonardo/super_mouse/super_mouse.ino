@@ -26,6 +26,8 @@ float AZ=0;
 
 float AY_TMP=999; // AY首次按下初始位置
 
+float Y_ALL=0;
+
 void setup() {
 
     Serial.begin(115200);
@@ -75,12 +77,30 @@ void loop() {
                         if (!Mouse.isPressed(MOUSE_LEFT)) {
                             Mouse.press(MOUSE_LEFT);
                         }
+                        if(Y_ALL<200 && Y_ALL>-200){
+                            Mouse.move(0, Y, 0);
+                            Y_ALL=Y_ALL+Y;
+                            delay(5);
+                            return;
+                        }else{
+                            if (Mouse.isPressed(MOUSE_LEFT)) {
+                                Mouse.release(MOUSE_LEFT);
+                            }
+                            delay(50);
+                            Mouse.move(0, -Y_ALL, 0);
+                            delay(100);
+                            Y_ALL=0;
+                            return;
+                        }
                     }
+
+                }else{
+                    Mouse.move(X, Y, 0);
+                    delay(5);
+                    return;
                 }
-                Mouse.move(X, Y, 0);
-                delay(5);
-                return;
             }else{
+                Y_ALL=0;
                 if(AX<-250){
                     if(Y==0){
                         if (Mouse.isPressed(MOUSE_LEFT)) {
@@ -90,7 +110,7 @@ void loop() {
                 }
             }
             AY_TMP=999;
-        }else if(AX>=-250){ // Z 按下,且非左斜放状态
+        }else if(AX>=-250 && Z==1){ // Z 按下,且非左斜放状态
             if(X!=0 || Y!=0){  // 慢移动
                 if(X<0)X=-1;
                 if(X>0)X=1;
