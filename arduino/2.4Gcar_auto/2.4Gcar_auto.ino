@@ -18,10 +18,18 @@ int leftMotor2 = 3;
 int rightMotor1 = 4;  // 右边轮子
 int rightMotor2 = 5;
 
-int SW1_PIN = D15;  // 中断开关引脚
+int REDRCV1_PIN = D14;  // 红外接收，黑线传感器 UNO: 12; wemos D1: D14
+int REDRCV2_PIN = D13;  // 红外接收，黑线传感器 UNO: 11; wemos D1: D13
+int SW1_PIN = D15;  // 开关引脚  UNO: 13; wemos D1: D15
+
 int SW1 = 0;  // 开关值
 int SW1_STATE_tmp = 0;  // 开关信号值
 int SW1_num_tmp = 0;   // 开关缓冲阈值，防止闪触
+
+// 可调距离，接收到反射0，无接收（黑线）1
+// 不可调节距离，hw-006 v1.2,接收到反射1,无接收（黑线）0
+int REDRCV1 = 0;
+int REDRCV2 = 0;
 
 void Mrun_one(int v,int M1,int M2)
 {
@@ -56,6 +64,10 @@ void setup() {
   pinMode(rightMotor1, OUTPUT);
   pinMode(rightMotor2, OUTPUT);
 
+  // 红外接收，黑线传感器
+  pinMode(REDRCV1_PIN, INPUT);
+  pinMode(REDRCV2_PIN, INPUT);
+
   // attachInterrupt(digitalPinToInterrupt(SW1_PIN), auto_start, CHANGE);
 }
 
@@ -89,7 +101,12 @@ void loop() {
 
 // 自动驾驶
 void auto_start(){
-  Serial.println("start");
+  Serial.print("start ");
+  REDRCV1 = digitalRead(REDRCV1_PIN);
+  REDRCV2 = digitalRead(REDRCV2_PIN);
+  Serial.print(REDRCV1);
+  Serial.print(" ");
+  Serial.println(REDRCV2);
   // Mrun();
 }
 
