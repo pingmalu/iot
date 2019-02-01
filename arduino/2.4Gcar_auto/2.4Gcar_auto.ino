@@ -18,9 +18,9 @@ int leftMotor2 = 3;
 int rightMotor1 = 4;  // 右边轮子
 int rightMotor2 = 5;
 
-int REDRCV1_PIN = D14;  // 红外接收，黑线传感器 UNO: 12; wemos D1: D14
-int REDRCV2_PIN = D13;  // 红外接收，黑线传感器 UNO: 11; wemos D1: D13
-int SW1_PIN = D15;  // 开关引脚  UNO: 13; wemos D1: D15
+int REDRCV1_PIN = 12;  // 红外接收，黑线传感器 UNO: 12; wemos D1: D14
+int REDRCV2_PIN = 11;  // 红外接收，黑线传感器 UNO: 11; wemos D1: D13
+int SW1_PIN = 13;  // 开关引脚  UNO: 13; wemos D1: D15
 
 int SW1 = 0;  // 开关值
 int SW1_STATE_tmp = 0;  // 开关信号值
