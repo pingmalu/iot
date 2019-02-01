@@ -31,6 +31,9 @@ int SW1_num_tmp = 0;   // 开关缓冲阈值，防止闪触
 int REDRCV1 = 0;
 int REDRCV2 = 0;
 
+int randspeed1 = 0;  // 随机速度
+int randspeed2 = 0;  // 随机速度
+
 void Mrun_one(int v,int M1,int M2)
 {
   int v_abs = abs(v);
@@ -51,7 +54,7 @@ void Mrun(int vl=0, int vr=0)
 {
   Mrun_one(vl,leftMotor1,leftMotor2);
   Mrun_one(vr,rightMotor1,rightMotor2);
-  Serial.printf("%d %d \n",vl,vr);
+  Serial.printf(" L:%d R:%d \n",vl,vr);
 }
 
 void setup() {
@@ -107,6 +110,20 @@ void auto_start(){
   Serial.print(REDRCV1);
   Serial.print(" ");
   Serial.println(REDRCV2);
+  if(REDRCV1==0 && REDRCV2==0){  // 同时接收到反射，前进
+    Mrun(SPEED_1,SPEED_1);
+  }else if(REDRCV1==1 && REDRCV2==0){ // 左侧碰到
+    Mrun(0,SPEED_1);
+  }else if(REDRCV1==0 && REDRCV2==1){ // 右侧碰到
+    Mrun(SPEED_1,0);
+  }else{  // 同时遇到黑线，乱走算法
+    randspeed1 = random(0, SPEED_1);
+    randspeed2 = random(0, SPEED_1);
+    randspeed1 = random(0, 5)==0?randspeed1:-randspeed1;
+    randspeed2 = random(0, 5)==0?randspeed2:-randspeed2;
+    Mrun(randspeed1,randspeed2);
+    delay(random(100, 500));
+  }
   // Mrun();
 }
 
