@@ -76,6 +76,10 @@ void setup() {
 
 void loop() {
   // Mrun();
+  // Serial.print("LOW"); // LOW:0  HIGH:1
+  // Serial.print(LOW);
+  // Serial.print("HIGH");
+  // Serial.println(HIGH);
 
   SW1_STATE_tmp = digitalRead(SW1_PIN); // 接高电平时触发
 
