@@ -76,7 +76,7 @@ void loop()
     {
         // Work with nunchuk_data
         nunchuk_print();
-        packet[0] = nunchuk_joystickX();
+        packet[0] = nunchuk_joystickX()+100;
         packet[1] = nunchuk_joystickY();
         packet[2] = nunchuk_accelX();
         packet[3] = nunchuk_accelY();
