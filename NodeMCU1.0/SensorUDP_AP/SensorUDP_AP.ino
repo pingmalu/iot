@@ -51,7 +51,7 @@ void loop()
         {
             packet[len] = 0; //末尾补0结束字符串
             // Serial.printf("UDP packet contents: %s\n", packet);
-            Serial.printf("UDP packet contents: %s  %d\n", packet,test_num);
+            Serial.printf("UDP packet contents: %d  %d\n", packet[0],test_num);
             test_num++;
 
             // int32_t bigEndianValue;

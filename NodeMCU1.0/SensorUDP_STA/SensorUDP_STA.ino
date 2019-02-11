@@ -27,8 +27,8 @@ const char *password = "ifconfig";
 
 WiFiUDP Udp;
 unsigned int port = 9999;
-char replyPacket[] = "Hi there! Got the message :-)"; // a reply string to send back
-IPAddress ipwangg(192, 168, 4, 1);
+char packet[6];
+IPAddress apip(192, 168, 4, 1);
 
 int test_num = 0; //发包计数器
 
@@ -71,18 +71,20 @@ void loop()
 
     // send back a reply, to the IP address and port we got the packet from
 
-    if (nunchuk_read()) {
+    delay(100);
+    if (nunchuk_read())
+    {
         // Work with nunchuk_data
         nunchuk_print();
+        packet[0] = nunchuk_joystickX();
+        Udp.beginPacket(apip, port);
+        Udp.write(packet);
+        Udp.endPacket();
+        Serial.printf("UDP packet contents: %d  %d\n", packet[0], test_num);
+        test_num++;
     }
-    delay(10);
-    return;
+    // delay(10);
+    // return;
 
-    delay(1000);
-    Udp.beginPacket(ipwangg, port);
-    Udp.write(replyPacket);
-    Udp.endPacket();
-    Serial.printf("UDP packet contents: %s  %d\n", replyPacket, test_num);
-    test_num++;
     //   }
 }
