@@ -27,7 +27,7 @@ const char *password = "ifconfig";
 
 WiFiUDP Udp;
 unsigned int port = 9999;
-char packet[7];
+char packet[5];
 IPAddress apip(192, 168, 4, 1);
 
 int test_num = 0; //发包计数器
@@ -71,23 +71,40 @@ void loop()
 
     // send back a reply, to the IP address and port we got the packet from
 
-    delay(100);
+    delay(10);
     if (nunchuk_read())
     {
         // Work with nunchuk_data
         nunchuk_print();
-        packet[0] = nunchuk_joystickX()+100;
-        packet[1] = nunchuk_joystickY();
-        packet[2] = nunchuk_accelX();
-        packet[3] = nunchuk_accelY();
-        packet[4] = nunchuk_accelZ();
-        packet[5] = nunchuk_buttonZ();
-        packet[6] = nunchuk_buttonC();
+        packet[0] = nunchuk_joystickX()+123;
+        packet[1] = nunchuk_joystickY()+126;
+        // packet[2] = nunchuk_accelX()+360;
+        // packet[3] = nunchuk_accelY()+360;
+        // packet[4] = nunchuk_accelZ()+360;
+        packet[2] = 255;
+        packet[3] = 255;
+        packet[4] = 255;
+        packet[5] = nunchuk_buttonZ()+1;
+        packet[6] = nunchuk_buttonC()+1;
         Udp.beginPacket(apip, port);
         Udp.write(packet);
         Udp.endPacket();
         // Serial.printf("UDP packet contents: %d  %d\n", packet[0], test_num);
         Serial.print(packet[0], DEC);
+        Serial.print(",");
+        Serial.print(packet[1], DEC);
+        Serial.print(",");
+        Serial.print(packet[2], DEC);
+        Serial.print(",");
+        Serial.print(packet[3], DEC);
+        Serial.print(",");
+        Serial.print(packet[4], DEC);
+        Serial.print(",");
+        Serial.print(packet[5], DEC);
+        Serial.print(",");
+        Serial.print(packet[6], DEC);
+
+        Serial.printf(" test_num: %d", test_num);
         Serial.println();
         // Serial.printf("UDP packet contents: %d,%d,%d,%d,%d,%d,%d  %d\n", packet[0],packet[1],packet[2],packet[3],packet[4],packet[5],packet[6],test_num);
         test_num++;

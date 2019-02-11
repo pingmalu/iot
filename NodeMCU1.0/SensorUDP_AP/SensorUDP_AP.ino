@@ -15,7 +15,7 @@ const char *password = "ifconfig";
 
 WiFiUDP Udp;
 unsigned int port = 9999;
-char packet[7];
+char packet[5];
 
 int test_num = 0; //发包计数器
 
@@ -44,15 +44,29 @@ void loop()
     int packetSize = Udp.parsePacket();
     if (packetSize)
     {
-        Serial.printf("Received %d bytes from %s, port %d\n", packetSize, Udp.remoteIP().toString().c_str(), Udp.remotePort());
         int len = Udp.read(packet, 7);
+        Serial.printf("Received %d bytes from %s, port %d, len %d, test_num %d\n", packetSize, Udp.remoteIP().toString().c_str(), Udp.remotePort(),len,test_num);
 
         if (len > 0)
         {
-            packet[len] = 0; //末尾补0结束字符串
+            // packet[len] = 0; //末尾补0结束字符串
             // Serial.printf("UDP packet contents: %s\n", packet);
-            Serial.println(packet[0]);
+            // Serial.println(packet[0]);
             // Serial.printf("UDP packet contents: %f,%f,%d,%d,%d,%d,%d  %d\n", ntohf(packet[0]),ntohf(packet[1]),packet[2],packet[3],packet[4],packet[5],packet[6],test_num);
+            Serial.print(packet[0], DEC);
+            Serial.print(",");
+            Serial.print(packet[1], DEC);
+            Serial.print(",");
+            Serial.print(packet[2], DEC);
+            Serial.print(",");
+            Serial.print(packet[3], DEC);
+            Serial.print(",");
+            Serial.print(packet[4], DEC);
+            Serial.print(",");
+            Serial.print(packet[5], DEC);
+            Serial.print(",");
+            Serial.print(packet[6], DEC);
+            Serial.println();
             test_num++;
 
             // int32_t bigEndianValue;
@@ -90,8 +104,8 @@ void loop()
 
 float ntohf(uint32_t nf)
 {
-   float x;
-   nf = ntohl(nf);
-   memcpy(&x, &nf, sizeof(float));
-   return x;
+    float x;
+    nf = ntohl(nf);
+    memcpy(&x, &nf, sizeof(float));
+    return x;
 }
