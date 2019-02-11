@@ -1,0 +1,96 @@
+/*
+
+接收端
+
+ESP8266通过AP模式接收UDP信号
+另一台通过STA模式发送UDP信号
+实现P2P通讯
+*/
+
+#include <ESP8266WiFi.h>
+#include <WiFiUdp.h>
+
+const char *ssid = "M4";
+const char *password = "ifconfig";
+
+WiFiUDP Udp;
+unsigned int port = 9999;
+char packet[255];
+
+int test_num = 0; //发包计数器
+
+void setup()
+{
+    Serial.begin(115200);
+    Serial.println();
+
+    Serial.print("Setting soft-AP ... ");
+    Serial.println(WiFi.softAP(ssid, password) ? "Ready" : "Failed!");
+
+    Serial.println();
+    Serial.print("Server IP address: ");
+    Serial.println(WiFi.softAPIP());
+    Serial.print("Server MAC address: ");
+    Serial.println(WiFi.softAPmacAddress());
+
+    Udp.begin(port);
+}
+
+void loop()
+{
+    // Serial.printf("Stations connected = %d\n", WiFi.softAPgetStationNum());
+    // delay(3000);
+
+    int packetSize = Udp.parsePacket();
+    if (packetSize)
+    {
+        Serial.printf("Received %d bytes from %s, port %d\n", packetSize, Udp.remoteIP().toString().c_str(), Udp.remotePort());
+        int len = Udp.read(packet, 255);
+
+        if (len > 0)
+        {
+            packet[len] = 0; //末尾补0结束字符串
+            // Serial.printf("UDP packet contents: %s\n", packet);
+            Serial.printf("UDP packet contents: %s  %d\n", packet,test_num);
+            test_num++;
+
+            // int32_t bigEndianValue;
+
+            // Serial.print(' ');
+            // memcpy(&bigEndianValue, &packet[0], 4);
+            // Serial.println(ntohf(bigEndianValue));
+            // Serial.println(packet);
+
+            // memcpy(&bigEndianValue, &packet[0], 4);
+            // float theUnpackedValue = ntohf(bigEndianValue);
+            // Serial.print(theUnpackedValue);
+            // Serial.print(' ');
+            // memcpy(&bigEndianValue, &packet[36], 4);
+            // Serial.print(ntohf(bigEndianValue));
+
+            // Serial.print(' ');
+            // memcpy(&bigEndianValue, &packet[40], 4);
+            // Serial.print(ntohf(bigEndianValue));
+
+            // Serial.print(' ');
+            // memcpy(&bigEndianValue, &packet[44], 4);
+            // Serial.print(ntohf(bigEndianValue));
+
+            // Serial.print(' ');
+            // memcpy(&bigEndianValue, &packet[56], 4);
+            // Serial.print(ntohf(bigEndianValue));
+
+            // Serial.print(' ');
+            // memcpy(&bigEndianValue, &packet[60], 4);
+            // Serial.println(ntohf(bigEndianValue));
+        }
+    }
+}
+
+float ntohf(uint32_t nf)
+{
+   float x;
+   nf = ntohl(nf);
+   memcpy(&x, &nf, sizeof(float));
+   return x;
+}
