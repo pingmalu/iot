@@ -15,7 +15,7 @@ const char *password = "ifconfig";
 
 WiFiUDP Udp;
 unsigned int port = 9999;
-char packet[255];
+char packet[7];
 
 int test_num = 0; //发包计数器
 
@@ -45,13 +45,14 @@ void loop()
     if (packetSize)
     {
         Serial.printf("Received %d bytes from %s, port %d\n", packetSize, Udp.remoteIP().toString().c_str(), Udp.remotePort());
-        int len = Udp.read(packet, 255);
+        int len = Udp.read(packet, 7);
 
         if (len > 0)
         {
             packet[len] = 0; //末尾补0结束字符串
             // Serial.printf("UDP packet contents: %s\n", packet);
-            Serial.printf("UDP packet contents: %d  %d\n", packet[0],test_num);
+            Serial.println(packet[0]);
+            // Serial.printf("UDP packet contents: %f,%f,%d,%d,%d,%d,%d  %d\n", ntohf(packet[0]),ntohf(packet[1]),packet[2],packet[3],packet[4],packet[5],packet[6],test_num);
             test_num++;
 
             // int32_t bigEndianValue;

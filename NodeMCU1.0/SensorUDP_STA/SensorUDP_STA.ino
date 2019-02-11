@@ -27,7 +27,7 @@ const char *password = "ifconfig";
 
 WiFiUDP Udp;
 unsigned int port = 9999;
-char packet[6];
+char packet[7];
 IPAddress apip(192, 168, 4, 1);
 
 int test_num = 0; //发包计数器
@@ -77,10 +77,19 @@ void loop()
         // Work with nunchuk_data
         nunchuk_print();
         packet[0] = nunchuk_joystickX();
+        packet[1] = nunchuk_joystickY();
+        packet[2] = nunchuk_accelX();
+        packet[3] = nunchuk_accelY();
+        packet[4] = nunchuk_accelZ();
+        packet[5] = nunchuk_buttonZ();
+        packet[6] = nunchuk_buttonC();
         Udp.beginPacket(apip, port);
         Udp.write(packet);
         Udp.endPacket();
-        Serial.printf("UDP packet contents: %d  %d\n", packet[0], test_num);
+        // Serial.printf("UDP packet contents: %d  %d\n", packet[0], test_num);
+        Serial.print(packet[0], DEC);
+        Serial.println();
+        // Serial.printf("UDP packet contents: %d,%d,%d,%d,%d,%d,%d  %d\n", packet[0],packet[1],packet[2],packet[3],packet[4],packet[5],packet[6],test_num);
         test_num++;
     }
     // delay(10);
