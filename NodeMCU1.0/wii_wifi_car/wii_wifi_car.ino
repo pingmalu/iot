@@ -32,9 +32,9 @@ int test_num = 0; //发包计数器
 #define SPEED_3 255
 
 int leftMotor1 = D5; // 前后轮子
-int leftMotor2 = 3;
-int rightMotor1 = 4; // 左右轮子
-int rightMotor2 = 5;
+int leftMotor2 = D6;
+int rightMotor1 = D7; // 左右轮子
+int rightMotor2 = D8;
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
@@ -52,6 +52,12 @@ void setup()
     Serial.println(WiFi.softAPIP());
     Serial.print("Server MAC address: ");
     Serial.println(WiFi.softAPmacAddress());
+
+    // 电机驱动引脚初始化
+    pinMode(leftMotor1, OUTPUT);
+    pinMode(leftMotor2, OUTPUT);
+    pinMode(rightMotor1, OUTPUT);
+    pinMode(rightMotor2, OUTPUT);
 
     Udp.begin(port);
 }
@@ -81,6 +87,7 @@ void loop()
             Serial.print(",");
             Serial.print(packet[6], DEC);
             Serial.print(" ");
+            // Serial.printf(" D5:%d D6:%d D7:%d D8:%d ",D5,D6,D7,D8);  // D5:14 D6:12 D7:13 D8:15
             // Serial.println();
             test_num++;
 
