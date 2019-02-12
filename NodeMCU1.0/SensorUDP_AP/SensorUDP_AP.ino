@@ -15,9 +15,11 @@ const char *password = "ifconfig";
 
 WiFiUDP Udp;
 unsigned int port = 9999;
-char packet[5];
+char packet[9];
 
 int test_num = 0; //发包计数器
+
+int BTValue;
 
 void setup()
 {
@@ -44,8 +46,8 @@ void loop()
     int packetSize = Udp.parsePacket();
     if (packetSize)
     {
-        int len = Udp.read(packet, 7);
-        Serial.printf("Received %d bytes from %s, port %d, len %d, test_num %d\n", packetSize, Udp.remoteIP().toString().c_str(), Udp.remotePort(),len,test_num);
+        int len = Udp.read(packet, 9);
+        Serial.printf("Received %d bytes from %s, port %d, len %d, test_num %d\n", packetSize, Udp.remoteIP().toString().c_str(), Udp.remotePort(), len, test_num);
 
         if (len > 0)
         {
@@ -53,19 +55,23 @@ void loop()
             // Serial.printf("UDP packet contents: %s\n", packet);
             // Serial.println(packet[0]);
             // Serial.printf("UDP packet contents: %f,%f,%d,%d,%d,%d,%d  %d\n", ntohf(packet[0]),ntohf(packet[1]),packet[2],packet[3],packet[4],packet[5],packet[6],test_num);
-            Serial.print(packet[0], DEC);
+
+            Serial.print((int)packet[0]);
             Serial.print(",");
-            Serial.print(packet[1], DEC);
+            Serial.print((int)packet[1]);
             Serial.print(",");
-            Serial.print(packet[2], DEC);
+            Serial.print((int)packet[2]);
             Serial.print(",");
-            Serial.print(packet[3], DEC);
+            Serial.print((int)packet[3]);
             Serial.print(",");
-            Serial.print(packet[4], DEC);
+            memcpy(&BTValue, &packet[4], 2);
+            Serial.print(BTValue);
             Serial.print(",");
-            Serial.print(packet[5], DEC);
+            memcpy(&BTValue, &packet[6], 2);
+            Serial.print(BTValue);
             Serial.print(",");
-            Serial.print(packet[6], DEC);
+            memcpy(&BTValue, &packet[8], 2);
+            Serial.print(BTValue, DEC);
             Serial.println();
             test_num++;
 
@@ -102,10 +108,23 @@ void loop()
     }
 }
 
-float ntohf(uint32_t nf)
+float ntohn(uint32_t nf)
 {
-    float x;
+    int x;
     nf = ntohl(nf);
     memcpy(&x, &nf, sizeof(float));
     return x;
+}
+
+unsigned char reversechar(unsigned char c)
+{
+    c = (c & 0x55) << 1 | (c & 0xAA) >> 1;
+    c = (c & 0x33) << 2 | (c & 0xCC) >> 2;
+    c = (c & 0x0F) << 4 | (c & 0xF0) >> 4;
+    return c;
+}
+
+unsigned char reverse(unsigned char b)
+{
+    return (unsigned char)(((b * 0x0802U & 0x22110U) | (b * 0x8020U & 0x88440U)) * 0x10101U >> 16);
 }
