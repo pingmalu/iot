@@ -30,6 +30,7 @@ int test_num = 0; //发包计数器
 #define SPEED_1 100
 #define SPEED_2 180
 #define SPEED_3 255
+#define SPEED_START 300  // 启动速度
 
 int leftMotor1 = D5; // 前后轮子
 int leftMotor2 = D6;
@@ -95,11 +96,11 @@ void loop()
 
             if ((int)packet[0] < 70)
             { // 左
-                LR = map(constrain((int)packet[0], 29, 70), 29, 70, -MAX_SPEED, 0);
+                LR = map(constrain((int)packet[0], 29, 70), 29, 70, -MAX_SPEED, -SPEED_START);
             }
             else if ((int)packet[0] > 170)
             { // 右
-                LR = map(constrain((int)packet[0], 170, 238), 170, 238, 0, MAX_SPEED);
+                LR = map(constrain((int)packet[0], 170, 238), 170, 238, SPEED_START, MAX_SPEED);
             }
             else
             {
@@ -108,12 +109,12 @@ void loop()
 
             if ((int)packet[1] > 170)
             { // 前
-                RUN_SPEED = map(constrain((int)packet[1], 170, 220), 170, 220, 0, MAX_SPEED);
+                RUN_SPEED = map(constrain((int)packet[1], 170, 220), 170, 220, SPEED_START, MAX_SPEED);
                 RUN_SPEED += abs(LR);
             }
             else if ((int)packet[1] < 70)
             { // 后
-                RUN_SPEED = map(constrain((int)packet[1], 23, 70), 23, 70, -MAX_SPEED, 0);
+                RUN_SPEED = map(constrain((int)packet[1], 23, 70), 23, 70, -MAX_SPEED, -SPEED_START);
                 RUN_SPEED -= abs(LR);
             }
             else
