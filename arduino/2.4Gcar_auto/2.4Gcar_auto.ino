@@ -5,7 +5,7 @@
  * 2019.2.1
  */
 
-// analogWrite(pin, value)  UNO:0-255  D1 Wifi:0-1023
+// analogWrite(pin, value)  UNO:0-255  D1 ESP8266:0-1023
 #define UNO_OR_D1 255
 
 // 电机速度定义

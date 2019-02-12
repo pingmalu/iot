@@ -19,8 +19,6 @@ char packet[6];
 
 int test_num = 0; //发包计数器
 
-int BTValue;
-
 void setup()
 {
     Serial.begin(115200);
@@ -52,10 +50,6 @@ void loop()
         if (len > 0)
         {
             // packet[len] = 0; //末尾补0结束字符串
-            // Serial.printf("UDP packet contents: %s\n", packet);
-            // Serial.println(packet[0]);
-            // Serial.printf("UDP packet contents: %f,%f,%d,%d,%d,%d,%d  %d\n", ntohf(packet[0]),ntohf(packet[1]),packet[2],packet[3],packet[4],packet[5],packet[6],test_num);
-
             Serial.print(packet[0], DEC);
             Serial.print(",");
             Serial.print(packet[1], DEC);
@@ -73,45 +67,8 @@ void loop()
             Serial.println();
             test_num++;
 
-            // int32_t bigEndianValue;
-
-            // Serial.print(' ');
-            // memcpy(&bigEndianValue, &packet[0], 4);
-            // Serial.println(ntohf(bigEndianValue));
-            // Serial.println(packet);
-
-            // memcpy(&bigEndianValue, &packet[0], 4);
-            // float theUnpackedValue = ntohf(bigEndianValue);
-            // Serial.print(theUnpackedValue);
-            // Serial.print(' ');
-            // memcpy(&bigEndianValue, &packet[36], 4);
-            // Serial.print(ntohf(bigEndianValue));
-
-            // Serial.print(' ');
-            // memcpy(&bigEndianValue, &packet[40], 4);
-            // Serial.print(ntohf(bigEndianValue));
-
-            // Serial.print(' ');
-            // memcpy(&bigEndianValue, &packet[44], 4);
-            // Serial.print(ntohf(bigEndianValue));
-
-            // Serial.print(' ');
-            // memcpy(&bigEndianValue, &packet[56], 4);
-            // Serial.print(ntohf(bigEndianValue));
-
-            // Serial.print(' ');
-            // memcpy(&bigEndianValue, &packet[60], 4);
-            // Serial.println(ntohf(bigEndianValue));
         }
     }
-}
-
-float ntohn(uint32_t nf)
-{
-    int x;
-    nf = ntohl(nf);
-    memcpy(&x, &nf, sizeof(float));
-    return x;
 }
 
 unsigned char reversechar(unsigned char c)
