@@ -23,23 +23,21 @@ char packet[6];
 
 int test_num = 0; //发包计数器
 
-
-
 // analogWrite(pin, value)  UNO:0-255  D1 ESP8266:0-1023
-#define MAX_SPEED 1023  // PWM最大数值
+#define MAX_SPEED 1023 // PWM最大数值
 
 // 电机速度定义
 #define SPEED_1 100
 #define SPEED_2 180
 #define SPEED_3 255
 
-int leftMotor1 = D5;  // 前后轮子
+int leftMotor1 = D5; // 前后轮子
 int leftMotor2 = 3;
-int rightMotor1 = 4;  // 左右轮子
+int rightMotor1 = 4; // 左右轮子
 int rightMotor2 = 5;
 
-int RUN_SPEED = 0;  // 推进速度
-int LR = 0;  // 转向速度
+int RUN_SPEED = 0; // 推进速度
+int LR = 0;        // 转向速度
 
 void setup()
 {
@@ -86,69 +84,81 @@ void loop()
             // Serial.println();
             test_num++;
 
-
-            
             // 前进 170-220  后 23-70  左 29-70  右 170-238
 
-            if((int)packet[0]<70){  // 左
-                LR = map(constrain((int)packet[0],29,70),29,70,-MAX_SPEED,0);
-            }else if((int)packet[0]>170){  // 右
-                LR = map(constrain((int)packet[0],170,238),170,238,0,MAX_SPEED);
-            }else{
+            if ((int)packet[0] < 70)
+            { // 左
+                LR = map(constrain((int)packet[0], 29, 70), 29, 70, -MAX_SPEED, 0);
+            }
+            else if ((int)packet[0] > 170)
+            { // 右
+                LR = map(constrain((int)packet[0], 170, 238), 170, 238, 0, MAX_SPEED);
+            }
+            else
+            {
                 LR = 0;
             }
 
-            if((int)packet[1]>170){  // 前
-                RUN_SPEED = map(constrain((int)packet[1],170,220),170,220,0,MAX_SPEED);
+            if ((int)packet[1] > 170)
+            { // 前
+                RUN_SPEED = map(constrain((int)packet[1], 170, 220), 170, 220, 0, MAX_SPEED);
                 RUN_SPEED += abs(LR);
-            }else if((int)packet[1]<70){  // 后
-                RUN_SPEED = map(constrain((int)packet[1],23,70),23,70,-MAX_SPEED,0);
+            }
+            else if ((int)packet[1] < 70)
+            { // 后
+                RUN_SPEED = map(constrain((int)packet[1], 23, 70), 23, 70, -MAX_SPEED, 0);
                 RUN_SPEED -= abs(LR);
-            }else{
+            }
+            else
+            {
                 RUN_SPEED = 0;
                 RUN_SPEED += abs(LR);
             }
 
-            if((int)packet[3]==2 && (int)packet[2]==1){  // 前
+            if ((int)packet[3] == 2 && (int)packet[2] == 1)
+            { // 前
                 RUN_SPEED = MAX_SPEED;
-            }else if((int)packet[3]==1 && (int)packet[2]==2){  // 后
+            }
+            else if ((int)packet[3] == 1 && (int)packet[2] == 2)
+            { // 后
                 RUN_SPEED = -MAX_SPEED;
             }
 
-            Mrun_one(RUN_SPEED,leftMotor1,leftMotor2);
-            Mrun_one(LR,rightMotor1,rightMotor2);
+            Mrun_one(RUN_SPEED, leftMotor1, leftMotor2);
+            Mrun_one(LR, rightMotor1, rightMotor2);
             // Serial.printf(" RUN_SPEED:%d LR:%d \n",RUN_SPEED,LR);
             Serial.println();
         }
     }
 }
 
-
-
-
-
-void Mrun_one(int v,int M1,int M2)
+void Mrun_one(int v, int M1, int M2)
 {
-  int v_abs = abs(v);
-//   v_abs = v_abs<MAX_SPEED?v_abs:MAX_SPEED;
-  v_abs = constrain(v_abs,0,MAX_SPEED);
-  if(v>0){
-    digitalWrite(M1, LOW);
-    analogWrite(M2, v_abs);
-    Serial.printf(" %d ",v_abs);
-  }else if(v<0){
-    digitalWrite(M1, HIGH);
-    analogWrite(M2, MAX_SPEED - v_abs);
-    Serial.printf(" %d ",-v_abs);
-  }else{
-    digitalWrite(M1, LOW);
-    digitalWrite(M2, LOW);
-  }
+    int v_abs = abs(v);
+    //   v_abs = v_abs<MAX_SPEED?v_abs:MAX_SPEED;
+    v_abs = constrain(v_abs, 0, MAX_SPEED);
+    if (v > 0)
+    {
+        digitalWrite(M1, LOW);
+        analogWrite(M2, v_abs);
+        Serial.printf(" %d ", v_abs);
+    }
+    else if (v < 0)
+    {
+        digitalWrite(M1, HIGH);
+        analogWrite(M2, MAX_SPEED - v_abs);
+        Serial.printf(" %d ", -v_abs);
+    }
+    else
+    {
+        digitalWrite(M1, LOW);
+        digitalWrite(M2, LOW);
+    }
 }
 
-void Mrun(int vl=0, int vr=0)
+void Mrun(int vl = 0, int vr = 0)
 {
-  Mrun_one(vl,leftMotor1,leftMotor2);
-  Mrun_one(vr,rightMotor1,rightMotor2);
-  Serial.printf(" L:%d R:%d \n",vl,vr);
+    Mrun_one(vl, leftMotor1, leftMotor2);
+    Mrun_one(vr, rightMotor1, rightMotor2);
+    Serial.printf(" L:%d R:%d \n", vl, vr);
 }
