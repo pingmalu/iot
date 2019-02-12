@@ -1,5 +1,5 @@
 /*
- * wii鸡腿手柄通过wifi控制小车 (NODEMCU版本)
+ * wii鸡腿手柄通过wifi控制小车(D1版本)
  * BY: Malu
  * https://malu.me
  * 2019.2.12
@@ -32,10 +32,10 @@ int test_num = 0; //发包计数器
 #define SPEED_3 255
 #define SPEED_START 300  // 启动速度
 
-int leftMotor1 = D5; // 前后轮子
-int leftMotor2 = D6;
-int rightMotor1 = D7; // 左右轮子
-int rightMotor2 = D8;
+int leftMotor1 = D3; // 前后轮子
+int leftMotor2 = D4;
+int rightMotor1 = D5; // 左右轮子
+int rightMotor2 = D6;
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
@@ -88,7 +88,7 @@ void loop()
             Serial.print(",");
             Serial.print(packet[6], DEC);
             Serial.print(" ");
-            // Serial.printf(" D5:%d D6:%d D7:%d D8:%d ",D5,D6,D7,D8);  // D5:14 D6:12 D7:13 D8:15
+            Serial.printf(" D5:%d D6:%d D7:%d D8:%d ",D3,D4,D5,D6);  // D5:14 D6:12 D7:13 D8:15
             // Serial.println();
             test_num++;
 
