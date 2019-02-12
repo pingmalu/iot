@@ -3,12 +3,12 @@
  * BY: Malu
  * https://malu.me
  * 2019.2.12
-
-接收端
-
-ESP8266通过AP模式接收UDP信号
-另一台通过STA模式发送UDP信号
-实现P2P通讯
+ * 
+ * 接收端
+ * 
+ * ESP8266通过AP模式接收UDP信号
+ * 另一台通过STA模式发送UDP信号
+ * 实现P2P通讯
 */
 
 #include <ESP8266WiFi.h>
