@@ -13,6 +13,8 @@ Top Right		GND		Ground Pin
 Bottom L.		+ V		5 Volt Pin
 Bottom R.		SDA		Digital Pin 2 (GOIO04)
 
+nunchuk_accelX()  最大值 506
+
 */
 
 #include <ESP8266WiFi.h>
@@ -27,12 +29,10 @@ const char *password = "ifconfig";
 
 WiFiUDP Udp;
 unsigned int port = 9999;
-char packet[9];
+char packet[6];
 IPAddress apip(192, 168, 4, 1);
 
 int test_num = 0; //发包计数器
-
-int BTValue;
 
 void setup()
 {
@@ -84,14 +84,9 @@ void loop()
         // packet[4] = nunchuk_accelZ()+360;
         packet[2] = nunchuk_buttonZ()+1;
         packet[3] = nunchuk_buttonC()+1;
-        BTValue = nunchuk_accelX()+400;
-        memcpy(&packet[4], &BTValue, 2);
-
-        BTValue = nunchuk_accelY()+400;
-        memcpy(&packet[6], &BTValue, 2);
-
-        BTValue = nunchuk_accelZ()+400;
-        memcpy(&packet[8], &BTValue, 2);
+        packet[4] = map(constrain(nunchuk_accelX(),-260,100),-260,100,1,255);
+        packet[5] = map(constrain(nunchuk_accelY(),-200,160),-200,160,1,255);
+        packet[6] = map(constrain(nunchuk_accelZ(),-200,160),-200,160,1,255);
 
         Udp.beginPacket(apip, port);
         Udp.write(packet);
@@ -105,19 +100,31 @@ void loop()
         Serial.print(",");
         Serial.print(packet[3], DEC);
         Serial.print(",");
-        memcpy(&BTValue, &packet[4], 2);
-        Serial.print((int)BTValue);
+        Serial.print(packet[4], DEC);
         Serial.print(",");
-        memcpy(&BTValue, &packet[6], 2);
-        Serial.print(BTValue, DEC);
+        Serial.print(packet[5], DEC);
         Serial.print(",");
-        memcpy(&BTValue, &packet[8], 2);
-        Serial.print(BTValue, DEC);
+        Serial.print(packet[6], DEC);
+        Serial.print(" ");
+        // memcpy(&BTValue, &packet[4], 2);
+        // if(BTValue<maxBTValue){
+        //     maxBTValue=BTValue;
+        // }
+        // -200 160
+        // Serial.print(constrain(maxBTValue,-260,100));
+        // Serial.print("-");
+        // Serial.print(map(constrain(maxBTValue,-260,100),-260,100,1,255));
+        // Serial.print(",");
+        // memcpy(&BTValue, &packet[6], 2);
+        // Serial.print(BTValue, DEC);
+        // Serial.print(",");
+        // memcpy(&BTValue, &packet[8], 2);
+        // Serial.print(BTValue, DEC);
 
         Serial.printf(" test_num: %d ", test_num);
         nunchuk_print();
-        // Serial.println();
-        // Serial.printf("UDP packet contents: %d,%d,%d,%d,%d,%d,%d  %d\n", packet[0],packet[1],packet[2],packet[3],packet[4],packet[5],packet[6],test_num);
+        // // Serial.println();
+        // // Serial.printf("UDP packet contents: %d,%d,%d,%d,%d,%d,%d  %d\n", packet[0],packet[1],packet[2],packet[3],packet[4],packet[5],packet[6],test_num);
         test_num++;
     }
     // delay(10);

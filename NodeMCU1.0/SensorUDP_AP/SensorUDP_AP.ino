@@ -15,7 +15,7 @@ const char *password = "ifconfig";
 
 WiFiUDP Udp;
 unsigned int port = 9999;
-char packet[9];
+char packet[6];
 
 int test_num = 0; //发包计数器
 
@@ -46,7 +46,7 @@ void loop()
     int packetSize = Udp.parsePacket();
     if (packetSize)
     {
-        int len = Udp.read(packet, 9);
+        int len = Udp.read(packet, 7);
         Serial.printf("Received %d bytes from %s, port %d, len %d, test_num %d\n", packetSize, Udp.remoteIP().toString().c_str(), Udp.remotePort(), len, test_num);
 
         if (len > 0)
@@ -56,22 +56,20 @@ void loop()
             // Serial.println(packet[0]);
             // Serial.printf("UDP packet contents: %f,%f,%d,%d,%d,%d,%d  %d\n", ntohf(packet[0]),ntohf(packet[1]),packet[2],packet[3],packet[4],packet[5],packet[6],test_num);
 
-            Serial.print((int)packet[0]);
+            Serial.print(packet[0], DEC);
             Serial.print(",");
-            Serial.print((int)packet[1]);
+            Serial.print(packet[1], DEC);
             Serial.print(",");
-            Serial.print((int)packet[2]);
+            Serial.print(packet[2], DEC);
             Serial.print(",");
-            Serial.print((int)packet[3]);
+            Serial.print(packet[3], DEC);
             Serial.print(",");
-            memcpy(&BTValue, &packet[4], 2);
-            Serial.print(BTValue);
+            Serial.print(packet[4], DEC);
             Serial.print(",");
-            memcpy(&BTValue, &packet[6], 2);
-            Serial.print(BTValue);
+            Serial.print(packet[5], DEC);
             Serial.print(",");
-            memcpy(&BTValue, &packet[8], 2);
-            Serial.print(BTValue, DEC);
+            Serial.print(packet[6], DEC);
+            Serial.print(" ");
             Serial.println();
             test_num++;
 
