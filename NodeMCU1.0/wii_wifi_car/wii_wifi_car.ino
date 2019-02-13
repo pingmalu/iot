@@ -128,18 +128,12 @@ void loop()
             if ((int)packet[1] > 170)
             { // 前
                 RUN_SPEED = map(constrain((int)packet[1], 170, 220), 170, 220, SPEED_START, MAX_SPEED);
-                if ((int)packet[3] != 2 && (int)packet[2] != 2)
-                {
-                    RUN_SPEED += abs(LR) * 0.5; // 只有前后按键没按下时，才进行左右速度加程
-                }
+                RUN_SPEED += abs(LR); // 只有前后按键没按下时，才进行左右速度加程
             }
             else if ((int)packet[1] < 70)
             { // 后
                 RUN_SPEED = map(constrain((int)packet[1], 23, 70), 23, 70, -MAX_SPEED, -SPEED_START);
-                if ((int)packet[3] != 2 && (int)packet[2] != 2)
-                {
-                    RUN_SPEED -= abs(LR) * 0.5; // 只有前后按键没按下时，才进行左右速度加程
-                }
+                RUN_SPEED -= abs(LR); // 只有前后按键没按下时，才进行左右速度加程
             }
             else
             {
@@ -150,11 +144,11 @@ void loop()
             if ((int)packet[3] == 2 && (int)packet[2] == 1)
             { // 前
                 // RUN_SPEED = MAX_SPEED;
-                RUN_SPEED = MAX_SPEED + RUN_SPEED; // 下拉减速算法
+                RUN_SPEED = MAX_SPEED - map(constrain((int)packet[5], 20, 100), 20, 100, MAX_SPEED, 0);
             }
             else if ((int)packet[3] == 1 && (int)packet[2] == 2)
             { // 后
-                RUN_SPEED = -MAX_SPEED;
+                RUN_SPEED = -MAX_SPEED + map(constrain((int)packet[5], 20, 100), 20, 100, MAX_SPEED, 0);
             }
             Serial.print(" RUN:");
             Mrun_one(RUN_SPEED, leftMotor1, leftMotor2);
