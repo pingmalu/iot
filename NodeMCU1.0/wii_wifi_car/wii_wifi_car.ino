@@ -128,12 +128,12 @@ void loop()
             if ((int)packet[1] > 170)
             { // 前
                 RUN_SPEED = map(constrain((int)packet[1], 170, 220), 170, 220, SPEED_START, MAX_SPEED);
-                RUN_SPEED += abs(LR); // 只有前后按键没按下时，才进行左右速度加程
+                // RUN_SPEED += abs(LR); // 只有前后按键没按下时，才进行左右速度加程
             }
             else if ((int)packet[1] < 70)
             { // 后
                 RUN_SPEED = map(constrain((int)packet[1], 23, 70), 23, 70, -MAX_SPEED, -SPEED_START);
-                RUN_SPEED -= abs(LR); // 只有前后按键没按下时，才进行左右速度加程
+                // RUN_SPEED -= abs(LR); // 只有前后按键没按下时，才进行左右速度加程
             }
             else
             {
