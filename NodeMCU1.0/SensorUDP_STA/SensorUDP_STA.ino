@@ -36,6 +36,8 @@ int test_num = 0; //发包计数器
 
 void setup()
 {
+    // Wire.begin(int sda, int scl);
+    Wire.begin(D4, D3);  // 自定义SDA、SCL引脚
     Serial.begin(115200);
     Serial.println();
 
@@ -87,6 +89,12 @@ void loop()
         packet[4] = map(constrain(nunchuk_accelX(),-260,100),-260,100,1,255);
         packet[5] = map(constrain(nunchuk_accelY(),-200,160),-200,160,1,255);
         packet[6] = map(constrain(nunchuk_accelZ(),-200,160),-200,160,1,255);
+
+        if(packet[4]==255 && packet[6]==255 && packet[6]==255){
+            Serial.println("The read handle is abnormal, please reset");
+            delay(1000);
+            return;
+        }
 
         Udp.beginPacket(apip, port);
         Udp.write(packet);

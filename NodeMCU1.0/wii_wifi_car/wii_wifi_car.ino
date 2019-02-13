@@ -1,5 +1,5 @@
 /*
- * wii鸡腿手柄通过wifi控制小车 (NODEMCU版本)
+ * wii鸡腿手柄通过wifi控制小车 (NODEMCU版本、D1版本)
  * BY: Malu
  * https://malu.me
  * 2019.2.12
@@ -30,15 +30,31 @@ int test_num = 0; //发包计数器
 #define SPEED_1 100
 #define SPEED_2 180
 #define SPEED_3 255
-#define SPEED_START 300  // 启动速度
+#define SPEED_START 300 // 启动速度
 
+// NODEMCU版本引脚
 int leftMotor1 = D5; // 前后轮子
 int leftMotor2 = D6;
 int rightMotor1 = D7; // 左右轮子
 int rightMotor2 = D8;
 
+// // D1 专用引脚
+// int leftMotor1 = D3; // 前后轮子
+// int leftMotor2 = D4;
+// int rightMotor1 = D5; // 左右轮子
+// int rightMotor2 = D6;
+
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
+
+int EMPTY_PACKAGE_NUM = 0; // 空包阈值，防止信号中断抽风
+
+void Mrun(int vl = 0, int vr = 0)
+{
+    Mrun_one(vl, leftMotor1, leftMotor2);
+    Mrun_one(vr, rightMotor1, rightMotor2);
+    Serial.printf(" L:%d R:%d \n", vl, vr);
+}
 
 void setup()
 {
@@ -73,6 +89,7 @@ void loop()
 
         if (len > 0)
         {
+            EMPTY_PACKAGE_NUM = 0;
             // packet[len] = 0; //末尾补0结束字符串
             Serial.print(packet[0], DEC);
             Serial.print(",");
@@ -88,7 +105,8 @@ void loop()
             Serial.print(",");
             Serial.print(packet[6], DEC);
             Serial.print(" ");
-            // Serial.printf(" D5:%d D6:%d D7:%d D8:%d ",D5,D6,D7,D8);  // D5:14 D6:12 D7:13 D8:15
+            // Serial.printf(" D5:%d D6:%d D7:%d D8:%d ",D5,D6,D7,D8);  // NODEMCU版本、D5:14 D6:12 D7:13 D8:15
+            // Serial.printf(" D3:%d D4:%d D5:%d D6:%d ",D3,D4,D5,D6);  // D1版本
             // Serial.println();
             test_num++;
 
@@ -110,32 +128,64 @@ void loop()
             if ((int)packet[1] > 170)
             { // 前
                 RUN_SPEED = map(constrain((int)packet[1], 170, 220), 170, 220, SPEED_START, MAX_SPEED);
-                RUN_SPEED += abs(LR);
+                if ((int)packet[3] != 2 && (int)packet[2] != 2)
+                {
+                    RUN_SPEED += abs(LR) * 0.5; // 只有前后按键没按下时，才进行左右速度加程
+                }
             }
             else if ((int)packet[1] < 70)
             { // 后
                 RUN_SPEED = map(constrain((int)packet[1], 23, 70), 23, 70, -MAX_SPEED, -SPEED_START);
-                RUN_SPEED -= abs(LR);
+                if ((int)packet[3] != 2 && (int)packet[2] != 2)
+                {
+                    RUN_SPEED -= abs(LR) * 0.5; // 只有前后按键没按下时，才进行左右速度加程
+                }
             }
             else
             {
                 RUN_SPEED = 0;
-                RUN_SPEED += abs(LR);
+                // RUN_SPEED += abs(LR);  // 纯左右时，是否前进
             }
 
             if ((int)packet[3] == 2 && (int)packet[2] == 1)
             { // 前
-                RUN_SPEED = MAX_SPEED;
+                // RUN_SPEED = MAX_SPEED;
+                RUN_SPEED = MAX_SPEED + RUN_SPEED; // 下拉减速算法
             }
             else if ((int)packet[3] == 1 && (int)packet[2] == 2)
             { // 后
                 RUN_SPEED = -MAX_SPEED;
             }
-
+            Serial.print(" RUN:");
             Mrun_one(RUN_SPEED, leftMotor1, leftMotor2);
+            Serial.print(" LR:");
             Mrun_one(LR, rightMotor1, rightMotor2);
             // Serial.printf(" RUN_SPEED:%d LR:%d \n",RUN_SPEED,LR);
             Serial.println();
+        }
+        else
+        {
+            if (EMPTY_PACKAGE_NUM > 100000)
+            {
+                Mrun(); // 停止
+                return;
+            }
+            else
+            {
+                EMPTY_PACKAGE_NUM++;
+            }
+        }
+    }
+    else
+    {
+        if (EMPTY_PACKAGE_NUM > 100000)
+        {
+            Mrun(); // 停止
+            return;
+        }
+        else
+        {
+            EMPTY_PACKAGE_NUM++;
         }
     }
 }
@@ -161,12 +211,6 @@ void Mrun_one(int v, int M1, int M2)
     {
         digitalWrite(M1, LOW);
         digitalWrite(M2, LOW);
+        // Serial.print(" 0 ");
     }
-}
-
-void Mrun(int vl = 0, int vr = 0)
-{
-    Mrun_one(vl, leftMotor1, leftMotor2);
-    Mrun_one(vr, rightMotor1, rightMotor2);
-    Serial.printf(" L:%d R:%d \n", vl, vr);
 }
