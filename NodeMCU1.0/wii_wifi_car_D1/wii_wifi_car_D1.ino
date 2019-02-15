@@ -27,22 +27,22 @@ int test_num = 0; //发包计数器
 #define MAX_SPEED 1023 // PWM最大数值
 
 // 电机速度定义
-#define MAX_SPEED_LR 700  // 转向最大速度
+#define SPEED_1 100
 #define SPEED_2 180
 #define SPEED_3 255
 #define SPEED_START 300 // 启动速度
 
-// NODEMCU版本引脚
-int leftMotor1 = D5; // 前后轮子
-int leftMotor2 = D6;
-int rightMotor1 = D7; // 左右轮子
-int rightMotor2 = D8;
+// // NODEMCU版本引脚
+// int leftMotor1 = D5; // 前后轮子
+// int leftMotor2 = D6;
+// int rightMotor1 = D7; // 左右轮子
+// int rightMotor2 = D8;
 
-// // D1 专用引脚
-// int leftMotor1 = D3; // 前后轮子
-// int leftMotor2 = D4;
-// int rightMotor1 = D5; // 左右轮子
-// int rightMotor2 = D6;
+// D1 专用引脚
+int leftMotor1 = D3; // 前后轮子
+int leftMotor2 = D4;
+int rightMotor1 = D5; // 左右轮子
+int rightMotor2 = D6;
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
@@ -115,11 +115,11 @@ void loop()
 
             if ((int)packet[0] < 70)
             { // 左
-                LR = map(constrain((int)packet[0], 29, 70), 29, 70, -MAX_SPEED_LR, -SPEED_START);
+                LR = map(constrain((int)packet[0], 29, 70), 29, 70, -MAX_SPEED, -SPEED_START);
             }
             else if ((int)packet[0] > 170)
             { // 右
-                LR = map(constrain((int)packet[0], 170, 238), 170, 238, SPEED_START, MAX_SPEED_LR);
+                LR = map(constrain((int)packet[0], 170, 238), 170, 238, SPEED_START, MAX_SPEED);
             }
             else
             {
