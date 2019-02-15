@@ -1,5 +1,5 @@
 /*
- * wii鸡腿手柄通过wifi控制小车 (NODEMCU版本、D1版本)
+ * wii鸡腿手柄通过wifi控制坦克 (NODEMCU版本、D1版本)
  * BY: Malu
  * https://malu.me
  * 2019.2.12
@@ -159,11 +159,37 @@ void loop()
                 RUN_SPEED = -MAX_SPEED + map(constrain((int)packet[5], 20, 100), 20, 100, MAX_SPEED, 0);
             }
             Serial.print(" RUN:");
-            Mrun_one(RUN_SPEED, leftMotor1, leftMotor2);
+            Serial.print(RUN_SPEED);
+            // Mrun_one(RUN_SPEED, leftMotor1, leftMotor2);
             Serial.print(" LR:");
-            Mrun_one(LR, rightMotor1, rightMotor2);
+            Serial.print(LR);
+            // Mrun_one(LR, rightMotor1, rightMotor2);
+
+
+            // 坦克转向粘滞算法
+            Serial.print(" | ");
+            if(RUN_SPEED==0 && LR!=0){  // 原地左右
+                Mrun(LR,-LR);
+            }else{
+                if(LR==0){
+                    Mrun(RUN_SPEED,RUN_SPEED);  // 原地前进后退
+                }else if(RUN_SPEED>0){  // 前
+                    if(LR>=0){
+                        Mrun(RUN_SPEED+LR,RUN_SPEED);
+                    }else{
+                        Mrun(RUN_SPEED,RUN_SPEED-LR);
+                    }
+                }else{  // 后
+                    if(LR>=0){
+                        Mrun(RUN_SPEED-LR,RUN_SPEED);
+                    }else{
+                        Mrun(RUN_SPEED,RUN_SPEED+LR);
+                    }
+                }
+            }
+
             // Serial.printf(" RUN_SPEED:%d LR:%d \n",RUN_SPEED,LR);
-            Serial.println();
+            // Serial.println();
         }
         else
         {
