@@ -9,6 +9,8 @@
 
 #include "PS2X_lib.h" //for v1.6
 
+#include "MRUN_lib.h"
+
 // 接收机引脚
 #define PS2_DAT 13 //14
 #define PS2_CMD 11 //15
@@ -40,6 +42,7 @@ int RUNCMD = 0;
 #define rumble false
 
 PS2X ps2x; // create PS2 Controller Class
+MRUN mrun;
 
 // analogWrite(pin, value)  UNO:0-255  D1 ESP8266:0-1023
 #define MAX_SPEED 1023 // PWM最大数值
@@ -253,6 +256,7 @@ void loop()
     }
     RUNCMD = FORWARD;
     Run(RUNCMD);
+    mrun.test(4);
     Serial.println();
     delay(1000);
 }
