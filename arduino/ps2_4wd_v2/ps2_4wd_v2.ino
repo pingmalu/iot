@@ -120,6 +120,12 @@ void setup()
         }
     } while (1);
 
+    // 电机驱动引脚初始化
+    pinMode(leftMotor1, OUTPUT);
+    pinMode(leftMotor2, OUTPUT);
+    pinMode(rightMotor1, OUTPUT);
+    pinMode(rightMotor2, OUTPUT);
+
     mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2);
 
     // type = ps2x.readType();
@@ -241,7 +247,7 @@ void loop()
     // mrun.one_l(RUN_SPEED);
     // Serial.print(" LR:");
     // mrun.one_r(LR);
-Serial.print("Stick Values:");
+    Serial.print("Stick Values:");
     Serial.print(ps2x.Analog(PSS_LY), DEC); //Left stick, Y axis. Other options: LX, RY, RX
     Serial.print(",");
     Serial.print(ps2x.Analog(PSS_LX), DEC);
@@ -250,8 +256,8 @@ Serial.print("Stick Values:");
     Serial.print(",");
     Serial.println(ps2x.Analog(PSS_RX), DEC);
 
-// RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, MAX_SPEED, -MAX_SPEED);
-// RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, MAX_SPEED, -MAX_SPEED);
+    // RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, MAX_SPEED, -MAX_SPEED);
+    // RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, MAX_SPEED, -MAX_SPEED);
 
     mrun.car(RUN_SPEED, LR);
 
