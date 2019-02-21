@@ -66,3 +66,14 @@ void MRUN::two(int vl, int vr)
   Serial.print(" R:");
   Serial.print(vr);
 }
+
+void MRUN::car(int y, int x)
+{
+  one(y, _m1, _m2);
+  one(x, _m3, _m4);
+  // Serial.printf(" L:%d R:%d \n", vl, vr);
+  Serial.print(" L:");
+  Serial.print(y);
+  Serial.print(" R:");
+  Serial.print(x);
+}

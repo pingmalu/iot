@@ -19,7 +19,7 @@ int rightMotor2 = D8;
 // 接收机引脚
 #define PS2_DAT D1 //14
 #define PS2_CMD D2 //15
-#define PS2_CS  D3 //16
+#define PS2_CS D3  //16
 #define PS2_CLK D4 //17
 
 // // D1版本引脚
@@ -71,6 +71,9 @@ MRUN mrun;
 // analogWrite(pin, value)  UNO:0-255  D1 ESP8266:0-1023
 #define MAX_SPEED 1023 // PWM最大数值
 
+int RUN_SPEED = 0; // 推进速度
+int LR = 0;        // 转向速度
+
 void Run(int cmd)
 {
     switch (cmd)
@@ -117,7 +120,7 @@ void setup()
         }
     } while (1);
 
-    mrun.config(leftMotor1,leftMotor2,rightMotor1,rightMotor2);
+    mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2);
 
     // type = ps2x.readType();
     // switch (type)
@@ -143,6 +146,116 @@ void loop()
     if (ps2x.Button(PSB_SELECT))
         Serial.println("Select is being held");
 
+    // 2wd小车
+    // 左边按键群
+    if (ps2x.Button(PSB_PAD_UP))
+    { //will be TRUE as long as button is pressed
+        Serial.println("Up held this hard: ");
+        RUN_SPEED = MAX_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_PAD_UP))
+    {
+        Serial.println("Up Button Released!");
+        RUN_SPEED = STOP;
+    }
+
+    if (ps2x.Button(PSB_PAD_DOWN))
+    {
+        Serial.println("DOWN held this hard: ");
+        RUN_SPEED = -MAX_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_PAD_DOWN))
+    {
+        Serial.println("DOWN Button Released!");
+        RUN_SPEED = STOP;
+    }
+
+    if (ps2x.Button(PSB_PAD_RIGHT))
+    {
+        Serial.println("Right held this hard: ");
+        LR = -MAX_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_PAD_RIGHT))
+    {
+        Serial.println("Right Button Released!");
+        LR = STOP;
+    }
+
+    if (ps2x.Button(PSB_PAD_LEFT))
+    {
+        Serial.println("LEFT held this hard: ");
+        LR = MAX_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_PAD_LEFT))
+    {
+        Serial.println("LEFT Button Released!");
+        LR = STOP;
+    }
+
+    // 右边按键群
+    if (ps2x.Button(PSB_TRIANGLE))
+    { //will be TRUE as long as button is pressed
+        Serial.println("Triangle pressed");
+        RUN_SPEED = MAX_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_TRIANGLE))
+    {
+        Serial.println("Triangle Button Released!");
+        RUN_SPEED = STOP;
+    }
+
+    if (ps2x.Button(PSB_CROSS))
+    {
+        Serial.println("PSB_CROSS pressed");
+        RUN_SPEED = -MAX_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_CROSS))
+    {
+        Serial.println("PSB_CROSS Button Released!");
+        RUN_SPEED = STOP;
+    }
+
+    if (ps2x.Button(PSB_CIRCLE)) // 右
+    {
+        Serial.println("PSB_CIRCLE pressed");
+        LR = -MAX_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_CIRCLE))
+    {
+        Serial.println("PSB_CIRCLE Button Released!");
+        LR = STOP;
+    }
+
+    if (ps2x.Button(PSB_SQUARE)) // 左
+    {
+        Serial.println("PSB_SQUARE pressed");
+        LR = MAX_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_SQUARE))
+    {
+        Serial.println("PSB_SQUARE Button Released!");
+        LR = STOP;
+    }
+
+    // Serial.print(" RUN:");
+    // mrun.one_l(RUN_SPEED);
+    // Serial.print(" LR:");
+    // mrun.one_r(LR);
+Serial.print("Stick Values:");
+    Serial.print(ps2x.Analog(PSS_LY), DEC); //Left stick, Y axis. Other options: LX, RY, RX
+    Serial.print(",");
+    Serial.print(ps2x.Analog(PSS_LX), DEC);
+    Serial.print(",");
+    Serial.print(ps2x.Analog(PSS_RY), DEC);
+    Serial.print(",");
+    Serial.println(ps2x.Analog(PSS_RX), DEC);
+
+// RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, MAX_SPEED, -MAX_SPEED);
+// RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, MAX_SPEED, -MAX_SPEED);
+
+    mrun.car(RUN_SPEED, LR);
+
+    /*
     // 左边按键群
     if (ps2x.Button(PSB_PAD_UP))
     { //will be TRUE as long as button is pressed
@@ -253,11 +366,22 @@ void loop()
         Serial.print(ps2x.Analog(PSS_RY), DEC);
         Serial.print(",");
         Serial.println(ps2x.Analog(PSS_RX), DEC);
+    }else{
+                Serial.print("Stick Values:");
+        Serial.print(ps2x.Analog(PSS_LY), DEC); //Left stick, Y axis. Other options: LX, RY, RX
+        Serial.print(",");
+        Serial.print(ps2x.Analog(PSS_LX), DEC);
+        Serial.print(",");
+        Serial.print(ps2x.Analog(PSS_RY), DEC);
+        Serial.print(",");
+        Serial.println(ps2x.Analog(PSS_RX), DEC);
     }
     // RUNCMD = FORWARD;
     Run(RUNCMD);
     // mrun.one(4, leftMotor1, leftMotor2);
     // mrun.two(4,9);
+*/
+
     Serial.println();
-    delay(50);
+    delay(10);
 }

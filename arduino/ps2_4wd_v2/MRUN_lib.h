@@ -19,6 +19,7 @@ public:
   void one_l(int);
   void one_r(int);
   void two(int a=0,int b=0);
+  void car(int y=0,int x=0);
 
 private:
   int _m1;
