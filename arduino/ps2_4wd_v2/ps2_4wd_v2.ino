@@ -66,47 +66,10 @@ int RUNCMD = 0;
 PS2X ps2x; // create PS2 Controller Class
 MRUN mrun;
 
-byte type = 0;
-byte vibrate = 0;
+// byte type = 0;
 
 // analogWrite(pin, value)  UNO:0-255  D1 ESP8266:0-1023
 #define MAX_SPEED 1023 // PWM最大数值
-
-void Mrun(int vl = 0, int vr = 0)
-{
-    Mrun_one(vl, leftMotor1, leftMotor2);
-    Mrun_one(vr, rightMotor1, rightMotor2);
-    // Serial.printf(" L:%d R:%d \n", vl, vr);
-    Serial.print(" L:");
-    Serial.print(vl);
-    Serial.print(" R:");
-    Serial.print(vr);
-}
-
-void Mrun_one(int v, int M1, int M2)
-{
-    int v_abs = abs(v);
-    //   v_abs = v_abs<MAX_SPEED?v_abs:MAX_SPEED;
-    v_abs = constrain(v_abs, 0, MAX_SPEED);
-    if (v > 0)
-    {
-        digitalWrite(M1, LOW);
-        analogWrite(M2, v_abs);
-        // Serial.print(v_abs);
-    }
-    else if (v < 0)
-    {
-        digitalWrite(M1, HIGH);
-        analogWrite(M2, MAX_SPEED - v_abs);
-        // Serial.print(-v_abs);
-    }
-    else
-    {
-        digitalWrite(M1, LOW);
-        digitalWrite(M2, LOW);
-        // Serial.print(" 0 ");
-    }
-}
 
 void Run(int cmd)
 {
@@ -114,23 +77,23 @@ void Run(int cmd)
     {
     case FORWARD:
         Serial.print(" FORWARD"); // 前
-        Mrun(MAX_SPEED, MAX_SPEED);
+        mrun.two(MAX_SPEED, MAX_SPEED);
         break;
     case BACKWARD:
         Serial.println("BACKWARD"); // 后
-        Mrun(-MAX_SPEED, -MAX_SPEED);
+        mrun.two(-MAX_SPEED, -MAX_SPEED);
         break;
     case TURNLEFT:
         Serial.println("TURNLEFT"); // 左
-        Mrun(-MAX_SPEED, MAX_SPEED);
+        mrun.two(-MAX_SPEED, MAX_SPEED);
         break;
     case TURNRIGHT:
         Serial.println("TURNRIGHT"); // 右
-        Mrun(MAX_SPEED, -MAX_SPEED);
+        mrun.two(MAX_SPEED, -MAX_SPEED);
         break;
     default:
         Serial.print("."); // 停止
-        Mrun();
+        mrun.two();
         break;
         // delay(50);
     }
@@ -154,6 +117,8 @@ void setup()
         }
     } while (1);
 
+    mrun.config(leftMotor1,leftMotor2,rightMotor1,rightMotor2);
+
     // type = ps2x.readType();
     // switch (type)
     // {
@@ -171,98 +136,14 @@ void setup()
 
 void loop()
 {
-    ps2x.read_gamepad(false, vibrate); //read controller and set large motor to spin at 'vibrate' speed
+    ps2x.read_gamepad(false, 0); //read controller and set large motor to spin at 'vibrate' speed
 
     if (ps2x.Button(PSB_START)) //will be TRUE as long as button is pressed
         Serial.println("Start is being held");
     if (ps2x.Button(PSB_SELECT))
         Serial.println("Select is being held");
 
-
-
-
-
-
-
-
-
-  
-    // ps2x.read_gamepad(false, 0);          //read controller and set large motor to spin at 'vibrate' speed
-    
-    if(ps2x.Button(PSB_START))                   //will be TRUE as long as button is pressed
-         Serial.println("Start is being held");
-    if(ps2x.Button(PSB_SELECT))
-         Serial.println("Select is being held");
-         
-         
-     if(ps2x.Button(PSB_PAD_UP)) {         //will be TRUE as long as button is pressed
-       Serial.print("Up held this hard: ");
-       Serial.println(ps2x.Analog(PSAB_PAD_UP), DEC);
-      }
-      if(ps2x.Button(PSB_PAD_RIGHT)){
-       Serial.print("Right held this hard: ");
-        Serial.println(ps2x.Analog(PSAB_PAD_RIGHT), DEC);
-      }
-      if(ps2x.Button(PSB_PAD_LEFT)){
-       Serial.print("LEFT held this hard: ");
-        Serial.println(ps2x.Analog(PSAB_PAD_LEFT), DEC);
-      }
-      if(ps2x.Button(PSB_PAD_DOWN)){
-       Serial.print("DOWN held this hard: ");
-     Serial.println(ps2x.Analog(PSAB_PAD_DOWN), DEC);
-      }   
-  
-    
-    //   vibrate = ps2x.Analog(PSAB_BLUE);        //this will set the large motor vibrate speed based on 
-                                              //how hard you press the blue (X) button    
-    
-    if (ps2x.NewButtonState())               //will be TRUE if any button changes state (on to off, or off to on)
-    {
-     
-       
-         
-        if(ps2x.Button(PSB_L3))
-         Serial.println("L3 pressed");
-        if(ps2x.Button(PSB_R3))
-         Serial.println("R3 pressed");
-        if(ps2x.Button(PSB_L2))
-         Serial.println("L2 pressed");
-        if(ps2x.Button(PSB_R2))
-         Serial.println("R2 pressed");
-        if(ps2x.Button(PSB_GREEN))
-         Serial.println("Triangle pressed");
-         
-    }   
-         
-    
-    if(ps2x.ButtonPressed(PSB_RED))             //will be TRUE if button was JUST pressed
-         Serial.println("Circle just pressed");
-         
-    if(ps2x.ButtonReleased(PSB_PINK))             //will be TRUE if button was JUST released
-         Serial.println("Square just released");     
-    
-    if(ps2x.NewButtonState(PSB_BLUE))            //will be TRUE if button was JUST pressed OR released
-         Serial.println("X just changed");    
-    
-    
-    if(ps2x.Button(PSB_L1) || ps2x.Button(PSB_R1)) // print stick values if either is TRUE
-    {
-        Serial.print("Stick Values:");
-        Serial.print(ps2x.Analog(PSS_LY), DEC); //Left stick, Y axis. Other options: LX, RY, RX  
-        Serial.print(",");
-        Serial.print(ps2x.Analog(PSS_LX), DEC); 
-        Serial.print(",");
-        Serial.print(ps2x.Analog(PSS_RY), DEC); 
-        Serial.print(",");
-        Serial.println(ps2x.Analog(PSS_RX), DEC); 
-    } 
-
-
-
-
-
-delay(50);
-return;
+    // 左边按键群
     if (ps2x.Button(PSB_PAD_UP))
     { //will be TRUE as long as button is pressed
         Serial.println("Up held this hard: ");
@@ -373,9 +254,10 @@ return;
         Serial.print(",");
         Serial.println(ps2x.Analog(PSS_RX), DEC);
     }
-    RUNCMD = FORWARD;
+    // RUNCMD = FORWARD;
     Run(RUNCMD);
-    mrun.test(4);
+    // mrun.one(4, leftMotor1, leftMotor2);
+    // mrun.two(4,9);
     Serial.println();
-    delay(1000);
+    delay(50);
 }
