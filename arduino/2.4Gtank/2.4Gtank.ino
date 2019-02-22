@@ -62,6 +62,8 @@ void setup()
   // 电机驱动引脚初始化
   pinMode(leftMotor1, OUTPUT);
   pinMode(leftMotor2, OUTPUT);
+  pinMode(rightMotor1, OUTPUT);
+  pinMode(rightMotor2, OUTPUT);
 }
 
 void loop()
