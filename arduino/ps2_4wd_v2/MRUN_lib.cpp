@@ -149,12 +149,27 @@ void MRUN::car(int y, int x)
     if (_RUN_SPEED > 0)
     { // 前
       // _RUN_SPEED = constrain(_RUN_SPEED, LR_MIN_SPEED, MAX_SPEED);  // 高速转向
-      _RUN_SPEED = constrain(_RUN_SPEED, START_SPEED, LR_MIN_SPEED);  // 低速转向
+      _RUN_SPEED = constrain(_RUN_SPEED, START_SPEED, LR_MIN_SPEED); // 低速转向
     }
     else if (_RUN_SPEED < 0)
     { // 后
       // _RUN_SPEED = constrain(_RUN_SPEED, -MAX_SPEED, -LR_MIN_SPEED);  // 高速转向
-      _RUN_SPEED = constrain(_RUN_SPEED, -LR_MIN_SPEED, -START_SPEED);  // 低速转向
+      _RUN_SPEED = constrain(_RUN_SPEED, -LR_MIN_SPEED, -START_SPEED); // 低速转向
+    }
+    else  // 直接左右拉，再切换上下
+    {
+      if (y > (_Y_MID + _SILL)) // 上拉 up ^
+      {
+        _RUN_SPEED = map(y, _Y_MID + _SILL, _Y_MAX, START_SPEED, MAX_SPEED);
+      }
+      else if (y < (_Y_MID - _SILL)) // 下拉 down v
+      {
+        _RUN_SPEED = map(y, _Y_MID - _SILL, _Y_MIN, -START_SPEED, -MAX_SPEED);
+      }
+      else
+      { // 回中
+        _RUN_SPEED = 0;
+      }
     }
   }
 
