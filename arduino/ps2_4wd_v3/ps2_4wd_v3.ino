@@ -11,16 +11,16 @@
 
 #include "MRUN_lib.h"
 
-// NODEMCU版本引脚
-int leftMotor1 = D5; // 前后轮子
-int leftMotor2 = D6;
-int rightMotor1 = D7; // 左右轮子
-int rightMotor2 = D8;
-// 接收机引脚
-#define PS2_DAT D1 //14
-#define PS2_CMD D2 //15
-#define PS2_CS D3  //16
-#define PS2_CLK D4 //17
+// // NODEMCU版本引脚
+// int leftMotor1 = D5; // 前后轮子
+// int leftMotor2 = D6;
+// int rightMotor1 = D7; // 左右轮子
+// int rightMotor2 = D8;
+// // 接收机引脚
+// #define PS2_DAT D1 //14
+// #define PS2_CMD D2 //15
+// #define PS2_CS D3  //16
+// #define PS2_CLK D4 //17
 
 // PS2X摇杆
 int Y_MAX = 255;
@@ -42,16 +42,16 @@ int SILL = 5; // 偏移阈值
 // #define PS2_CS D11  //16
 // #define PS2_CLK D10 //17
 
-// // UNO版本引脚
-// int leftMotor1 = 2; // 左边轮子
-// int leftMotor2 = 3;
-// int rightMotor1 = 4; // 右边轮子
-// int rightMotor2 = 5;
-// // 接收机引脚
-// #define PS2_DAT 13 //14
-// #define PS2_CMD 11 //15
-// #define PS2_CS 10  //16
-// #define PS2_CLK 12 //17
+// UNO版本引脚
+int leftMotor1 = 2; // 左边轮子
+int leftMotor2 = 3;
+int rightMotor1 = 4; // 右边轮子
+int rightMotor2 = 5;
+// 接收机引脚
+#define PS2_DAT 13 //14
+#define PS2_CMD 11 //15
+#define PS2_CS 10  //16
+#define PS2_CLK 12 //17
 
 // 驾驶定义
 #define STOP 0
@@ -78,7 +78,12 @@ MRUN mrun;
 // byte type = 0;
 
 // analogWrite(pin, value)  UNO:0-255  D1 ESP8266:0-1023
-#define MAX_SPEED 1023 // PWM最大数值
+#ifndef ESP8266
+#define MAX_SPEED 255
+#else
+#define MAX_SPEED 1023
+#endif
+
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
@@ -367,9 +372,16 @@ void loop()
     {
         RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, 255, 0);
         LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 0, 255);
-        mrun.car(RUN_SPEED, LR);
+        mrun.tank(RUN_SPEED, LR);
     }else{
-        mrun.two(RUN_SPEED, LR);
+        // 坦克坐标变换
+        if(LR>0){
+            mrun.two(MAX_SPEED, -MAX_SPEED);
+        }else if(LR<0){
+            mrun.two(-MAX_SPEED, MAX_SPEED);
+        }else{
+            mrun.two(RUN_SPEED, RUN_SPEED);
+        }
     }
 
 
