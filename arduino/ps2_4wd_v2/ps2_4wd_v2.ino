@@ -366,7 +366,7 @@ void loop()
     if (RUN_SPEED == STOP && LR == STOP)  // 在按键全部释放
     {
         RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, 255, 0);
-        LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 0, 255);
+        LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 225, 30);
         mrun.car(RUN_SPEED, LR);
     }else{
         mrun.two(RUN_SPEED, LR);
