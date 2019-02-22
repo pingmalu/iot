@@ -13,11 +13,11 @@
 
 #ifndef ESP8266
 #define MAX_SPEED 255
-#define START_SPEED 50
+#define START_SPEED 20
 #define LR_MIN_SPEED 200 // 粘滞转向最低推进速度
 #else
 #define MAX_SPEED 1023
-#define START_SPEED 200
+#define START_SPEED 80
 #define LR_MIN_SPEED 800 // 粘滞转向最低推进速度
 #endif
 
@@ -42,6 +42,12 @@ void MRUN::one(int v, int M1, int M2)
 {
   int v_abs = abs(v);
   v_abs = constrain(v_abs, 0, MAX_SPEED);
+  if (v_abs < START_SPEED) // 小于启动速度，不要发送PWM
+  {
+    digitalWrite(M1, LOW);
+    digitalWrite(M2, LOW);
+    return;
+  }
   if (v > 0)
   {
     digitalWrite(M1, LOW);
@@ -278,24 +284,23 @@ void MRUN::tank(int y, int x)
     { // 前
       if (_LR >= 0)
       {
-        two(_RUN_SPEED + _LR, _RUN_SPEED);
+        two(START_SPEED + _LR, START_SPEED);
       }
       else
       {
-        two(_RUN_SPEED, _RUN_SPEED - _LR);
+        two(START_SPEED, START_SPEED - _LR);
       }
     }
     else
     { // 后
       if (_LR >= 0)
       {
-        two(_RUN_SPEED - _LR, _RUN_SPEED);
+        two(-START_SPEED - _LR, -START_SPEED);
       }
       else
       {
-        two(_RUN_SPEED, _RUN_SPEED + _LR);
+        two(-START_SPEED, -START_SPEED + _LR);
       }
     }
   }
-
 }

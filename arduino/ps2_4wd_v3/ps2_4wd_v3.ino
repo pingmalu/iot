@@ -62,6 +62,7 @@ int rightMotor2 = 5;
 
 // 全局驾驶变量
 int RUNCMD = 0;
+bool TANK_MOD = false;
 
 /******************************************************************
    select modes of PS2 controller:
@@ -83,7 +84,6 @@ MRUN mrun;
 #else
 #define MAX_SPEED 1023
 #endif
-
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
@@ -164,6 +164,13 @@ void loop()
     LR = STOP;
 
     ps2x.read_gamepad(false, 0); //read controller and set large motor to spin at 'vibrate' speed
+
+    // SELECT 切换坦克模式
+    if (ps2x.ButtonReleased(PSB_SELECT))
+    {
+        Serial.println("PSB_SELECT Button Released!");
+        TANK_MOD = TANK_MOD ? false : true;
+    }
 
     if (ps2x.Button(PSB_START)) //will be TRUE as long as button is pressed
         Serial.println("Start is being held");
@@ -259,8 +266,6 @@ void loop()
         Serial.println("PSB_SQUARE Button Released!");
         LR = STOP;
     }
-
-
 
     // // 左边按键群
     // if (ps2x.Button(PSB_PAD_UP))
@@ -368,22 +373,38 @@ void loop()
 
     // RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, MAX_SPEED, -MAX_SPEED);
 
-    if (RUN_SPEED == STOP && LR == STOP)  // 在按键全部释放
+    if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放
     {
-        RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, 255, 0);
-        LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 0, 255);
-        mrun.tank(RUN_SPEED, LR);
-    }else{
+        if (TANK_MOD)
+        {
+            RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 254), 0, 254, MAX_SPEED, -MAX_SPEED);
+            LR = map(constrain((int)ps2x.Analog(PSS_RY), 0, 254), 0, 254, MAX_SPEED, -MAX_SPEED);
+            mrun.two(RUN_SPEED, LR);
+        }
+        else
+        {
+            RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, 255, 0);
+            LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 0, 255);
+            mrun.tank(RUN_SPEED, LR);
+        }
+        
+    }
+    else
+    {
         // 坦克坐标变换
-        if(LR>0){
+        if (LR < 0)
+        {
             mrun.two(MAX_SPEED, -MAX_SPEED);
-        }else if(LR<0){
+        }
+        else if (LR > 0)
+        {
             mrun.two(-MAX_SPEED, MAX_SPEED);
-        }else{
+        }
+        else
+        {
             mrun.two(RUN_SPEED, RUN_SPEED);
         }
     }
-
 
     /*
     if (ps2x.Button(PSB_L2))
