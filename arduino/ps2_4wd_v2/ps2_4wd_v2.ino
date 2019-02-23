@@ -255,6 +255,21 @@ void loop()
         LR = STOP;
     }
 
+// 中继2.4g模块测试
+// int LED = D0;
+
+// void setup() {
+//   // put your setup code here, to run once:
+// pinMode(LED , OUTPUT);
+// }
+
+// void loop() {
+//   // put your main code here, to run repeatedly:
+//    digitalWrite(LED,HIGH); // turn on led
+//    delay(5000); // delay for 500 ms
+//    digitalWrite(LED,LOW); // turn off led
+//    delay(1000);
+// }
 
 
     // // 左边按键群
