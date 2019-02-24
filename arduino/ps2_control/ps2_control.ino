@@ -53,7 +53,6 @@ int right = 5;
 
 PS2X ps2x; // create PS2 Controller Class
 
-
 // 驾驶定义
 #define STOP 0
 #define FORWARD 1
@@ -70,31 +69,30 @@ void Run(int cmd)
     {
     case FORWARD:
         Serial.print("FORWARD"); // 前
-        digitalWrite(up,LOW);
+        digitalWrite(up, LOW);
         break;
     case BACKWARD:
         Serial.println("BACKWARD"); // 后
-        digitalWrite(down,LOW);
+        digitalWrite(down, LOW);
         break;
     case TURNLEFT:
         Serial.println("TURNLEFT"); // 左
-        digitalWrite(left,LOW);
+        digitalWrite(left, LOW);
         break;
     case TURNRIGHT:
         Serial.println("TURNRIGHT"); // 右
-        digitalWrite(right,LOW);
+        digitalWrite(right, LOW);
         break;
     default:
         Serial.print("."); // 停止
-        digitalWrite(up,HIGH);
-        digitalWrite(down,HIGH);
-        digitalWrite(left,HIGH);
-        digitalWrite(right,HIGH);
+        digitalWrite(up, HIGH);
+        digitalWrite(down, HIGH);
+        digitalWrite(left, HIGH);
+        digitalWrite(right, HIGH);
         break;
         // delay(50);
     }
 }
-
 
 void setup()
 {
@@ -120,7 +118,6 @@ void setup()
     pinMode(left, OUTPUT);
     pinMode(right, OUTPUT);
 
-
     // type = ps2x.readType();
     // switch (type)
     // {
@@ -141,100 +138,112 @@ void loop()
 
     ps2x.read_gamepad(false, 0); //read controller and set large motor to spin at 'vibrate' speed
 
-
     if (ps2x.Button(PSB_PAD_UP))
     { //will be TRUE as long as button is pressed
         Serial.println("Up held this hard: ");
         RUNCMD = FORWARD;
+        digitalWrite(up, LOW);
     }
     else if (ps2x.ButtonReleased(PSB_PAD_UP))
     {
         Serial.println("Up Button Released!");
         RUNCMD = STOP;
+        digitalWrite(up, HIGH);
     }
 
     if (ps2x.Button(PSB_PAD_DOWN))
     {
         Serial.println("DOWN held this hard: ");
         RUNCMD = BACKWARD;
+        digitalWrite(down, LOW);
     }
     else if (ps2x.ButtonReleased(PSB_PAD_DOWN))
     {
         Serial.println("DOWN Button Released!");
         RUNCMD = STOP;
+        digitalWrite(down, HIGH);
     }
 
     if (ps2x.Button(PSB_PAD_RIGHT))
     {
         Serial.println("Right held this hard: ");
         RUNCMD = TURNRIGHT;
+        digitalWrite(right, LOW);
     }
     else if (ps2x.ButtonReleased(PSB_PAD_RIGHT))
     {
         Serial.println("Right Button Released!");
         RUNCMD = STOP;
+        digitalWrite(right, HIGH);
     }
 
     if (ps2x.Button(PSB_PAD_LEFT))
     {
         Serial.println("LEFT held this hard: ");
         RUNCMD = TURNLEFT;
+        digitalWrite(left, LOW);
     }
     else if (ps2x.ButtonReleased(PSB_PAD_LEFT))
     {
         Serial.println("LEFT Button Released!");
         RUNCMD = STOP;
+        digitalWrite(left, HIGH);
     }
-
-
 
     // 右边按键群
     if (ps2x.Button(PSB_TRIANGLE))
     { //will be TRUE as long as button is pressed
         Serial.println("Triangle pressed");
         RUNCMD = FORWARD;
+        digitalWrite(up, LOW);
     }
     else if (ps2x.ButtonReleased(PSB_TRIANGLE))
     {
         Serial.println("Triangle Button Released!");
         RUNCMD = STOP;
+        digitalWrite(up, HIGH);
     }
 
     if (ps2x.Button(PSB_CROSS))
     {
         Serial.println("PSB_CROSS pressed");
         RUNCMD = BACKWARD;
+        digitalWrite(down, LOW);
     }
     else if (ps2x.ButtonReleased(PSB_CROSS))
     {
         Serial.println("PSB_CROSS Button Released!");
         RUNCMD = STOP;
+        digitalWrite(down, HIGH);
     }
 
-    if (ps2x.Button(PSB_CIRCLE))  // 右
+    if (ps2x.Button(PSB_CIRCLE)) // 右
     {
         Serial.println("PSB_CIRCLE pressed");
         RUNCMD = TURNRIGHT;
+        digitalWrite(right, LOW);
     }
     else if (ps2x.ButtonReleased(PSB_CIRCLE))
     {
         Serial.println("PSB_CIRCLE Button Released!");
         RUNCMD = STOP;
+        digitalWrite(right, HIGH);
     }
 
-    if (ps2x.Button(PSB_SQUARE))  // 左
+    if (ps2x.Button(PSB_SQUARE)) // 左
     {
         Serial.println("PSB_SQUARE pressed");
         RUNCMD = TURNLEFT;
+        digitalWrite(left, LOW);
     }
     else if (ps2x.ButtonReleased(PSB_SQUARE))
     {
         Serial.println("PSB_SQUARE Button Released!");
+        digitalWrite(left, HIGH);
         RUNCMD = STOP;
     }
 
-
-    Run(RUNCMD);
+    // Run(RUNCMD);
 
     Serial.println();
     delay(10);
