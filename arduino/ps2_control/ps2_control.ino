@@ -198,10 +198,10 @@ void loop()
     }
 
     // 摇杆控制器 start
-    R_RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, 0, 255);
-    R_LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 0, 255);
-    L_RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 0, 255);
-    L_LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 0, 255);
+    R_RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, 255, 0);
+    R_LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 255, 0);
+    L_RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 255, 0);
+    L_LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 255, 0);
 
     if ((Y_MID + SILL) < R_RUN_SPEED || (Y_MID + SILL) < L_RUN_SPEED) // 上
     {
@@ -223,12 +223,12 @@ void loop()
         }
     }
 
-    if ((Y_MID + SILL) < R_LR || (Y_MID + SILL) < L_LR) // 左
+    if ((Y_MID + 5) < R_LR || (Y_MID + 5) < L_LR) // 左
     {
         left_right_tag = true;
         digitalWrite(left, LOW);
     }
-    else if ((Y_MID - SILL) > R_LR || (Y_MID - SILL) > L_LR) // 右
+    else if ((Y_MID - 5) > R_LR || (Y_MID - 5) > L_LR) // 右
     {
         left_right_tag = true;
         digitalWrite(right, LOW);
