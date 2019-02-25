@@ -17,7 +17,7 @@
 // 接收机引脚
 #define PS2_DAT 13
 #define PS2_CMD 12
-#define PS2_CS  11
+#define PS2_CS 11
 #define PS2_CLK 10
 
 // // NODEMCU版本引脚
@@ -52,6 +52,17 @@
 #define rumble false
 
 PS2X ps2x; // create PS2 Controller Class
+
+int R_RUN_SPEED = 0; // 推进速度
+int R_LR = 0;        // 转向速度
+int L_RUN_SPEED = 0; // 推进速度
+int L_LR = 0;        // 转向速度
+
+#define Y_MID 128
+#define SILL 64
+
+bool up_down_tag = false;
+bool left_right_tag = false;
 
 void setup()
 {
@@ -89,7 +100,6 @@ void setup()
     pinMode(down, OUTPUT);
     pinMode(left, OUTPUT);
     pinMode(right, OUTPUT);
-
 }
 
 void loop()
@@ -143,8 +153,8 @@ void loop()
     }
 
     // 右边按键群
-    if (ps2x.Button(PSB_TRIANGLE))  // 上 三角
-    { //will be TRUE as long as button is pressed
+    if (ps2x.Button(PSB_TRIANGLE)) // 上 三角
+    {                              //will be TRUE as long as button is pressed
         Serial.println(" ▲ Triangle pressed");
         digitalWrite(up, LOW);
     }
@@ -154,7 +164,7 @@ void loop()
         digitalWrite(up, HIGH);
     }
 
-    if (ps2x.Button(PSB_CROSS))  // 下 叉
+    if (ps2x.Button(PSB_CROSS)) // 下 叉
     {
         Serial.println(" ✗ PSB_CROSS pressed");
         digitalWrite(down, LOW);
@@ -185,6 +195,52 @@ void loop()
     {
         Serial.println(" □ PSB_SQUARE Button Released!");
         digitalWrite(left, HIGH);
+    }
+
+    // 摇杆控制器 start
+    R_RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, 0, 255);
+    R_LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 0, 255);
+    L_RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 0, 255);
+    L_LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 0, 255);
+
+    if ((Y_MID + SILL) < R_RUN_SPEED || (Y_MID + SILL) < L_RUN_SPEED) // 上
+    {
+        up_down_tag = true;
+        digitalWrite(up, LOW);
+    }
+    else if ((Y_MID - SILL) > R_RUN_SPEED || (Y_MID - SILL) > L_RUN_SPEED) // 下
+    {
+        up_down_tag = true;
+        digitalWrite(down, LOW);
+    }
+    else
+    {
+        if (up_down_tag)
+        {
+            digitalWrite(up, HIGH);
+            digitalWrite(down, HIGH);
+            up_down_tag = false;
+        }
+    }
+
+    if ((Y_MID + SILL) < R_LR || (Y_MID + SILL) < L_LR) // 左
+    {
+        left_right_tag = true;
+        digitalWrite(left, LOW);
+    }
+    else if ((Y_MID - SILL) > R_LR || (Y_MID - SILL) > L_LR) // 右
+    {
+        left_right_tag = true;
+        digitalWrite(right, LOW);
+    }
+    else
+    {
+        if (left_right_tag)
+        {
+            digitalWrite(left, HIGH);
+            digitalWrite(right, HIGH);
+            left_right_tag = false;
+        }
     }
 
     Serial.println();
