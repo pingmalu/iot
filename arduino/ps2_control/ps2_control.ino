@@ -64,6 +64,9 @@ int L_LR = 0;        // 转向速度
 bool up_down_tag = false;
 bool left_right_tag = false;
 
+int MLOW = HIGH;
+int MHIGH = LOW;
+
 void setup()
 {
     Serial.begin(115200);
@@ -111,90 +114,90 @@ void loop()
     if (ps2x.Button(PSB_PAD_UP))
     { //will be TRUE as long as button is pressed
         Serial.println("Up held this hard: ");
-        digitalWrite(up, LOW);
+        digitalWrite(up, MLOW);
     }
     else if (ps2x.ButtonReleased(PSB_PAD_UP))
     {
         Serial.println("Up Button Released!");
-        digitalWrite(up, HIGH);
+        digitalWrite(up, MHIGH);
     }
 
     if (ps2x.Button(PSB_PAD_DOWN))
     {
         Serial.println("DOWN held this hard: ");
-        digitalWrite(down, LOW);
+        digitalWrite(down, MLOW);
     }
     else if (ps2x.ButtonReleased(PSB_PAD_DOWN))
     {
         Serial.println("DOWN Button Released!");
-        digitalWrite(down, HIGH);
+        digitalWrite(down, MHIGH);
     }
 
     if (ps2x.Button(PSB_PAD_RIGHT))
     {
         Serial.println("Right held this hard: ");
-        digitalWrite(right, LOW);
+        digitalWrite(right, MLOW);
     }
     else if (ps2x.ButtonReleased(PSB_PAD_RIGHT))
     {
         Serial.println("Right Button Released!");
-        digitalWrite(right, HIGH);
+        digitalWrite(right, MHIGH);
     }
 
     if (ps2x.Button(PSB_PAD_LEFT))
     {
         Serial.println("LEFT held this hard: ");
-        digitalWrite(left, LOW);
+        digitalWrite(left, MLOW);
     }
     else if (ps2x.ButtonReleased(PSB_PAD_LEFT))
     {
         Serial.println("LEFT Button Released!");
-        digitalWrite(left, HIGH);
+        digitalWrite(left, MHIGH);
     }
 
     // 右边按键群
     if (ps2x.Button(PSB_TRIANGLE)) // 上 三角
     {                              //will be TRUE as long as button is pressed
         Serial.println(" ▲ Triangle pressed");
-        digitalWrite(up, LOW);
+        digitalWrite(up, MLOW);
     }
     else if (ps2x.ButtonReleased(PSB_TRIANGLE))
     {
         Serial.println(" ▲ Triangle Button Released!");
-        digitalWrite(up, HIGH);
+        digitalWrite(up, MHIGH);
     }
 
     if (ps2x.Button(PSB_CROSS)) // 下 叉
     {
         Serial.println(" ✗ PSB_CROSS pressed");
-        digitalWrite(down, LOW);
+        digitalWrite(down, MLOW);
     }
     else if (ps2x.ButtonReleased(PSB_CROSS))
     {
         Serial.println(" ✗ PSB_CROSS Button Released!");
-        digitalWrite(down, HIGH);
+        digitalWrite(down, MHIGH);
     }
 
     if (ps2x.Button(PSB_CIRCLE)) // 右 圈
     {
         Serial.println(" ○ PSB_CIRCLE pressed");
-        digitalWrite(right, LOW);
+        digitalWrite(right, MLOW);
     }
     else if (ps2x.ButtonReleased(PSB_CIRCLE))
     {
         Serial.println(" ○ PSB_CIRCLE Button Released!");
-        digitalWrite(right, HIGH);
+        digitalWrite(right, MHIGH);
     }
 
     if (ps2x.Button(PSB_SQUARE)) // 左 正方
     {
         Serial.println(" □ PSB_SQUARE pressed");
-        digitalWrite(left, LOW);
+        digitalWrite(left, MLOW);
     }
     else if (ps2x.ButtonReleased(PSB_SQUARE))
     {
         Serial.println(" □ PSB_SQUARE Button Released!");
-        digitalWrite(left, HIGH);
+        digitalWrite(left, MHIGH);
     }
 
     // 摇杆控制器 start
@@ -206,19 +209,19 @@ void loop()
     if ((Y_MID + SILL) < R_RUN_SPEED || (Y_MID + SILL) < L_RUN_SPEED) // 上
     {
         up_down_tag = true;
-        digitalWrite(up, LOW);
+        digitalWrite(up, MLOW);
     }
     else if ((Y_MID - SILL) > R_RUN_SPEED || (Y_MID - SILL) > L_RUN_SPEED) // 下
     {
         up_down_tag = true;
-        digitalWrite(down, LOW);
+        digitalWrite(down, MLOW);
     }
     else
     {
         if (up_down_tag)
         {
-            digitalWrite(up, HIGH);
-            digitalWrite(down, HIGH);
+            digitalWrite(up, MHIGH);
+            digitalWrite(down, MHIGH);
             up_down_tag = false;
         }
     }
@@ -226,19 +229,19 @@ void loop()
     if ((Y_MID + 5) < R_LR || (Y_MID + 5) < L_LR) // 左
     {
         left_right_tag = true;
-        digitalWrite(left, LOW);
+        digitalWrite(left, MLOW);
     }
     else if ((Y_MID - 5) > R_LR || (Y_MID - 5) > L_LR) // 右
     {
         left_right_tag = true;
-        digitalWrite(right, LOW);
+        digitalWrite(right, MLOW);
     }
     else
     {
         if (left_right_tag)
         {
-            digitalWrite(left, HIGH);
-            digitalWrite(right, HIGH);
+            digitalWrite(left, MHIGH);
+            digitalWrite(right, MHIGH);
             left_right_tag = false;
         }
     }
