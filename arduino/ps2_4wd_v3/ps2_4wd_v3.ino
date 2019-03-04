@@ -79,7 +79,7 @@ int rightMotor2 = 6;
 
 // 全局驾驶变量
 int RUNCMD = 0;
-bool TANK_MOD = false;
+bool TANK_MOD = true;
 
 /******************************************************************
    select modes of PS2 controller:
