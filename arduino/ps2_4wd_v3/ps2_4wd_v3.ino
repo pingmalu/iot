@@ -53,6 +53,23 @@ int rightMotor2 = 5;
 #define PS2_CS 10  //16
 #define PS2_CLK 12 //17
 
+/*****************************
+ * 
+ * 2.4g_tank 引脚
+ * 
+ // UNO版本引脚
+int leftMotor1 = 4; // 左边轮子
+int leftMotor2 = 5;
+int rightMotor1 = 7; // 右边轮子
+int rightMotor2 = 6;
+// 接收机引脚
+#define PS2_DAT 11 //14
+#define PS2_CMD 10 //15
+#define PS2_CS  9  //16
+#define PS2_CLK 8 //17
+ * 
+ * **************************/
+
 // 驾驶定义
 #define STOP 0
 #define FORWARD 1
