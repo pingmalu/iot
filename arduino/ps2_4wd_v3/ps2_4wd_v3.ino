@@ -47,27 +47,27 @@ int SILL = 5; // 偏移阈值
 // #define PS2_CS D11  //16
 // #define PS2_CLK D10 //17
 
-// // UNO版本引脚
-// int leftMotor1 = 2; // 左边轮子
-// int leftMotor2 = 3;
-// int rightMotor1 = 4; // 右边轮子
-// int rightMotor2 = 5;
-// // 接收机引脚
-// #define PS2_DAT 13 //14
-// #define PS2_CMD 11 //15
-// #define PS2_CS 10  //16
-// #define PS2_CLK 12 //17
-
-// UNO 2.4g_tank 引脚
-int leftMotor1 = 4; // 左边轮子
-int leftMotor2 = 5;
-int rightMotor1 = 7; // 右边轮子
-int rightMotor2 = 6;
+// UNO版本引脚
+int leftMotor1 = 2; // 左边轮子
+int leftMotor2 = 3;
+int rightMotor1 = 4; // 右边轮子
+int rightMotor2 = 5;
 // 接收机引脚
-#define PS2_DAT 11 //14
-#define PS2_CMD 10 //15
-#define PS2_CS 9   //16
-#define PS2_CLK 8  //17
+#define PS2_DAT 13 //14
+#define PS2_CMD 11 //15
+#define PS2_CS 10  //16
+#define PS2_CLK 12 //17
+
+// // UNO 2.4g_tank 引脚
+// int leftMotor1 = 4; // 左边轮子
+// int leftMotor2 = 5;
+// int rightMotor1 = 7; // 右边轮子
+// int rightMotor2 = 6;
+// // 接收机引脚
+// #define PS2_DAT 11 //14
+// #define PS2_CMD 10 //15
+// #define PS2_CS 9   //16
+// #define PS2_CLK 8  //17
 
 // 驾驶定义
 #define STOP 0
@@ -494,18 +494,18 @@ void loop()
     // Serial.println(digitalRead(leftMotor2));
     // Serial.println(digitalRead(rightMotor1));
     // Serial.println(digitalRead(rightMotor2));
-    // if (digitalRead(leftMotor1) != LOW || digitalRead(leftMotor2) != LOW || digitalRead(rightMotor1) != LOW || digitalRead(rightMotor2) != LOW)
-    // if ((RUN_SPEED < 130 && RUN_SPEED > 126) && (LR < 130 && LR > 126))
-    // {
-    //     if ((millis() - starttime) > 10000)
-    //     { // xx秒没有按，自动关机 10分钟
-    //         go_poweroff();
-    //     }
-    // }
-    // else
-    // {
-    //     starttime = millis();
-    // }
+    // if (digitalRead(leftMotor1) == LOW && digitalRead(leftMotor2) == LOW && digitalRead(rightMotor1) == LOW && digitalRead(rightMotor2) == LOW)
+    if ((RUN_SPEED < 130 && RUN_SPEED > 126) && (LR < 130 && LR > 126))
+    {
+        if ((millis() - starttime) > 600000)
+        { // xx秒没有按，自动关机 10分钟
+            go_poweroff();
+        }
+    }
+    else
+    {
+        starttime = millis();
+    }
     // 自动关机 end
 
     Serial.println();
