@@ -6,7 +6,12 @@
  * 2019.2.21
 
 */
-
+#ifndef ESP8266
+#include <avr/sleep.h>
+#define ISESP8266 false
+#else
+#define ISESP8266 true
+#endif
 #include <PS2X_lib.h> //for v1.6
 
 #include "MRUN_lib.h"
@@ -42,22 +47,18 @@ int SILL = 5; // 偏移阈值
 // #define PS2_CS D11  //16
 // #define PS2_CLK D10 //17
 
-// UNO版本引脚
-int leftMotor1 = 2; // 左边轮子
-int leftMotor2 = 3;
-int rightMotor1 = 4; // 右边轮子
-int rightMotor2 = 5;
-// 接收机引脚
-#define PS2_DAT 13 //14
-#define PS2_CMD 11 //15
-#define PS2_CS 10  //16
-#define PS2_CLK 12 //17
+// // UNO版本引脚
+// int leftMotor1 = 2; // 左边轮子
+// int leftMotor2 = 3;
+// int rightMotor1 = 4; // 右边轮子
+// int rightMotor2 = 5;
+// // 接收机引脚
+// #define PS2_DAT 13 //14
+// #define PS2_CMD 11 //15
+// #define PS2_CS 10  //16
+// #define PS2_CLK 12 //17
 
-/*****************************
- * 
- * 2.4g_tank 引脚
- * 
- // UNO版本引脚
+// UNO 2.4g_tank 引脚
 int leftMotor1 = 4; // 左边轮子
 int leftMotor2 = 5;
 int rightMotor1 = 7; // 右边轮子
@@ -65,10 +66,8 @@ int rightMotor2 = 6;
 // 接收机引脚
 #define PS2_DAT 11 //14
 #define PS2_CMD 10 //15
-#define PS2_CS  9  //16
-#define PS2_CLK 8 //17
- * 
- * **************************/
+#define PS2_CS 9   //16
+#define PS2_CLK 8  //17
 
 // 驾驶定义
 #define STOP 0
@@ -104,6 +103,28 @@ MRUN mrun;
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
+
+unsigned long starttime;
+unsigned long looptime;
+
+void go_poweroff()
+{
+    Serial.print("go to sleep!!!");
+    delay(1000);
+
+    #ifdef ESP8266
+        ESP.deepSleep(30000e6);
+    #else
+        // pinMode(13, OUTPUT);   // UNO板载LED关闭
+        // digitalWrite(13, LOW); // UNO板载LED关闭
+        // 采用“Power-down”睡眠模式
+        set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+        // 启用睡眠模式
+        sleep_enable();
+        // 进入睡眠模式
+        sleep_cpu();
+    #endif
+}
 
 void Run(int cmd)
 {
@@ -147,6 +168,13 @@ void setup()
         }
         else
         {
+            Serial.print(" uptime:");
+            Serial.print(millis());
+            Serial.print(" ");
+            if (millis() > 60000) // 启动时检测不到手柄连接器，超过60秒，进入睡眠
+            {
+                go_poweroff();
+            }
             delay(100);
         }
     } while (1);
@@ -158,6 +186,8 @@ void setup()
     pinMode(rightMotor2, OUTPUT);
 
     mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
+
+    starttime = millis();
 
     // type = ps2x.readType();
     // switch (type)
@@ -404,7 +434,6 @@ void loop()
             LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 0, 255);
             mrun.tank(RUN_SPEED, LR);
         }
-        
     }
     else
     {
@@ -459,6 +488,24 @@ void loop()
     // mrun.one(4, leftMotor1, leftMotor2);
     // mrun.two(4,9);
 */
+
+    // 自动关机 start
+    // Serial.println(digitalRead(leftMotor1));
+    // Serial.println(digitalRead(leftMotor2));
+    // Serial.println(digitalRead(rightMotor1));
+    // Serial.println(digitalRead(rightMotor2));
+    if (digitalRead(leftMotor1) != LOW || digitalRead(leftMotor2) != LOW || digitalRead(rightMotor1) != LOW || digitalRead(rightMotor2) != LOW)
+    {
+        starttime = millis();
+    }
+    else
+    {
+        if ((millis() - starttime) > 600000)
+        { // xx秒没有按，自动关机 10分钟
+            go_poweroff();
+        }
+    }
+    // 自动关机 end
 
     Serial.println();
     delay(10);
