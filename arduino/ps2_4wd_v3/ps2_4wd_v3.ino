@@ -115,8 +115,8 @@ void go_poweroff()
     #ifdef ESP8266
         ESP.deepSleep(30000e6);
     #else
-        // pinMode(13, OUTPUT);   // UNO板载LED关闭
-        // digitalWrite(13, LOW); // UNO板载LED关闭
+        pinMode(13, OUTPUT);   // UNO板载LED关闭
+        digitalWrite(13, LOW); // UNO板载LED关闭
         // 采用“Power-down”睡眠模式
         set_sleep_mode(SLEEP_MODE_PWR_DOWN);
         // 启用睡眠模式
