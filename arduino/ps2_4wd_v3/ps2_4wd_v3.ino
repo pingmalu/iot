@@ -112,18 +112,18 @@ void go_poweroff()
     Serial.print("go to sleep!!!");
     delay(1000);
 
-    #ifdef ESP8266
-        ESP.deepSleep(30000e6);
-    #else
-        pinMode(13, OUTPUT);   // UNO板载LED关闭
-        digitalWrite(13, LOW); // UNO板载LED关闭
-        // 采用“Power-down”睡眠模式
-        set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-        // 启用睡眠模式
-        sleep_enable();
-        // 进入睡眠模式
-        sleep_cpu();
-    #endif
+#ifdef ESP8266
+    ESP.deepSleep(30000e6);
+#else
+    pinMode(13, OUTPUT);   // UNO板载LED关闭
+    digitalWrite(13, LOW); // UNO板载LED关闭
+    // 采用“Power-down”睡眠模式
+    set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+    // 启用睡眠模式
+    sleep_enable();
+    // 进入睡眠模式
+    sleep_cpu();
+#endif
 }
 
 void Run(int cmd)
@@ -494,17 +494,18 @@ void loop()
     // Serial.println(digitalRead(leftMotor2));
     // Serial.println(digitalRead(rightMotor1));
     // Serial.println(digitalRead(rightMotor2));
-    if (digitalRead(leftMotor1) != LOW || digitalRead(leftMotor2) != LOW || digitalRead(rightMotor1) != LOW || digitalRead(rightMotor2) != LOW)
-    {
-        starttime = millis();
-    }
-    else
-    {
-        if ((millis() - starttime) > 600000)
-        { // xx秒没有按，自动关机 10分钟
-            go_poweroff();
-        }
-    }
+    // if (digitalRead(leftMotor1) != LOW || digitalRead(leftMotor2) != LOW || digitalRead(rightMotor1) != LOW || digitalRead(rightMotor2) != LOW)
+    // if ((RUN_SPEED < 130 && RUN_SPEED > 126) && (LR < 130 && LR > 126))
+    // {
+    //     if ((millis() - starttime) > 10000)
+    //     { // xx秒没有按，自动关机 10分钟
+    //         go_poweroff();
+    //     }
+    // }
+    // else
+    // {
+    //     starttime = millis();
+    // }
     // 自动关机 end
 
     Serial.println();
