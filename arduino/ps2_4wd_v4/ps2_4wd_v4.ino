@@ -16,21 +16,23 @@
 
 #include "MRUN_lib.h"
 
-#include <Servo.h>  // 舵机控制
-Servo myservo1;  // 创建舵机对象
-Servo myservo2;  // 创建舵机对象
+#include <Servo.h> // 舵机控制
+Servo myservo1;    // 创建舵机对象
+Servo myservo2;    // 创建舵机对象
 
-
-// // NODEMCU版本引脚
-// int leftMotor1 = D5; // 前后轮子
-// int leftMotor2 = D6;
-// int rightMotor1 = D7; // 左右轮子
-// int rightMotor2 = D8;
-// // 接收机引脚
-// #define PS2_DAT D1 //14
-// #define PS2_CMD D2 //15
-// #define PS2_CS D3  //16
-// #define PS2_CLK D4 //17
+// NODEMCU版本引脚
+int leftMotor1 = D5; // 前后轮子
+int leftMotor2 = D6;
+int rightMotor1 = D7; // 左右轮子
+int rightMotor2 = D8;
+// 接收机引脚
+#define PS2_DAT D1 //14
+#define PS2_CMD D2 //15
+#define PS2_CS D3  //16
+#define PS2_CLK D4 //17
+// 舵机引脚
+#define SERVO_PIN_1 16
+#define SERVO_PIN_2 3
 
 // PS2X摇杆
 int Y_MAX = 255;
@@ -40,6 +42,10 @@ int X_MAX = 255;
 int X_MID = 128;
 int X_MIN = 0;
 int SILL = 5; // 偏移阈值
+
+// 舵机角度值
+int lx;
+// int ly;
 
 // // D1版本引脚
 // int leftMotor1 = D2; // 前后轮子
@@ -52,19 +58,19 @@ int SILL = 5; // 偏移阈值
 // #define PS2_CS D11  //16
 // #define PS2_CLK D10 //17
 
-// UNO版本引脚
-int leftMotor1 = 2; // 左边轮子
-int leftMotor2 = 3;
-int rightMotor1 = 4; // 右边轮子
-int rightMotor2 = 5;
-// 接收机引脚
-#define PS2_DAT 13 //14
-#define PS2_CMD 11 //15
-#define PS2_CS 10  //16
-#define PS2_CLK 12 //17
-// 舵机引脚
-#define SERVO_PIN_1 9
-#define SERVO_PIN_2 8
+// // UNO版本引脚
+// int leftMotor1 = 2; // 左边轮子
+// int leftMotor2 = 3;
+// int rightMotor1 = 4; // 右边轮子
+// int rightMotor2 = 5;
+// // 接收机引脚
+// #define PS2_DAT 13 //14
+// #define PS2_CMD 11 //15
+// #define PS2_CS 10  //16
+// #define PS2_CLK 12 //17
+// // 舵机引脚
+// #define SERVO_PIN_1 9
+// #define SERVO_PIN_2 8
 
 // // UNO 2.4g_tank 引脚
 // int leftMotor1 = 4; // 左边轮子
@@ -447,8 +453,25 @@ void loop()
             mrun.tank(RUN_SPEED, LR);
 
             // 舵机start
-            myservo1.write(map(constrain((int)ps2x.Analog(PSS_LX), 0, 254), 0, 254, 0, 180));
-            myservo2.write(map(constrain((int)ps2x.Analog(PSS_LY), 0, 254), 0, 254, 0, 180));
+            lx = map(constrain((int)ps2x.Analog(PSS_LY), 0, 254), 0, 254, 0, 254);
+            Serial.print(lx);
+            Serial.print(' ');
+            if (lx > 128)
+            {
+                lx = map(lx, 129, 254, 0, 180);
+                myservo1.write(lx);
+            }else if (lx < 127)
+            {
+                lx = map(lx, 126, 0, 0, 180);
+                myservo2.write(lx);
+            }else{
+                myservo1.write(0);
+                myservo2.write(0);
+            }
+            // if(ly != map(constrain((int)ps2x.Analog(PSS_LY), 0, 254), 0, 254, 0, 180)){
+            //     ly = map(constrain((int)ps2x.Analog(PSS_LY), 0, 254), 0, 254, 0, 180);
+            //     myservo2.write(ly);
+            // }
             // 舵机end
         }
     }
