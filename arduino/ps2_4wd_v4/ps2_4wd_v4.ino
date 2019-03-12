@@ -438,6 +438,32 @@ void loop()
 
     // RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, MAX_SPEED, -MAX_SPEED);
 
+
+    // 上按键控制舵机，L1 R1
+    if (ps2x.Button(PSB_R1)) // 右
+    {
+        Serial.println("PSB_R1 pressed");
+        myservo1.write(0);
+    }
+    else if (ps2x.ButtonReleased(PSB_R1))
+    {
+        Serial.println("PSB_R1 Button Released!");
+        myservo1.write(180);
+    }
+
+    if (ps2x.Button(PSB_L1)) // 左
+    {
+        Serial.println("PSB_L1 pressed");
+        myservo2.write(180);
+    }
+    else if (ps2x.ButtonReleased(PSB_L1))
+    {
+        Serial.println("PSB_L1 Button Released!");
+        myservo2.write(0);
+    }
+
+
+
     if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放
     {
         if (TANK_MOD)
@@ -452,27 +478,23 @@ void loop()
             LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 0, 255);
             mrun.tank(RUN_SPEED, LR);
 
-            // 舵机start
-            lx = map(constrain((int)ps2x.Analog(PSS_LY), 0, 254), 0, 254, 0, 254);
-            Serial.print(lx);
-            Serial.print(' ');
-            if (lx > 128)
-            {
-                lx = map(lx, 129, 254, 180, 0);
-                myservo1.write(lx);
-            }else if (lx < 127)
-            {
-                lx = map(lx, 126, 0, 0, 180);
-                myservo2.write(lx);
-            }else{
-                myservo1.write(180);
-                myservo2.write(0);
-            }
-            // if(ly != map(constrain((int)ps2x.Analog(PSS_LY), 0, 254), 0, 254, 0, 180)){
-            //     ly = map(constrain((int)ps2x.Analog(PSS_LY), 0, 254), 0, 254, 0, 180);
-            //     myservo2.write(ly);
+            // // 舵机start
+            // lx = map(constrain((int)ps2x.Analog(PSS_LX), 0, 254), 0, 254, 0, 254);
+            // Serial.print(lx);
+            // Serial.print(' ');
+            // if (lx > 128)
+            // {
+            //     lx = map(lx, 129, 254, 180, 0);
+            //     myservo1.write(lx);
+            // }else if (lx < 127)
+            // {
+            //     lx = map(lx, 126, 0, 0, 180);
+            //     myservo2.write(lx);
+            // }else{
+            //     myservo1.write(180);
+            //     myservo2.write(0);
             // }
-            // 舵机end
+            // // 舵机end
         }
     }
     else
