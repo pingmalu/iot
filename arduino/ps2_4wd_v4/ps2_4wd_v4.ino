@@ -458,14 +458,14 @@ void loop()
             Serial.print(' ');
             if (lx > 128)
             {
-                lx = map(lx, 129, 254, 0, 180);
+                lx = map(lx, 129, 254, 180, 0);
                 myservo1.write(lx);
             }else if (lx < 127)
             {
                 lx = map(lx, 126, 0, 0, 180);
                 myservo2.write(lx);
             }else{
-                myservo1.write(0);
+                myservo1.write(180);
                 myservo2.write(0);
             }
             // if(ly != map(constrain((int)ps2x.Analog(PSS_LY), 0, 254), 0, 254, 0, 180)){
