@@ -20,19 +20,19 @@
 Servo myservo1;    // 创建舵机对象
 Servo myservo2;    // 创建舵机对象
 
-// NODEMCU版本引脚
-int leftMotor1 = D5; // 前后轮子
-int leftMotor2 = D6;
-int rightMotor1 = D7; // 左右轮子
-int rightMotor2 = D8;
-// 接收机引脚
-#define PS2_DAT D1 //14
-#define PS2_CMD D2 //15
-#define PS2_CS D3  //16
-#define PS2_CLK D4 //17
-// 舵机引脚
-#define SERVO_PIN_1 16
-#define SERVO_PIN_2 3
+// // NODEMCU版本引脚
+// int leftMotor1 = D5; // 前后轮子
+// int leftMotor2 = D6;
+// int rightMotor1 = D7; // 左右轮子
+// int rightMotor2 = D8;
+// // 接收机引脚
+// #define PS2_DAT D1 //14
+// #define PS2_CMD D2 //15
+// #define PS2_CS D3  //16
+// #define PS2_CLK D4 //17
+// // 舵机引脚
+// #define SERVO_PIN_1 16
+// #define SERVO_PIN_2 3
 
 // PS2X摇杆
 int Y_MAX = 255;
@@ -58,19 +58,19 @@ int lx;
 // #define PS2_CS D11  //16
 // #define PS2_CLK D10 //17
 
-// // UNO版本引脚
-// int leftMotor1 = 2; // 左边轮子
-// int leftMotor2 = 3;
-// int rightMotor1 = 4; // 右边轮子
-// int rightMotor2 = 5;
-// // 接收机引脚
-// #define PS2_DAT 13 //14
-// #define PS2_CMD 11 //15
-// #define PS2_CS 10  //16
-// #define PS2_CLK 12 //17
-// // 舵机引脚
-// #define SERVO_PIN_1 9
-// #define SERVO_PIN_2 8
+// UNO版本引脚
+int leftMotor1 = 2; // 左边轮子
+int leftMotor2 = 3;
+int rightMotor1 = 4; // 右边轮子
+int rightMotor2 = 5;
+// 接收机引脚
+#define PS2_DAT 13 //14
+#define PS2_CMD 11 //15
+#define PS2_CS 10  //16
+#define PS2_CLK 12 //17
+// 舵机引脚
+#define SERVO_PIN_1 9
+#define SERVO_PIN_2 8
 
 // // UNO 2.4g_tank 引脚
 // int leftMotor1 = 4; // 左边轮子
