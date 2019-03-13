@@ -304,3 +304,111 @@ void MRUN::tank(int y, int x)
     }
   }
 }
+
+void MRUN::tank_v2(int y, int x)
+{
+  Serial.print(" tank_v2_1:");
+  Serial.print(y);
+  Serial.print(" tank_v2_2:");
+  Serial.print(x);
+
+  if (_Y_MAX == 0 && _Y_MIN == 0 && _X_MAX == 0 && _X_MIN == 0)
+  {
+    one(y, _m1, _m2);
+    one(x, _m3, _m4);
+    return;
+  }
+
+  y = constrain(y, _Y_MIN, _Y_MAX);
+  x = constrain(x, _X_MIN, _X_MAX);
+
+  if (x > (_X_MID + _SILL)) // 右拉 right >
+  {
+    _LR = map(x, _X_MID + _SILL, _X_MAX, START_SPEED, MAX_SPEED);
+  }
+  else if (x < (_X_MID - _SILL)) // 左拉 left <
+  {
+    _LR = map(x, _X_MID - _SILL, _X_MIN, -START_SPEED, -MAX_SPEED);
+  }
+  else
+  { // 回中
+    _LR = 0;
+  }
+
+  if (y > (_Y_MID + _SILL)) // 上拉 up ^
+  {
+    _RUN_SPEED = map(y, _Y_MID + _SILL, _Y_MAX, START_SPEED, MAX_SPEED);
+  }
+  else if (y < (_Y_MID - _SILL)) // 下拉 down v
+  {
+    _RUN_SPEED = map(y, _Y_MID - _SILL, _Y_MIN, -START_SPEED, -MAX_SPEED);
+  }
+  else
+  { // 回中
+    _RUN_SPEED = 0;
+  }
+
+  // 粘滞器
+  if (_LR != 0 && _RUN_SPEED != 0)
+  {
+    if (_RUN_SPEED > 0)
+    {
+      if (_tmp_RUN_SPEED == 0)
+      {
+        _tmp_RUN_SPEED = _RUN_SPEED;
+      }
+    }
+    else
+    {
+      if (_tmp_RUN_SPEED == 0)
+      {
+        _tmp_RUN_SPEED = -_RUN_SPEED;
+      }
+    }
+  }
+  else if (_LR == 0 && _RUN_SPEED == 0)
+  {
+    _tmp_RUN_SPEED = 0;
+  }
+
+  if (_tmp_RUN_SPEED == 0)
+  {
+    if (_RUN_SPEED == 0 && _LR != 0) // 原地左右
+    {
+      two(_LR, -_LR);
+    }
+    else if (_RUN_SPEED != 0 && _LR == 0) // 原地前后
+    {
+      two(_RUN_SPEED, _RUN_SPEED);
+    }
+    else // 都为0，停止
+    {
+      two(0, 0);
+    }
+  }
+  else // 粘滞中
+  {
+    if (_tmp_RUN_SPEED > 0) // 前粘滞
+    {
+      if (_LR > 0) // 粘滞右
+      {
+        two(_tmp_RUN_SPEED, constrain(map(y, _Y_MID, _Y_MAX, 0, MAX_SPEED), 0, _tmp_RUN_SPEED));
+      }
+      else // 粘滞左
+      {
+        two(constrain(map(y, _Y_MID, _Y_MAX, 0, MAX_SPEED), 0, _tmp_RUN_SPEED), _tmp_RUN_SPEED);
+      }
+    }
+    else // 后粘滞
+    {
+      if (_LR > 0) // 粘滞右
+      {
+        two(_tmp_RUN_SPEED, constrain(map(y, _Y_MID, _Y_MAX, -MAX_SPEED, 0), 0, _tmp_RUN_SPEED));
+      }
+      else // 粘滞左
+      {
+        two(constrain(map(y, _Y_MID, _Y_MAX, -MAX_SPEED, 0), 0, _tmp_RUN_SPEED), _tmp_RUN_SPEED);
+      }
+    }
+  }
+}

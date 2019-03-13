@@ -21,6 +21,7 @@ public:
   void two(int a=0,int b=0);
   void car(int y=0,int x=0);
   void tank(int y=0,int x=0);
+  void tank_v2(int y=0,int x=0);
 
 private:
   int _m1;
@@ -38,6 +39,8 @@ private:
 
   int _RUN_SPEED;  // 电机前进值
   int _LR;  // 电机左右值
+  int _tmp_RUN_SPEED;  // 前后粘滞值
+  // int _tmp_LR;  // 左右粘滞值
 };
 
 #endif

@@ -20,19 +20,19 @@
 Servo myservo1;    // 创建舵机对象
 Servo myservo2;    // 创建舵机对象
 
-// // NODEMCU版本引脚
-// int leftMotor1 = D5; // 前后轮子
-// int leftMotor2 = D6;
-// int rightMotor1 = D7; // 左右轮子
-// int rightMotor2 = D8;
-// // 接收机引脚
-// #define PS2_DAT D1 //14
-// #define PS2_CMD D2 //15
-// #define PS2_CS D3  //16
-// #define PS2_CLK D4 //17
-// // 舵机引脚
-// #define SERVO_PIN_1 16
-// #define SERVO_PIN_2 3
+// NODEMCU版本引脚
+int leftMotor1 = D5; // 前后轮子
+int leftMotor2 = D6;
+int rightMotor1 = D7; // 左右轮子
+int rightMotor2 = D8;
+// 接收机引脚
+#define PS2_DAT D1 //14
+#define PS2_CMD D2 //15
+#define PS2_CS D3  //16
+#define PS2_CLK D4 //17
+// 舵机引脚
+#define SERVO_PIN_1 16
+#define SERVO_PIN_2 3
 
 // PS2X摇杆
 int Y_MAX = 255;
@@ -58,19 +58,19 @@ int lx;
 // #define PS2_CS D11  //16
 // #define PS2_CLK D10 //17
 
-// UNO版本引脚
-int leftMotor1 = 2; // 左边轮子
-int leftMotor2 = 3;
-int rightMotor1 = 4; // 右边轮子
-int rightMotor2 = 5;
-// 接收机引脚
-#define PS2_DAT 13 //14
-#define PS2_CMD 11 //15
-#define PS2_CS 10  //16
-#define PS2_CLK 12 //17
-// 舵机引脚
-#define SERVO_PIN_1 9
-#define SERVO_PIN_2 8
+// // UNO版本引脚
+// int leftMotor1 = 2; // 左边轮子
+// int leftMotor2 = 3;
+// int rightMotor1 = 4; // 右边轮子
+// int rightMotor2 = 5;
+// // 接收机引脚
+// #define PS2_DAT 13 //14
+// #define PS2_CMD 11 //15
+// #define PS2_CS 10  //16
+// #define PS2_CLK 12 //17
+// // 舵机引脚
+// #define SERVO_PIN_1 9
+// #define SERVO_PIN_2 8
 
 // // UNO 2.4g_tank 引脚
 // int leftMotor1 = 4; // 左边轮子
@@ -200,7 +200,7 @@ void setup()
     pinMode(rightMotor2, OUTPUT);
 
     // 舵机引脚初始化
-    myservo1.attach(SERVO_PIN_1);
+    // myservo1.attach(SERVO_PIN_1);
     myservo2.attach(SERVO_PIN_2);
 
     mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
@@ -438,7 +438,6 @@ void loop()
 
     // RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, MAX_SPEED, -MAX_SPEED);
 
-
     // 上按键控制舵机，L1 R1
     if (ps2x.Button(PSB_R1)) // 右
     {
@@ -462,8 +461,6 @@ void loop()
         myservo2.write(0);
     }
 
-
-
     if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放
     {
         if (TANK_MOD)
@@ -476,7 +473,17 @@ void loop()
         {
             RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, 255, 0);
             LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 0, 255);
-            mrun.tank(RUN_SPEED, LR);
+
+            if (RUN_SPEED == 128 && LR == 128) // R摇杆不在控制
+            {
+                RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 255, 0);
+                LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 0, 255);
+                mrun.tank_v2(RUN_SPEED, LR);
+            }
+            else
+            {
+                mrun.tank(RUN_SPEED, LR);
+            }
 
             // // 舵机start
             // lx = map(constrain((int)ps2x.Analog(PSS_LX), 0, 254), 0, 254, 0, 254);
