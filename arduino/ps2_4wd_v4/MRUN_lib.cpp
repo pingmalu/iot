@@ -362,7 +362,7 @@ void MRUN::tank_v2(int y, int x)
     {
       if (_tmp_RUN_SPEED == 0)
       {
-        _tmp_RUN_SPEED = -_RUN_SPEED;
+        _tmp_RUN_SPEED = _RUN_SPEED;
       }
     }
   }
@@ -392,22 +392,22 @@ void MRUN::tank_v2(int y, int x)
     {
       if (_LR > 0) // 粘滞右
       {
-        two(_tmp_RUN_SPEED, constrain(map(y, _Y_MID, _Y_MAX, 0, MAX_SPEED), 0, _tmp_RUN_SPEED));
+        two(_tmp_RUN_SPEED, constrain(map(y, _Y_MIN, _Y_MAX, 0, MAX_SPEED), 0, _tmp_RUN_SPEED));
       }
-      else // 粘滞左
+      else if (_LR < 0) // 粘滞左
       {
-        two(constrain(map(y, _Y_MID, _Y_MAX, 0, MAX_SPEED), 0, _tmp_RUN_SPEED), _tmp_RUN_SPEED);
+        two(constrain(map(y, _Y_MIN, _Y_MAX, 0, MAX_SPEED), 0, _tmp_RUN_SPEED), _tmp_RUN_SPEED);
       }
     }
     else // 后粘滞
     {
       if (_LR > 0) // 粘滞右
       {
-        two(_tmp_RUN_SPEED, constrain(map(y, _Y_MID, _Y_MAX, -MAX_SPEED, 0), 0, _tmp_RUN_SPEED));
+        two(_tmp_RUN_SPEED, -constrain(map(y, _Y_MIN, _Y_MAX, MAX_SPEED, 0), 0, -_tmp_RUN_SPEED));
       }
-      else // 粘滞左
+      else if (_LR < 0) // 粘滞左
       {
-        two(constrain(map(y, _Y_MID, _Y_MAX, -MAX_SPEED, 0), 0, _tmp_RUN_SPEED), _tmp_RUN_SPEED);
+        two(-constrain(map(y, _Y_MIN, _Y_MAX, MAX_SPEED, 0), 0, -_tmp_RUN_SPEED), _tmp_RUN_SPEED);
       }
     }
   }
