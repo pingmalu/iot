@@ -184,7 +184,7 @@ void setup()
             Serial.print(" uptime:");
             Serial.print(millis());
             Serial.print(" ");
-            if (millis() > 60000) // 启动时检测不到手柄连接器，超过60秒，进入睡眠
+            if (millis() > 600000) // 启动时检测不到手柄连接器，超过600秒，进入睡眠
             {
                 go_poweroff();
             }
