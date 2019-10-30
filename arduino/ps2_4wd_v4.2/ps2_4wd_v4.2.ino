@@ -235,6 +235,15 @@ void loop()
     {
         Serial.println("PSB_SELECT Button Released!");
         TANK_MOD = TANK_MOD ? false : true;
+        if (TANK_MOD)
+        {
+            mrun.tank_v2(138, 138);
+            delay(200);
+            mrun.tank_v2(128, 128);
+            delay(200);
+            mrun.tank_v2(138, 138);
+            delay(200);
+        }
     }
 
     if (ps2x.Button(PSB_START)) //will be TRUE as long as button is pressed
