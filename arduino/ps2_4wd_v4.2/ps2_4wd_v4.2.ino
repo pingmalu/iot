@@ -481,7 +481,17 @@ void loop()
                 // RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 255, 0);
                 // LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 0, 255);
                 // mrun.tank_v2(RUN_SPEED, LR);
-                RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 150, 0);
+
+                // 摇杆中位时舵机打到150度,上下都可控制
+                int LYnum = constrain((int)ps2x.Analog(PSS_LY), 0, 255);
+                if (LYnum < Y_MID)
+                {
+                    RUN_SPEED = map(LYnum, Y_MID, 0, 150, 0);
+                }
+                else
+                {
+                    RUN_SPEED = map(LYnum, Y_MID, 255, 150, 0);
+                }
                 LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 0, 180);
                 myservo1.write(RUN_SPEED);
                 myservo2.write(LR);
