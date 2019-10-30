@@ -476,9 +476,13 @@ void loop()
 
             if (RUN_SPEED == 128 && LR == 128) // R摇杆不在控制
             {
-                RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 255, 0);
-                LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 0, 255);
-                mrun.tank_v2(RUN_SPEED, LR);
+                // RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 255, 0);
+                // LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 0, 255);
+                // mrun.tank_v2(RUN_SPEED, LR);
+                RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 180, 0);
+                LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 0, 180);
+                myservo1.write(RUN_SPEED);
+                myservo2.write(LR);
             }
             else
             {
