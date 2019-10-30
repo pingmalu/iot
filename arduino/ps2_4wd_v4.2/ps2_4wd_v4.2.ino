@@ -442,23 +442,23 @@ void loop()
     if (ps2x.Button(PSB_R1)) // 右
     {
         Serial.println("PSB_R1 pressed");
-        myservo1.write(0);
+        // myservo1.write(0);
     }
     else if (ps2x.ButtonReleased(PSB_R1))
     {
         Serial.println("PSB_R1 Button Released!");
-        myservo1.write(180);
+        // myservo1.write(180);
     }
 
     if (ps2x.Button(PSB_L1)) // 左
     {
         Serial.println("PSB_L1 pressed");
-        myservo2.write(180);
+        // myservo2.write(180);
     }
     else if (ps2x.ButtonReleased(PSB_L1))
     {
         Serial.println("PSB_L1 Button Released!");
-        myservo2.write(0);
+        // myservo2.write(0);
     }
 
     if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放
@@ -471,18 +471,21 @@ void loop()
         }
         else
         {
+            // 右摇杆
             RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, 255, 0);
             LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 0, 255);
 
             if (RUN_SPEED == 128 && LR == 128) // R摇杆不在控制
             {
+                // 左摇杆
                 // RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 255, 0);
                 // LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 0, 255);
                 // mrun.tank_v2(RUN_SPEED, LR);
-                RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 180, 0);
+                RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 150, 0);
                 LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 0, 180);
                 myservo1.write(RUN_SPEED);
                 myservo2.write(LR);
+                mrun.tank_v2(Y_MID, X_MID);
             }
             else
             {
