@@ -35,13 +35,14 @@ void MRUN::config(int m1, int m2, int m3, int m4, int Y_MAX, int Y_MID, int Y_MI
   _X_MID = X_MID;
   _X_MIN = X_MIN;
   _SILL = SILL;
+  MAX_RUN_SPEED = MAX_SPEED;
   Serial.println(" config OK");
 }
 
 void MRUN::one(int v, int M1, int M2)
 {
   int v_abs = abs(v);
-  v_abs = constrain(v_abs, 0, MAX_SPEED);
+  v_abs = constrain(v_abs, 0, MAX_RUN_SPEED);
   if (v_abs < START_SPEED) // 小于启动速度，不要发送PWM
   {
     digitalWrite(M1, LOW);
@@ -58,7 +59,7 @@ void MRUN::one(int v, int M1, int M2)
   else if (v < 0)
   {
     digitalWrite(M1, HIGH);
-    analogWrite(M2, MAX_SPEED - v_abs);
+    analogWrite(M2, MAX_RUN_SPEED - v_abs);
     Serial.print(" one:");
     Serial.print(-v_abs);
   }

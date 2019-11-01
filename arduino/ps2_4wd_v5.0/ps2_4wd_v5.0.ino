@@ -117,7 +117,6 @@ MRUN mrun;
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
-int RUN_MAX_SPEED = MAX_SPEED;  // 推进最大速度
 
 unsigned long starttime;
 unsigned long looptime;
@@ -177,6 +176,9 @@ void setup()
     myservo2.attach(SERVO_PIN_2);
 
     mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
+
+    // 初始最大速度
+    mrun.MAX_RUN_SPEED = 150;
 
     starttime = millis();
 
@@ -318,23 +320,23 @@ void loop()
     if (ps2x.Button(PSB_R1)) // 右
     {
         Serial.println("PSB_R1 pressed");
-        // myservo1.write(0);
+        mrun.MAX_RUN_SPEED = 255;  // 加速
     }
     else if (ps2x.ButtonReleased(PSB_R1))
     {
         Serial.println("PSB_R1 Button Released!");
-        // myservo1.write(180);
+        mrun.MAX_RUN_SPEED = 150;  // 加速释放
     }
 
     if (ps2x.Button(PSB_L1)) // 左
     {
         Serial.println("PSB_L1 pressed");
-        // myservo2.write(180);
+        mrun.MAX_RUN_SPEED = 255;  // 加速
     }
     else if (ps2x.ButtonReleased(PSB_L1))
     {
         Serial.println("PSB_L1 Button Released!");
-        // myservo2.write(0);
+        mrun.MAX_RUN_SPEED = 150;  // 加速释放
     }
 
     if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放
