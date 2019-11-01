@@ -93,7 +93,6 @@ int lx;
 #define TURNRIGHT 4
 
 // 全局驾驶变量
-int RUNCMD = 0;
 bool TANK_MOD = true;
 
 /******************************************************************
@@ -119,6 +118,7 @@ MRUN mrun;
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
+// int START_TAG = 0;
 
 unsigned long starttime;
 unsigned long looptime;
@@ -144,7 +144,7 @@ void go_poweroff()
 
 void setup()
 {
-    Serial.begin(115200);
+    // Serial.begin(115200);
 
     int error = 0;
     do
@@ -180,7 +180,7 @@ void setup()
     mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
 
     // 初始最大速度
-    mrun.MAX_RUN_SPEED = 150;
+    mrun.MAX_RUN_SPEED = 250;
 
     starttime = millis();
 
@@ -201,11 +201,21 @@ void setup()
 
 void loop()
 {
+    ps2x.read_gamepad(); //read controller and set large motor to spin at 'vibrate' speed
+
+    // if (ps2x.Button(PSB_START)){ 
+    //     Serial.println("Start is being held");
+    //     START_TAG = 1;
+    // }
+
+    // if(START_TAG == 0){
+    //     delay(10);
+    //     return;
+    // }
+
     // 速度初始化
     RUN_SPEED = STOP;
     LR = STOP;
-
-    ps2x.read_gamepad(false, 0); //read controller and set large motor to spin at 'vibrate' speed
 
     // SELECT 切换坦克模式
     if (ps2x.ButtonReleased(PSB_SELECT))
@@ -223,10 +233,10 @@ void loop()
         }
     }
 
-    if (ps2x.Button(PSB_START)) //will be TRUE as long as button is pressed
-        Serial.println("Start is being held");
     if (ps2x.Button(PSB_SELECT))
         Serial.println("Select is being held");
+    if (ps2x.Button(PSB_START))
+        Serial.println("PSB_START is being held");
 
     // 左边按键群
     if (ps2x.Button(PSB_PAD_UP))
@@ -318,27 +328,70 @@ void loop()
         LR = STOP;
     }
 
-    // 上按键控制舵机，L1 R1
+    // 上按键加速，R1,L1
     if (ps2x.Button(PSB_R1)) // 右
     {
         Serial.println("PSB_R1 pressed");
-        mrun.MAX_RUN_SPEED = 255;  // 加速
+        mrun.MAX_RUN_SPEED = 512; // 加速
     }
     else if (ps2x.ButtonReleased(PSB_R1))
     {
         Serial.println("PSB_R1 Button Released!");
-        mrun.MAX_RUN_SPEED = 150;  // 加速释放
+        mrun.MAX_RUN_SPEED = 250; // 加速释放
     }
 
     if (ps2x.Button(PSB_L1)) // 左
     {
         Serial.println("PSB_L1 pressed");
-        mrun.MAX_RUN_SPEED = 255;  // 加速
+        mrun.MAX_RUN_SPEED = 200;
     }
     else if (ps2x.ButtonReleased(PSB_L1))
     {
         Serial.println("PSB_L1 Button Released!");
-        mrun.MAX_RUN_SPEED = 150;  // 加速释放
+        mrun.MAX_RUN_SPEED = 250; // 加速释放
+    }
+
+    // 上按键加速，R2,L2
+    if (ps2x.Button(PSB_R2)) // 右
+    {
+        Serial.println("PSB_R2 pressed");
+        mrun.MAX_RUN_SPEED = 1023; // 加速
+    }
+    else if (ps2x.ButtonReleased(PSB_R2))
+    {
+        Serial.println("PSB_R2 Button Released!");
+        mrun.MAX_RUN_SPEED = 250; // 加速释放
+    }
+
+    if (ps2x.Button(PSB_L2)) // 左
+    {
+        Serial.println("PSB_L2 pressed");
+        mrun.MAX_RUN_SPEED = 1023; // 加速
+    }
+    else if (ps2x.ButtonReleased(PSB_L2))
+    {
+        Serial.println("PSB_L2 Button Released!");
+        mrun.MAX_RUN_SPEED = 250; // 加速释放
+    }
+
+    // 快速旋转1s
+    if (ps2x.ButtonReleased(PSB_L3))
+    {
+        Serial.println("PSB_L3 Button Released!");
+        mrun.MAX_RUN_SPEED = 512;
+        int tmp_speed = 255;
+        mrun.two(-tmp_speed, tmp_speed);
+        delay(300);
+        return;
+    }
+    if (ps2x.ButtonReleased(PSB_R3))
+    {
+        Serial.println("PSB_R3 Button Released!");
+        mrun.MAX_RUN_SPEED = 1023;
+        int tmp_speed = 255;
+        mrun.two(tmp_speed, -tmp_speed);
+        delay(300);
+        return;
     }
 
     if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放

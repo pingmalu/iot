@@ -59,7 +59,7 @@ void MRUN::one(int v, int M1, int M2)
   else if (v < 0)
   {
     digitalWrite(M1, HIGH);
-    analogWrite(M2, MAX_RUN_SPEED - v_abs);
+    analogWrite(M2, MAX_SPEED - v_abs);
     Serial.print(" one:");
     Serial.print(-v_abs);
   }
