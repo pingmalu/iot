@@ -3,9 +3,10 @@
  * 4.2版本加入舵机摇杆控制
  * 4.3版本加入坦克模式切换蜂鸣模拟
  * 5.0版本修改MRUN库，增加最大速度控制
+ * 5.1版本专门适配迷你四轮驱动小车n20电机驱动
  * BY: Malu
  * https://malu.me
- * 2019.11.01
+ * 2019.11.09
  */
 
 #ifndef ESP8266
@@ -43,7 +44,7 @@ int Y_MIN = 0;
 int X_MAX = 255;
 int X_MID = 128;
 int X_MIN = 0;
-int SILL = 5; // 偏移阈值
+int SILL = 6; // 偏移阈值
 
 // 舵机角度值
 int lx;
@@ -180,7 +181,7 @@ void setup()
     mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
 
     // 初始最大速度
-    mrun.MAX_RUN_SPEED = 512;
+    mrun.MAX_RUN_SPEED = 256;
 
     starttime = millis();
 
@@ -224,11 +225,11 @@ void loop()
         TANK_MOD = TANK_MOD ? false : true;
         if (TANK_MOD)
         {
-            mrun.tank_v2(138, 138);
+            mrun.tank_v2(133, 133);
             delay(100);
             mrun.tank_v2(128, 128);
             delay(100);
-            mrun.tank_v2(138, 138);
+            mrun.tank_v2(133, 133);
             delay(100);
         }
     }
@@ -369,12 +370,12 @@ void loop()
     if (ps2x.Button(PSB_R2)) // 右
     {
         Serial.println("PSB_R2 pressed");
-        mrun.MAX_RUN_SPEED = 1023; // 加速
+        mrun.MAX_RUN_SPEED = 512; // 加速
     }
     else if (ps2x.ButtonReleased(PSB_R2))
     {
         Serial.println("PSB_R2 Button Released!");
-        mrun.MAX_RUN_SPEED = 512; // 加速释放
+        mrun.MAX_RUN_SPEED = 256; // 加速释放
     }
 
     if (ps2x.Button(PSB_L2)) // 左
@@ -385,7 +386,7 @@ void loop()
     else if (ps2x.ButtonReleased(PSB_L2))
     {
         Serial.println("PSB_L2 Button Released!");
-        mrun.MAX_RUN_SPEED = 512; // 加速释放
+        mrun.MAX_RUN_SPEED = 256; // 加速释放
     }
 
     // // 快速旋转1s
