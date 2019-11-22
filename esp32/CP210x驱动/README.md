@@ -1,0 +1,3 @@
+# 请使用 CP210x_Windows_Drivers_with_Serial_Enumeration.7z
+
+解压后点击 CP210xVCPInstaller_x64.exe 安装
