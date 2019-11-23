@@ -4,9 +4,10 @@
  * 4.3版本加入坦克模式切换蜂鸣模拟
  * 5.0版本修改MRUN库，增加最大速度控制
  * 5.1版本专门适配迷你四轮驱动小车n20电机驱动
+ * 5.2版本专门适配mg996舵机四轮驱动大车，推土机
  * BY: Malu
  * https://malu.me
- * 2019.11.09
+ * 2019.11.23
  */
 
 #ifndef ESP8266
@@ -181,7 +182,7 @@ void setup()
     mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
 
     // 初始最大速度
-    mrun.MAX_RUN_SPEED = 256;
+    mrun.MAX_RUN_SPEED = 512;
 
     starttime = millis();
 
@@ -370,12 +371,12 @@ void loop()
     if (ps2x.Button(PSB_R2)) // 右
     {
         Serial.println("PSB_R2 pressed");
-        mrun.MAX_RUN_SPEED = 512; // 加速
+        mrun.MAX_RUN_SPEED = 1023; // 加速
     }
     else if (ps2x.ButtonReleased(PSB_R2))
     {
         Serial.println("PSB_R2 Button Released!");
-        mrun.MAX_RUN_SPEED = 256; // 加速释放
+        mrun.MAX_RUN_SPEED = 512; // 加速释放
     }
 
     if (ps2x.Button(PSB_L2)) // 左
@@ -386,7 +387,7 @@ void loop()
     else if (ps2x.ButtonReleased(PSB_L2))
     {
         Serial.println("PSB_L2 Button Released!");
-        mrun.MAX_RUN_SPEED = 256; // 加速释放
+        mrun.MAX_RUN_SPEED = 512; // 加速释放
     }
 
     // // 快速旋转1s
