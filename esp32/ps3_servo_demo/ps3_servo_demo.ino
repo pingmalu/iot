@@ -132,11 +132,13 @@ void notify()
             SVO4--;
     }
 
-    delay(10);
+    // delay(15);
     myservo1.write(SVO1);
-    myservo2.write(SVO2);
-    myservo3.write(SVO3);
-    myservo4.write(SVO4);
+    myservo2.write(pr(Ps3.data.analog.stick.lx));
+    myservo3.write(pr(Ps3.data.analog.stick.ly));
+    myservo4.write(pr(Ps3.data.analog.stick.ry));
+    // myservo3.write(SVO3);
+    // myservo4.write(SVO4);
 
     Serial.print(" ( ");
     Serial.print(SVO2);
