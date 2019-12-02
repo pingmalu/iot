@@ -32,9 +32,9 @@
 /* Comment this out to disable prints and save space */
 #define BLYNK_PRINT Serial
 
-
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
+#include <Servo.h>
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
@@ -45,10 +45,61 @@ char auth[] = "qhDFWGZdcFk63Abua5V1aOJB7i02zLtI";
 char ssid[] = "16988";
 char pass[] = "bric16988";
 
+Servo myservo1;
+Servo myservo2;
+Servo myservo3;
+Servo myservo4;
+
+int16_t SVO1 = 90;
+int16_t SVO2 = 90;
+int16_t SVO3 = 90;
+int16_t SVO4 = 90;
+
+int16_t pr1024(int16_t val)
+{
+  val = map(val, 0, 1023, 0, 180);
+  Serial.print(" [");
+  Serial.print(val);
+  Serial.print("]");
+  return val;
+}
+
+BLYNK_WRITE(V1)
+{
+  int x = param[0].asInt();
+  int y = param[1].asInt();
+
+  // Do something with x and y
+  Serial.print("X = ");
+  Serial.print(x);
+  Serial.print("; Y = ");
+  Serial.println(y);
+
+  myservo1.write(pr1024(x));
+}
+
+BLYNK_WRITE(V2)
+{
+  int x = param[0].asInt();
+  int y = param[1].asInt();
+
+  // Do something with x and y
+  Serial.print("X = ");
+  Serial.print(x);
+  Serial.print("; Y = ");
+  Serial.println(y);
+
+  myservo2.write(pr1024(x));
+}
+
 void setup()
 {
   // Debug console
   Serial.begin(9600);
+  myservo1.attach(16);
+  myservo2.attach(5);
+  myservo3.attach(4);
+  myservo4.attach(0);
 
   Blynk.begin(auth, ssid, pass);
 }
