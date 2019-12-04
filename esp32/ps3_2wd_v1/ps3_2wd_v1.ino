@@ -166,13 +166,6 @@ void setup()
     Ps3.attach(notify);
     Ps3.begin("00:1a:7d:da:71:13");
 
-    //setup channel 0 with frequency 312500 Hz
-    sigmaDeltaSetup(0, 312500);
-    //attach pin 18 to channel 0
-    sigmaDeltaAttachPin(leftMotor1, 0);
-    //initialize channel 0 to off
-    sigmaDeltaWrite(0, 0);
-
     // 电机驱动引脚初始化
     pinMode(leftMotor1, OUTPUT);
     pinMode(leftMotor2, OUTPUT);

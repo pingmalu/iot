@@ -5,11 +5,11 @@
 #ifndef MRUN_lib_h
 #define MRUN_lib_h
 
-#if ARDUINO > 22
+// #if ARDUINO > 22
 #include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
+// #else
+// #include "WProgram.h"
+// #endif
 
 class MRUN
 {
