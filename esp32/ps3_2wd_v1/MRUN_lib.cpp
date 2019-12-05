@@ -42,14 +42,14 @@ void MRUN::one(int v, int M1, int M2)
   if (v > 0)
   {
     digitalWrite(M1, LOW);
-    analogWrite(M2, v_abs);
+    analogWrite(M2, v_abs, 1023);
     Serial.print(" one:");
     Serial.print(v_abs);
   }
   else if (v < 0)
   {
     digitalWrite(M1, HIGH);
-    analogWrite(M2, MAX_SPEED - v_abs);
+    analogWrite(M2, MAX_SPEED - v_abs, 1023);
     Serial.print(" one:");
     Serial.print(-v_abs);
   }

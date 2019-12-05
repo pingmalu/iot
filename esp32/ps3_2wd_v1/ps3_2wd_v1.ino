@@ -16,17 +16,17 @@
 #include <Ps3Controller.h>
 
 // esp32-cam引脚
-int leftMotor1 = 4; // 前后轮子
-int leftMotor2 = 2;
+int leftMotor1 = 12; // 前后轮子
+int leftMotor2 = 13;
 int rightMotor1 = 14; // 左右轮子
 int rightMotor2 = 15;
 
 // PSx摇杆
 int Y_MAX = 255;
-int Y_MID = 128;
+int Y_MID = 127;
 int Y_MIN = 0;
 int X_MAX = 255;
-int X_MID = 128;
+int X_MID = 127;
 int X_MIN = 0;
 int SILL = 6; // 偏移阈值
 
@@ -108,7 +108,7 @@ void notify()
         RUN_SPEED = pr(Ps3.data.analog.stick.ry);
         LR = pr(Ps3.data.analog.stick.rx);
 
-        if (RUN_SPEED == 128 && LR == 128) // 右摇杆不在控制
+        if (RUN_SPEED == 127 && LR == 127) // 右摇杆不在控制
         {
             // 左摇杆
             RUN_SPEED = pr(Ps3.data.analog.stick.ly);
@@ -123,7 +123,7 @@ void notify()
     else
     {
         // 坦克坐标变换
-        if (LR < 0)
+        if (LR < STOP)
         {
             if (RUN_SPEED > STOP)
             {
@@ -138,7 +138,7 @@ void notify()
                 mrun.two(MAX_SPEED, -MAX_SPEED);
             }
         }
-        else if (LR > 0)
+        else if (LR > STOP)
         {
             if (RUN_SPEED > STOP)
             {
@@ -158,6 +158,7 @@ void notify()
             mrun.two(RUN_SPEED, RUN_SPEED);
         }
     }
+    Serial.print("\n");
 }
 
 void setup()
