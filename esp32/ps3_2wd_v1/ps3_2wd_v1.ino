@@ -16,10 +16,10 @@
 #include <Ps3Controller.h>
 
 // esp32-cam引脚
-int leftMotor1 = 12; // 前后轮子
-int leftMotor2 = 13;
-int rightMotor1 = 14; // 左右轮子
-int rightMotor2 = 15;
+int leftMotor1 = 36; // 前后轮子
+int leftMotor2 = 39;
+int rightMotor1 = 34; // 左右轮子
+int rightMotor2 = 35;
 
 // PSx摇杆
 int Y_MAX = 255;
@@ -31,14 +31,14 @@ int X_MIN = 0;
 int SILL = 6; // 偏移阈值
 
 // 舵机角度值
-int lx;
+// int lx;
 // int ly;
 
 // 驾驶定义
 #define STOP 0
 
 // 全局驾驶变量
-bool TANK_MOD = true;
+// bool TANK_MOD = true;
 
 MRUN mrun;
 
@@ -71,6 +71,8 @@ int16_t pr_f(int16_t val)
 
 void notify()
 {
+    ps3_debug();
+
     // 速度初始化
     RUN_SPEED = STOP;
     LR = STOP;
@@ -161,9 +163,92 @@ void notify()
     Serial.print("\n");
 }
 
+void ps3_debug()
+{
+    Serial.print(Ps3.data.status.battery);
+    Serial.print(" ");
+    Serial.print(Ps3.data.sensor.accelerometer.x);
+    Serial.print(" ");
+    Serial.print(Ps3.data.sensor.accelerometer.y);
+    Serial.print(" ");
+    Serial.print(Ps3.data.sensor.accelerometer.z);
+    Serial.print(" ");
+    Serial.print(Ps3.data.sensor.gyroscope.z);
+
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.cross);
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.square);
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.triangle);
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.circle);
+
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.button.cross);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.button.square);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.button.triangle);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.button.circle);
+
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.stick.lx);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.stick.ly);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.stick.rx);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.stick.ry);
+
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.up);
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.right);
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.down);
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.left);
+
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.button.up);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.button.right);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.button.down);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.button.left);
+
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.l1);
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.r1);
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.l2);
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.r2);
+
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.button.l1);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.button.r1);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.button.l2);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.button.r2);
+
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.select);
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.start);
+    Serial.print(" ");
+    Serial.print(Ps3.data.button.ps);
+}
+
 void setup()
 {
-    Serial.begin(115200);
+    Serial.begin(9600);
     Ps3.attach(notify);
     Ps3.begin("00:1a:7d:da:71:13");
 
