@@ -16,10 +16,10 @@
 #include <Ps3Controller.h>
 
 // esp32-cam引脚
-int leftMotor1 = 4; // 前后轮子
-int leftMotor2 = 2;
-int rightMotor1 = 14; // 左右轮子
-int rightMotor2 = 15;
+int leftMotor1 = 2; // 前后轮子
+int leftMotor2 = 4;
+int rightMotor1 = 16; // 左右轮子
+int rightMotor2 = 17;
 
 // PSx摇杆
 int Y_MAX = 255;
@@ -28,7 +28,7 @@ int Y_MIN = 0;
 int X_MAX = 255;
 int X_MID = 128;
 int X_MIN = 0;
-int SILL = 6; // 偏移阈值
+int SILL = 2; // 偏移阈值
 
 // 舵机角度值
 int lx;
@@ -71,6 +71,21 @@ int16_t pr_f(int16_t val)
 
 void notify()
 {
+    Serial.print(Ps3.data.status.battery);
+    Serial.print(" ");
+    Serial.print(Ps3.data.analog.stick.ry);
+    Serial.print(" ");
+    // 防止信号中断自动前进
+    // 4 -1  [128] [128] [128] [128] tank_v2_1:128 tank_v2_2:128 two_L:0 tow_R:0
+    // 20 -128  [255] [128] tank_L:255 tank_R:128 one:1023 one:1023 two_L:1023 tow_R:1023
+    if(Ps3.data.status.battery == 20)
+    {
+        mrun.two(STOP, STOP);
+        Serial.println();
+        return;
+    }
+
+
     // 速度初始化
     RUN_SPEED = STOP;
     LR = STOP;
@@ -91,11 +106,11 @@ void notify()
 
     if (Ps3.data.button.right == 1 || Ps3.data.button.circle == 1)
     {
-        LR = -MAX_SPEED;
+        LR = MAX_SPEED;
     }
     else if (Ps3.data.button.left == 1 || Ps3.data.button.square == 1)
     {
-        LR = MAX_SPEED;
+        LR = -MAX_SPEED;
     }
     else
     {
@@ -105,14 +120,14 @@ void notify()
     if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放
     {
         // 右摇杆
-        RUN_SPEED = pr(Ps3.data.analog.stick.ry);
-        LR = pr(Ps3.data.analog.stick.rx);
+        RUN_SPEED = pr_f(Ps3.data.analog.stick.ry);
+        LR = pr_f(Ps3.data.analog.stick.rx);
 
         if (RUN_SPEED == 128 && LR == 128) // 右摇杆不在控制
         {
             // 左摇杆
-            RUN_SPEED = pr(Ps3.data.analog.stick.ly);
-            LR = pr(Ps3.data.analog.stick.lx);
+            RUN_SPEED = pr_f(Ps3.data.analog.stick.ly);
+            LR = pr_f(Ps3.data.analog.stick.lx);
             mrun.tank_v2(RUN_SPEED, LR);
         }
         else
@@ -158,6 +173,8 @@ void notify()
             mrun.two(RUN_SPEED, RUN_SPEED);
         }
     }
+    Serial.println();
+    // delay(10);
 }
 
 void setup()
