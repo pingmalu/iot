@@ -23,22 +23,22 @@ int rightMotor2 = 17;
 
 // PSx摇杆
 int Y_MAX = 255;
-int Y_MID = 127;
+int Y_MID = 128;
 int Y_MIN = 0;
 int X_MAX = 255;
-int X_MID = 127;
+int X_MID = 128;
 int X_MIN = 0;
 int SILL = 2; // 偏移阈值
 
 // 舵机角度值
-// int lx;
+int lx;
 // int ly;
 
 // 驾驶定义
 #define STOP 0
 
 // 全局驾驶变量
-// bool TANK_MOD = true;
+bool TANK_MOD = true;
 
 MRUN mrun;
 
@@ -123,7 +123,7 @@ void notify()
         RUN_SPEED = pr_f(Ps3.data.analog.stick.ry);
         LR = pr_f(Ps3.data.analog.stick.rx);
 
-        if (RUN_SPEED == 127 && LR == 127) // 右摇杆不在控制
+        if (RUN_SPEED == 128 && LR == 128) // 右摇杆不在控制
         {
             // 左摇杆
             RUN_SPEED = pr_f(Ps3.data.analog.stick.ly);
@@ -138,7 +138,7 @@ void notify()
     else
     {
         // 坦克坐标变换
-        if (LR < STOP)
+        if (LR < 0)
         {
             if (RUN_SPEED > STOP)
             {
@@ -153,7 +153,7 @@ void notify()
                 mrun.two(MAX_SPEED, -MAX_SPEED);
             }
         }
-        else if (LR > STOP)
+        else if (LR > 0)
         {
             if (RUN_SPEED > STOP)
             {
@@ -179,7 +179,7 @@ void notify()
 
 void setup()
 {
-    Serial.begin(9600);
+    Serial.begin(115200);
     Ps3.attach(notify);
     Ps3.begin("00:1a:7d:da:71:13");
 
