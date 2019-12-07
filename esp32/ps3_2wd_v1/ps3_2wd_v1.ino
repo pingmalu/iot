@@ -71,6 +71,7 @@ int16_t pr_f(int16_t val)
 
 void notify()
 {
+    Ps3.setLed(2);
     Serial.print(Ps3.data.status.battery);
     Serial.print(" ");
     Serial.print(Ps3.data.analog.stick.ry);
@@ -78,13 +79,28 @@ void notify()
     // 防止信号中断自动前进
     // 4 -1  [128] [128] [128] [128] tank_v2_1:128 tank_v2_2:128 two_L:0 tow_R:0
     // 20 -128  [255] [128] tank_L:255 tank_R:128 one:1023 one:1023 two_L:1023 tow_R:1023
-    if(Ps3.data.status.battery == 20)
+    if (Ps3.data.status.battery == 20)
     {
         mrun.two(STOP, STOP);
         Serial.println();
         return;
     }
 
+    // 手柄震动
+    if (Ps3.data.button.l1 == 1)
+    {
+        ps3_cmd_t cmd;
+
+        cmd.led1 = true;
+
+        cmd.rumble_left_intensity = 0xff;
+        cmd.rumble_right_intensity = 0xff;
+
+        cmd.rumble_right_duration = 100;
+        cmd.rumble_left_duration = 100;
+
+        ps3Cmd(cmd);
+    }
 
     // 速度初始化
     RUN_SPEED = STOP;
