@@ -14,6 +14,16 @@
 
 #include "MRUN_lib.h"
 #include <Ps3Controller.h>
+#include <Servo.h>
+Servo myservolno;
+Servo myservorno;
+Servo myservo1;
+Servo myservo2;
+Servo myservo3;
+// 舵机引脚
+int SPIN_1 = 5;
+int SPIN_2 = 18;
+int SPIN_3 = 19;
 
 // esp32-cam引脚
 int leftMotor1 = 2; // 前后轮子
@@ -30,10 +40,6 @@ int X_MID = 128;
 int X_MIN = 0;
 int SILL = 2; // 偏移阈值
 
-// 舵机角度值
-int lx;
-// int ly;
-
 // 驾驶定义
 #define STOP 0
 
@@ -42,14 +48,11 @@ bool TANK_MOD = true;
 
 MRUN mrun;
 
-// byte type = 0;
-
 // analogWrite(pin, value)  UNO:0-255  D1 ESP8266:0-1023
 #define MAX_SPEED 1023
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
-// int START_TAG = 0;
 
 int pr(int16_t val)
 {
@@ -66,6 +69,15 @@ int16_t pr_f(int16_t val)
     Serial.print(" [");
     Serial.print(val);
     Serial.print("]");
+    return val;
+}
+
+int16_t pr180(int16_t val)
+{
+    val = map(val, -128, 127, 0, 180);
+    Serial.print(" (");
+    Serial.print(val);
+    Serial.print(")");
     return val;
 }
 
@@ -100,6 +112,16 @@ void notify()
         cmd.rumble_left_duration = 100;
 
         ps3Cmd(cmd);
+    }
+
+    // 舵机2
+    if (Ps3.data.button.r1 == 1)
+    {
+        myservo2.write(180);
+    }
+    else
+    {
+        myservo2.write(0);
     }
 
     // 速度初始化
@@ -142,9 +164,15 @@ void notify()
         if (RUN_SPEED == 128 && LR == 128) // 右摇杆不在控制
         {
             // 左摇杆
-            RUN_SPEED = pr_f(Ps3.data.analog.stick.ly);
-            LR = pr_f(Ps3.data.analog.stick.lx);
-            mrun.tank_v2(RUN_SPEED, LR);
+            // RUN_SPEED = pr_f(Ps3.data.analog.stick.ly);
+            // LR = pr_f(Ps3.data.analog.stick.lx);
+            // mrun.tank_v2(RUN_SPEED, LR);
+            myservo1.write(pr180(Ps3.data.analog.stick.lx));
+            myservo3.write(pr180(Ps3.data.analog.stick.ly));
+            // maluservo(pr180(Ps3.data.analog.stick.lx), SPIN_1);
+            // delay(1);
+            // myservo3.write(pr180(Ps3.data.analog.stick.lx));
+            mrun.two(STOP, STOP);
         }
         else
         {
@@ -196,6 +224,13 @@ void notify()
 void setup()
 {
     Serial.begin(115200);
+
+    myservolno.attach(SPIN_1);
+    myservorno.attach(SPIN_1);
+    myservo1.attach(SPIN_1);
+    myservo2.attach(SPIN_2);
+    myservo3.attach(SPIN_3);
+
     Ps3.attach(notify);
     Ps3.begin("00:1a:7d:da:71:13");
 
