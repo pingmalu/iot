@@ -20,10 +20,15 @@ Servo myservorno;
 Servo myservo1;
 Servo myservo2;
 Servo myservo3;
+Servo myservo4;
 // 舵机引脚
 int SPIN_1 = 5;
 int SPIN_2 = 18;
 int SPIN_3 = 19;
+int SPIN_4 = 21;
+int16_t SVO2 = 90;
+int16_t SVO3 = 90;
+int16_t SVO4 = 90;
 
 // esp32-cam引脚
 int leftMotor1 = 2; // 前后轮子
@@ -121,7 +126,41 @@ void notify()
     }
     else
     {
-        myservo2.write(0);
+        myservo2.write(90);
+    }
+
+    // if (Ps3.data.analog.stick.lx > 50)
+    // {
+    //     if (SVO2 < 180)
+    //         SVO2++;
+    // }
+    // if (Ps3.data.analog.stick.lx < -50)
+    // {
+    //     if (SVO2 > 0)
+    //         SVO2--;
+    // }
+
+    // if (Ps3.data.analog.stick.ly > 50)
+    // {
+    //     if (SVO3 < 180)
+    //         SVO3++;
+    // }
+    // if (Ps3.data.analog.stick.ly < -50)
+    // {
+    //     if (SVO3 > 0)
+    //         SVO3--;
+    // }
+    // myservo1.write(SVO2);
+    // myservo3.write(SVO3);
+    myservo1.write(pr180(Ps3.data.analog.stick.lx));
+    // // Serial.print(Ps3.data.analog.button.r2);
+    if (Ps3.data.button.r2 == 1)
+    {
+        myservo4.write(pr180(Ps3.data.analog.stick.ly));
+    }
+    else
+    {
+        myservo3.write(pr180(Ps3.data.analog.stick.ly));
     }
 
     // 速度初始化
@@ -167,8 +206,7 @@ void notify()
             // RUN_SPEED = pr_f(Ps3.data.analog.stick.ly);
             // LR = pr_f(Ps3.data.analog.stick.lx);
             // mrun.tank_v2(RUN_SPEED, LR);
-            myservo1.write(pr180(Ps3.data.analog.stick.lx));
-            myservo3.write(pr180(Ps3.data.analog.stick.ly));
+
             // maluservo(pr180(Ps3.data.analog.stick.lx), SPIN_1);
             // delay(1);
             // myservo3.write(pr180(Ps3.data.analog.stick.lx));
@@ -230,6 +268,7 @@ void setup()
     myservo1.attach(SPIN_1);
     myservo2.attach(SPIN_2);
     myservo3.attach(SPIN_3);
+    myservo4.attach(SPIN_4);
 
     Ps3.attach(notify);
     Ps3.begin("00:1a:7d:da:71:13");
