@@ -178,7 +178,7 @@ void setup()
 
     Serial.begin(115200);
     Ps3.attach(notify);
-    Ps3.begin("00:1a:7d:da:71:13");
+    Ps3.begin("FF:87:E0:A6:AC:05");
 }
 
 void loop()
