@@ -26,6 +26,7 @@ int SPIN_1 = 5;
 int SPIN_2 = 18;
 int SPIN_3 = 19;
 int SPIN_4 = 21;
+int16_t SVO1 = 90;
 int16_t SVO2 = 90;
 int16_t SVO3 = 90;
 int16_t SVO4 = 90;
@@ -50,6 +51,8 @@ int SILL = 2; // 偏移阈值
 
 // 全局驾驶变量
 bool TANK_MOD = true;
+bool LED_MOD = true;
+int LED_MOD_NUM = 0;
 
 MRUN mrun;
 
@@ -104,7 +107,7 @@ void notify()
     }
 
     // 手柄震动
-    if (Ps3.data.button.l1 == 1)
+    if (Ps3.data.button.start == 1)
     {
         ps3_cmd_t cmd;
 
@@ -117,6 +120,24 @@ void notify()
         cmd.rumble_left_duration = 100;
 
         ps3Cmd(cmd);
+        LED_MOD = true;
+    }
+
+    if (Ps3.data.button.select == 1)
+    {
+
+        LED_MOD = false;
+    }
+
+    if (LED_MOD)
+    {
+        digitalWrite(22, LOW);
+        digitalWrite(23, HIGH);
+    }
+    else
+    {
+        digitalWrite(23, LOW);
+        digitalWrite(22, HIGH);
     }
 
     // 舵机2
@@ -129,39 +150,60 @@ void notify()
         myservo2.write(90);
     }
 
-    // if (Ps3.data.analog.stick.lx > 50)
-    // {
-    //     if (SVO2 < 180)
-    //         SVO2++;
-    // }
-    // if (Ps3.data.analog.stick.lx < -50)
-    // {
-    //     if (SVO2 > 0)
-    //         SVO2--;
-    // }
-
-    // if (Ps3.data.analog.stick.ly > 50)
-    // {
-    //     if (SVO3 < 180)
-    //         SVO3++;
-    // }
-    // if (Ps3.data.analog.stick.ly < -50)
-    // {
-    //     if (SVO3 > 0)
-    //         SVO3--;
-    // }
-    // myservo1.write(SVO2);
-    // myservo3.write(SVO3);
-    myservo1.write(pr180(Ps3.data.analog.stick.lx));
-    // // Serial.print(Ps3.data.analog.button.r2);
-    if (Ps3.data.button.r2 == 1)
+    if (Ps3.data.button.l1 == 1)
     {
-        myservo4.write(pr180(Ps3.data.analog.stick.ly));
+        myservo1.write(pr180(Ps3.data.analog.stick.lx));
+        myservo3.write(pr180(Ps3.data.analog.stick.ly));
     }
     else
     {
-        myservo3.write(pr180(Ps3.data.analog.stick.ly));
+        if (Ps3.data.analog.stick.lx > 50)
+        {
+            if (SVO1 < 180)
+                SVO1++;
+        }
+        if (Ps3.data.analog.stick.lx < -50)
+        {
+            if (SVO1 > 0)
+                SVO1--;
+        }
+
+        if (Ps3.data.analog.stick.ly > 50)
+        {
+            if (SVO3 < 180)
+                SVO3++;
+        }
+        if (Ps3.data.analog.stick.ly < -50)
+        {
+            if (SVO3 > 0)
+                SVO3--;
+        }
+        myservo1.write(SVO1);
+        myservo3.write(SVO3);
     }
+
+    if (Ps3.data.button.r2 == 1)
+    {
+        if (SVO4 < 180)
+            SVO4++;
+    }
+    if (Ps3.data.button.l2 == 1)
+    {
+        if (SVO4 > 0)
+            SVO4--;
+    }
+    // myservo2.write(SVO2);
+    myservo4.write(SVO4);
+    // myservo1.write(pr180(Ps3.data.analog.stick.lx));
+    // // // Serial.print(Ps3.data.analog.button.r2);
+    // if (Ps3.data.button.r2 == 1)
+    // {
+    //     myservo4.write(pr180(Ps3.data.analog.stick.ly));
+    // }
+    // else
+    // {
+    //     myservo3.write(pr180(Ps3.data.analog.stick.ly));
+    // }
 
     // 速度初始化
     RUN_SPEED = STOP;
@@ -170,11 +212,11 @@ void notify()
     // 按键群
     if (Ps3.data.button.up == 1 || Ps3.data.button.triangle == 1)
     {
-        RUN_SPEED = MAX_SPEED;
+        RUN_SPEED = -MAX_SPEED;
     }
     else if (Ps3.data.button.down == 1 || Ps3.data.button.cross == 1)
     {
-        RUN_SPEED = -MAX_SPEED;
+        RUN_SPEED = MAX_SPEED;
     }
     else
     {
@@ -197,7 +239,7 @@ void notify()
     if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放
     {
         // 右摇杆
-        RUN_SPEED = pr_f(Ps3.data.analog.stick.ry);
+        RUN_SPEED = pr(Ps3.data.analog.stick.ry);
         LR = pr_f(Ps3.data.analog.stick.rx);
 
         if (RUN_SPEED == 128 && LR == 128) // 右摇杆不在控制
@@ -270,8 +312,11 @@ void setup()
     myservo3.attach(SPIN_3);
     myservo4.attach(SPIN_4);
 
+    pinMode(23, OUTPUT);
+    pinMode(22, OUTPUT);
+
     Ps3.attach(notify);
-    Ps3.begin("00:1a:7d:da:71:13");
+    Ps3.begin("FF:87:E0:A6:AC:05");
 
     // 电机驱动引脚初始化
     pinMode(leftMotor1, OUTPUT);
