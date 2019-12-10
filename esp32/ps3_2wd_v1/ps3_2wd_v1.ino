@@ -301,6 +301,15 @@ void notify()
     // delay(10);
 }
 
+// 重连
+void rec()
+{
+    Serial.print("*****************down***************");
+    Serial.println();
+    Ps3.attach(notify);
+    Ps3.begin("FF:87:E0:A6:AC:05");
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -316,6 +325,7 @@ void setup()
     pinMode(22, OUTPUT);
 
     Ps3.attach(notify);
+    Ps3.attachOnDisconnect(rec);
     Ps3.begin("FF:87:E0:A6:AC:05");
 
     // 电机驱动引脚初始化
