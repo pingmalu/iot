@@ -240,7 +240,7 @@ void notify()
     {
         // 右摇杆
         RUN_SPEED = pr(Ps3.data.analog.stick.ry);
-        LR = pr_f(Ps3.data.analog.stick.rx);
+        LR = pr(Ps3.data.analog.stick.rx);
 
         if (RUN_SPEED == 128 && LR == 128) // 右摇杆不在控制
         {
