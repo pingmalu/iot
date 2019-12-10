@@ -51,7 +51,8 @@ int SILL = 2; // 偏移阈值
 
 // 全局驾驶变量
 bool TANK_MOD = true;
-bool LED_MOD = true;
+bool TANK_V2_MOD = true;
+bool LED_MOD = false;
 int LED_MOD_NUM = 0;
 
 MRUN mrun;
@@ -102,6 +103,7 @@ void notify()
     if (Ps3.data.status.battery == 20)
     {
         mrun.two(STOP, STOP);
+        Serial.print("stop");
         Serial.println();
         return;
     }
@@ -109,46 +111,55 @@ void notify()
     // 手柄震动
     if (Ps3.data.button.start == 1)
     {
-        ps3_cmd_t cmd;
+        // ps3_cmd_t cmd;
 
-        cmd.led1 = true;
+        // cmd.led1 = true;
 
-        cmd.rumble_left_intensity = 0xff;
-        cmd.rumble_right_intensity = 0xff;
+        // cmd.rumble_left_intensity = 0xff;
+        // cmd.rumble_right_intensity = 0xff;
 
-        cmd.rumble_right_duration = 100;
-        cmd.rumble_left_duration = 100;
+        // cmd.rumble_right_duration = 100;
+        // cmd.rumble_left_duration = 100;
 
-        ps3Cmd(cmd);
+        // ps3Cmd(cmd);
         LED_MOD = true;
+    }
+
+    if (Ps3.data.button.r3 == 1)
+    {
+        TANK_V2_MOD = true;
     }
 
     if (Ps3.data.button.select == 1)
     {
 
         LED_MOD = false;
+        TANK_V2_MOD = false;
     }
 
     if (LED_MOD)
     {
-        digitalWrite(22, LOW);
-        digitalWrite(23, HIGH);
+        digitalWrite(23, LOW);
+        digitalWrite(22, HIGH);
     }
     else
     {
-        digitalWrite(23, LOW);
-        digitalWrite(22, HIGH);
+        digitalWrite(22, LOW);
+        digitalWrite(23, HIGH);
     }
 
     // 舵机2
     if (Ps3.data.button.r1 == 1)
     {
-        myservo2.write(180);
+        SVO2 = 160;
     }
     else
     {
-        myservo2.write(90);
+        SVO2 = 100;
     }
+    myservo2.write(SVO2);
+    Serial.print(SVO2);
+    Serial.print(" ");
 
     if (Ps3.data.button.l1 == 1)
     {
@@ -170,7 +181,7 @@ void notify()
 
         if (Ps3.data.analog.stick.ly > 50)
         {
-            if (SVO3 < 180)
+            if (SVO3 < 99)
                 SVO3++;
         }
         if (Ps3.data.analog.stick.ly < -50)
@@ -180,33 +191,39 @@ void notify()
         }
         myservo1.write(SVO1);
         myservo3.write(SVO3);
+        Serial.print(SVO1);
+        Serial.print(" ");
+        Serial.print(SVO3);
+        Serial.print(" ");
     }
 
     if (Ps3.data.button.r2 == 1)
     {
-        if (SVO4 < 180)
+        if (SVO4 < 130)
             SVO4++;
     }
     if (Ps3.data.button.l2 == 1)
     {
-        if (SVO4 > 0)
+        if (SVO4 > 45)
             SVO4--;
     }
     // myservo2.write(SVO2);
     myservo4.write(SVO4);
-    // myservo1.write(pr180(Ps3.data.analog.stick.lx));
-    // // // Serial.print(Ps3.data.analog.button.r2);
-    // if (Ps3.data.button.r2 == 1)
-    // {
-    //     myservo4.write(pr180(Ps3.data.analog.stick.ly));
-    // }
-    // else
-    // {
-    //     myservo3.write(pr180(Ps3.data.analog.stick.ly));
-    // }
+    Serial.print(SVO4);
+    Serial.print(" ");
+        // myservo1.write(pr180(Ps3.data.analog.stick.lx));
+        // // // Serial.print(Ps3.data.analog.button.r2);
+        // if (Ps3.data.button.r2 == 1)
+        // {
+        //     myservo4.write(pr180(Ps3.data.analog.stick.ly));
+        // }
+        // else
+        // {
+        //     myservo3.write(pr180(Ps3.data.analog.stick.ly));
+        // }
 
-    // 速度初始化
-    RUN_SPEED = STOP;
+        // 速度初始化
+        RUN_SPEED = STOP;
     LR = STOP;
 
     // 按键群
@@ -256,7 +273,14 @@ void notify()
         }
         else
         {
-            mrun.tank(RUN_SPEED, LR);
+            if (TANK_V2_MOD)
+            {
+                mrun.tank_v2(RUN_SPEED, LR);
+            }
+            else
+            {
+                mrun.tank(RUN_SPEED, LR);
+            }
         }
     }
     else
