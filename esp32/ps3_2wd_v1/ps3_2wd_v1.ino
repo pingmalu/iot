@@ -151,7 +151,7 @@ void notify()
     // 舵机2
     if (Ps3.data.button.r1 == 1)
     {
-        SVO2 = 160;
+        SVO2 = 165;
     }
     else
     {
