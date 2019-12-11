@@ -15,6 +15,9 @@
 #include "MRUN_lib.h"
 #include <Ps3Controller.h>
 #include <Servo.h>
+int LED_PIN1 = 23;
+int LED_PIN2 = 22;
+
 Servo myservolno;
 Servo myservorno;
 Servo myservo1;
@@ -26,12 +29,13 @@ int SPIN_1 = 5;
 int SPIN_2 = 18;
 int SPIN_3 = 19;
 int SPIN_4 = 21;
+// 舵机初始角度
 int16_t SVO1 = 90;
 int16_t SVO2 = 90;
 int16_t SVO3 = 90;
 int16_t SVO4 = 90;
 
-// esp32-cam引脚
+// 电机驱动引脚
 int leftMotor1 = 2; // 前后轮子
 int leftMotor2 = 4;
 int rightMotor1 = 16; // 左右轮子
@@ -137,13 +141,13 @@ void notify()
 
     if (LED_MOD)
     {
-        digitalWrite(23, LOW);
-        digitalWrite(22, HIGH);
+        digitalWrite(LED_PIN1, LOW);
+        digitalWrite(LED_PIN2, HIGH);
     }
     else
     {
-        digitalWrite(22, LOW);
-        digitalWrite(23, LOW);
+        digitalWrite(LED_PIN1, LOW);
+        digitalWrite(LED_PIN2, LOW);
     }
     Serial.print("TANK_V2_MOD:");
     Serial.print(TANK_V2_MOD);
@@ -342,8 +346,8 @@ void setup()
     myservo3.attach(SPIN_3);
     myservo4.attach(SPIN_4);
 
-    pinMode(23, OUTPUT);
-    pinMode(22, OUTPUT);
+    pinMode(LED_PIN1, OUTPUT);
+    pinMode(LED_PIN2, OUTPUT);
 
     Ps3.attach(notify);
     Ps3.attachOnDisconnect(rec);
@@ -363,4 +367,7 @@ void setup()
 
 void loop()
 {
+    Serial.print("conn:");
+    Serial.print(Ps3.data.status.connection);
+    Serial.print(" \n");
 }
