@@ -70,6 +70,8 @@ MRUN mrun;
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
 
+ps3_cmd_t cmd;
+
 int pr(int16_t val)
 {
     val = map(val, -128, 127, 0, 255);
@@ -100,12 +102,13 @@ int16_t pr180(int16_t val)
 // 手柄震动
 void shock()
 {
-    ps3_cmd_t cmd;
-    cmd.led1 = true;
+    Serial.print("shocking");
+    Serial.print(" ");
+    // cmd.led1 = true;
     cmd.rumble_left_intensity = 0xff; //强度
     cmd.rumble_right_intensity = 0xff;
-    cmd.rumble_right_duration = 1000; //持续时间
-    cmd.rumble_left_duration = 1000;
+    cmd.rumble_right_duration = 100; //持续时间
+    cmd.rumble_left_duration = 100;
     ps3Cmd(cmd);
 }
 
@@ -146,7 +149,6 @@ void battery_info_v2(int i)
     Serial.print("battery:");
     Serial.print(i);
     Serial.print(" ");
-    ps3_cmd_t cmd;
     switch (i)
     {
     case 1:
@@ -175,11 +177,10 @@ void battery_info_v2(int i)
 
 void notify()
 {
-    Ps3.setLed(3);
-    Serial.print(Ps3.data.status.battery);
-    Serial.print(" ");
-    Serial.print(Ps3.data.analog.stick.ry);
-    Serial.print(" ");
+    // Serial.print(Ps3.data.status.battery);
+    // Serial.print(" ");
+    // Serial.print(Ps3.data.analog.stick.ry);
+    // Serial.print(" ");
     // 防止信号中断自动前进
     // 4 -1  [128] [128] [128] [128] tank_v2_1:128 tank_v2_2:128 two_L:0 tow_R:0
     // 20 -128  [255] [128] tank_L:255 tank_R:128 one:1023 one:1023 two_L:1023 tow_R:1023
@@ -194,7 +195,9 @@ void notify()
     //显示手柄电量
     if (Ps3.data.button.ps == 1)
     {
-        battery_info(Ps3.data.status.battery);
+        battery_info_v2(Ps3.data.status.battery);
+        Serial.println();
+        return;
     }
 
     if (Ps3.data.button.select == 1)
@@ -202,11 +205,14 @@ void notify()
         LED_MOD = false;
         TANK_V2_MOD = false;
         shock(); //震动
+        Serial.println();
+        return;
     }
 
     if (Ps3.data.button.start == 1)
     {
         LED_MOD = true;
+        Ps3.setLed(3);
     }
 
     if (Ps3.data.button.r3 == 1)
@@ -224,12 +230,12 @@ void notify()
         digitalWrite(LED_PIN1, LOW);
         digitalWrite(LED_PIN2, LOW);
     }
-    Serial.print("TANK_V2_MOD:");
-    Serial.print(TANK_V2_MOD);
-    Serial.print(" ");
-    Serial.print("LED_MOD:");
-    Serial.print(LED_MOD);
-    Serial.print(" ");
+    // Serial.print("TANK_V2_MOD:");
+    // Serial.print(TANK_V2_MOD);
+    // Serial.print(" ");
+    // Serial.print("LED_MOD:");
+    // Serial.print(LED_MOD);
+    // Serial.print(" ");
 
     // 舵机
     if (Ps3.data.button.r1 == 1)
@@ -285,18 +291,18 @@ void notify()
     myservo2.write(SVO2);
     myservo3.write(SVO3);
     myservo4.write(SVO4);
-    Serial.print("SVO1:");
-    Serial.print(SVO1);
-    Serial.print(" ");
-    Serial.print("SVO2:");
-    Serial.print(SVO2);
-    Serial.print(" ");
-    Serial.print("SVO3:");
-    Serial.print(SVO3);
-    Serial.print(" ");
-    Serial.print("SVO4:");
-    Serial.print(SVO4);
-    Serial.print(" ");
+    // Serial.print("SVO1:");
+    // Serial.print(SVO1);
+    // Serial.print(" ");
+    // Serial.print("SVO2:");
+    // Serial.print(SVO2);
+    // Serial.print(" ");
+    // Serial.print("SVO3:");
+    // Serial.print(SVO3);
+    // Serial.print(" ");
+    // Serial.print("SVO4:");
+    // Serial.print(SVO4);
+    // Serial.print(" ");
 
     // 速度初始化
     RUN_SPEED = STOP;
@@ -442,7 +448,7 @@ void setup()
 
 void loop()
 {
-    Serial.print("conn:");
-    Serial.print(Ps3.data.status.connection);
-    Serial.print(" \n");
+    // Serial.print("conn:");
+    // Serial.print(Ps3.data.status.connection);
+    // Serial.print(" \n");
 }
