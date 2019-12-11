@@ -2,6 +2,9 @@
  * ps3手柄控制4轮驱动小车
  * ps3蓝牙库 https://github.com/jvpernis/esp32-ps3/tree/develop
  * v1 ps3蓝牙控制坦克，机械手臂，LED大灯
+ *    PS键显示电量
+ *    select键关灯，关闭TANK_V2_MOD，手柄震动
+ *    R3键开启TANK_V2_MOD
  * old
  * 4.2版本加入舵机摇杆控制
  * 4.3版本加入坦克模式切换蜂鸣模拟
@@ -99,10 +102,74 @@ void shock()
 {
     ps3_cmd_t cmd;
     cmd.led1 = true;
-    cmd.rumble_left_intensity = 0xff;
+    cmd.rumble_left_intensity = 0xff; //强度
     cmd.rumble_right_intensity = 0xff;
-    cmd.rumble_right_duration = 100;
-    cmd.rumble_left_duration = 100;
+    cmd.rumble_right_duration = 1000; //持续时间
+    cmd.rumble_left_duration = 1000;
+    ps3Cmd(cmd);
+}
+
+// 手柄电量显示
+void battery_info(int i)
+{
+    Serial.print("battery:");
+    Serial.print(i);
+    Serial.print(" ");
+    switch (i)
+    {
+    case 1:
+        Ps3.setLed(1);
+        break;
+    case 2:
+        Ps3.setLed(1);
+        Ps3.setLed(2);
+        break;
+    case 3:
+        Ps3.setLed(1);
+        Ps3.setLed(2);
+        Ps3.setLed(3);
+        break;
+    case 4:
+        Ps3.setLed(1);
+        Ps3.setLed(2);
+        Ps3.setLed(3);
+        Ps3.setLed(4);
+        break;
+    default:
+        break;
+    }
+}
+
+// 手柄电量显示v2
+void battery_info_v2(int i)
+{
+    Serial.print("battery:");
+    Serial.print(i);
+    Serial.print(" ");
+    ps3_cmd_t cmd;
+    switch (i)
+    {
+    case 1:
+        cmd.led1 = true;
+        break;
+    case 2:
+        cmd.led1 = true;
+        cmd.led2 = true;
+        break;
+    case 3:
+        cmd.led1 = true;
+        cmd.led2 = true;
+        cmd.led3 = true;
+        break;
+    case 4:
+        cmd.led1 = true;
+        cmd.led2 = true;
+        cmd.led3 = true;
+        cmd.led4 = true;
+        break;
+    default:
+        break;
+    }
     ps3Cmd(cmd);
 }
 
@@ -124,10 +191,17 @@ void notify()
         return;
     }
 
+    //显示手柄电量
+    if (Ps3.data.button.ps == 1)
+    {
+        battery_info(Ps3.data.status.battery);
+    }
+
     if (Ps3.data.button.select == 1)
     {
         LED_MOD = false;
         TANK_V2_MOD = false;
+        shock(); //震动
     }
 
     if (Ps3.data.button.start == 1)
