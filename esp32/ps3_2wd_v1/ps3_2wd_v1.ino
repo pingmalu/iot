@@ -1,6 +1,7 @@
 /*
  * ps3手柄控制4轮驱动小车
  * ps3蓝牙库 https://github.com/jvpernis/esp32-ps3/tree/develop
+ * v1 ps3蓝牙控制坦克，机械手臂，LED大灯
  * old
  * 4.2版本加入舵机摇杆控制
  * 4.3版本加入坦克模式切换蜂鸣模拟
