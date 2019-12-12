@@ -367,7 +367,7 @@ void MRUN::tank_v2(int y, int x)
   {
     if (_RUN_SPEED == 0 && _LR != 0) // 原地左右
     {
-      two(_LR, -_LR);
+      two(-_LR, _LR);
     }
     else if (_RUN_SPEED != 0 && _LR == 0) // 原地前后
     {

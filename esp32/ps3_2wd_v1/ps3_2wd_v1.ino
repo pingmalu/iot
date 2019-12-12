@@ -19,6 +19,7 @@
 #include "MRUN_lib.h"
 #include <Ps3Controller.h>
 #include <Servo.h>
+#include <analogWrite.h>
 int LED_PIN1 = 23;
 int LED_PIN2 = 22;
 
@@ -28,6 +29,7 @@ Servo myservo1;
 Servo myservo2;
 Servo myservo3;
 Servo myservo4;
+Servo myservoledno;
 // 舵机引脚
 int SPIN_1 = 5;
 int SPIN_2 = 18;
@@ -110,6 +112,12 @@ void shock()
     cmd.rumble_right_duration = 100; //持续时间
     cmd.rumble_left_duration = 100;
     ps3Cmd(cmd);
+}
+
+// 默认灯亮效果
+void defled()
+{
+    Ps3.setLed(3);
 }
 
 // 手柄电量显示
@@ -204,8 +212,8 @@ void notify()
     {
         LED_MOD = false;
         TANK_V2_MOD = false;
-        shock(); //震动
-        Serial.println();
+        // shock(); //震动
+        // Serial.println();
         return;
     }
 
@@ -220,6 +228,15 @@ void notify()
         TANK_V2_MOD = true;
     }
 
+    if (Ps3.data.analog.button.r2 > 0)
+    {
+        Serial.print(Ps3.data.analog.button.r2);
+        Serial.println();
+        digitalWrite(LED_PIN1, LOW);
+        analogWrite(LED_PIN2, Ps3.data.analog.button.r2, 255);
+        return;
+    }
+
     if (LED_MOD)
     {
         digitalWrite(LED_PIN1, LOW);
@@ -230,6 +247,7 @@ void notify()
         digitalWrite(LED_PIN1, LOW);
         digitalWrite(LED_PIN2, LOW);
     }
+
     // Serial.print("TANK_V2_MOD:");
     // Serial.print(TANK_V2_MOD);
     // Serial.print(" ");
@@ -420,12 +438,13 @@ void setup()
 {
     Serial.begin(115200);
 
-    myservolno.attach(SPIN_1);
-    myservorno.attach(SPIN_1);
+    myservolno.attach(SPIN_1); //电机驱动pwm通道占位
+    myservorno.attach(SPIN_1); //电机驱动pwm通道占位
     myservo1.attach(SPIN_1);
     myservo2.attach(SPIN_2);
     myservo3.attach(SPIN_3);
     myservo4.attach(SPIN_4);
+    myservoledno.attach(SPIN_1); //LED电机驱动pwm通道占位
 
     pinMode(LED_PIN1, OUTPUT);
     pinMode(LED_PIN2, OUTPUT);
