@@ -11,16 +11,32 @@
 #define SS_PIN 15
 MFRC522 mfrc522(SS_PIN, RST_PIN); // 创建新的RFID实例
 MFRC522::MIFARE_Key key;
+unsigned long starttime;
+
+void go_poweroff()
+{
+    Serial.print("go to sleep!!!");
+    delay(1000);
+    ESP.deepSleep(10e6);
+}
+
 void setup()
 {
     Serial.begin(115200); // 设置串口波特率为9600
     SPI.begin();          // SPI开始
     mfrc522.PCD_Init();   // Init MFRC522 card
     Serial.println("test-demo-start");
+
+    starttime = millis(); //初始化时间
 }
 
 void loop()
 {
+    if ((millis() - starttime) > 10e3)
+    { // 自动休眠 10s
+        go_poweroff();
+    }
+
     // 寻找新卡
     if (!mfrc522.PICC_IsNewCardPresent())
     {
@@ -47,22 +63,22 @@ void loop()
     MFRC522::PICC_Type piccType = mfrc522.PICC_GetType(mfrc522.uid.sak);
     Serial.println(mfrc522.PICC_GetTypeName(piccType));
 
-    // 检查兼容性
-    if (piccType != MFRC522::PICC_TYPE_MIFARE_MINI && piccType != MFRC522::PICC_TYPE_MIFARE_1K && piccType != MFRC522::PICC_TYPE_MIFARE_4K)
-    {
-        // Serial.println(F("仅仅适合Mifare Classic卡的读写"));
-        Serial.println("仅仅适合Mifare Classic卡的读写");
-        return;
-    }
+    // // 检查兼容性
+    // if (piccType != MFRC522::PICC_TYPE_MIFARE_MINI && piccType != MFRC522::PICC_TYPE_MIFARE_1K && piccType != MFRC522::PICC_TYPE_MIFARE_4K)
+    // {
+    //     // Serial.println(F("仅仅适合Mifare Classic卡的读写"));
+    //     Serial.println("仅仅适合Mifare Classic卡的读写");
+    //     return;
+    // }
 
-    MFRC522::StatusCode status;
-    if (status != MFRC522::STATUS_OK)
-    {
-        // Serial.print(F("身份验证失败？或者是卡链接失败"));
-        Serial.print("身份验证失败？或者是卡链接失败");
-        Serial.println(mfrc522.GetStatusCodeName(status));
-        return;
-    }
+    // MFRC522::StatusCode status;
+    // if (status != MFRC522::STATUS_OK)
+    // {
+    //     // Serial.print(F("身份验证失败？或者是卡链接失败"));
+    //     Serial.print("身份验证失败？或者是卡链接失败");
+    //     Serial.println(mfrc522.GetStatusCodeName(status));
+    //     return;
+    // }
     //停止 PICC
     mfrc522.PICC_HaltA();
     //停止加密PCD
