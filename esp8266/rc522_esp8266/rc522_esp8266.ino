@@ -1,3 +1,10 @@
+/**
+ * 接线
+ * SDA->D8
+ * SCK->D5
+ * MOSI->D7
+ * MISO->D5
+ */
 #include <SPI.h>
 #include <MFRC522.h>
 #define RST_PIN 5 // 配置针脚
@@ -6,9 +13,9 @@ MFRC522 mfrc522(SS_PIN, RST_PIN); // 创建新的RFID实例
 MFRC522::MIFARE_Key key;
 void setup()
 {
-    Serial.begin(9600); // 设置串口波特率为9600
-    SPI.begin();        // SPI开始
-    mfrc522.PCD_Init(); // Init MFRC522 card
+    Serial.begin(115200); // 设置串口波特率为9600
+    SPI.begin();          // SPI开始
+    mfrc522.PCD_Init();   // Init MFRC522 card
     Serial.println("test-demo-start");
 }
 
@@ -17,7 +24,7 @@ void loop()
     // 寻找新卡
     if (!mfrc522.PICC_IsNewCardPresent())
     {
-        //Serial.println("没有找到卡");
+        // Serial.println("没有找到卡");
         return;
     }
 
