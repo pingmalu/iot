@@ -4,6 +4,9 @@
  * SCK->D5
  * MOSI->D7
  * MISO->D5
+ * 
+ * ESP8266
+ * D0->RST
  */
 #include <SPI.h>
 #include <MFRC522.h>
@@ -15,32 +18,32 @@ unsigned long starttime;
 
 void go_poweroff()
 {
-    Serial.print("go to sleep!!!");
-    delay(1000);
-    ESP.deepSleep(10e6);
+    Serial.println("go to sleep!!!");
+    ESP.deepSleep(10e6); // 10 seconds
 }
 
 void setup()
 {
-    Serial.begin(115200); // 设置串口波特率为9600
+    Serial.begin(115200); // 设置串口波特率为115200
     SPI.begin();          // SPI开始
     mfrc522.PCD_Init();   // Init MFRC522 card
-    Serial.println("test-demo-start");
-
+    Serial.println();
+    Serial.println("Init MFRC522 card");
     starttime = millis(); //初始化时间
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, LOW);
 }
 
 void loop()
 {
-    if ((millis() - starttime) > 10e3)
-    { // 自动休眠 10s
-        go_poweroff();
-    }
-
     // 寻找新卡
     if (!mfrc522.PICC_IsNewCardPresent())
     {
         // Serial.println("没有找到卡");
+        if ((millis() - starttime) > 1e3)
+        { // 自动休眠 10s
+            go_poweroff();
+        }
         return;
     }
 
@@ -83,6 +86,7 @@ void loop()
     mfrc522.PICC_HaltA();
     //停止加密PCD
     mfrc522.PCD_StopCrypto1();
+
     return;
 }
 
