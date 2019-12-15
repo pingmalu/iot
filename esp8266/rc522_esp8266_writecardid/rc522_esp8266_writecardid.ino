@@ -15,22 +15,22 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
-#define RST_PIN 5 // Configurable, see typical pin layout above
-#define SS_PIN 15 // Configurable, see typical pin layout above
+#define RST_PIN 10 // Configurable, see typical pin layout above
+#define SS_PIN 15  // Configurable, see typical pin layout above
 
 MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
 
 /*在这里修改卡号，读取的卡号是16进制的，每2位前加0x   */
 #define NEW_UID                \
     {                          \
-        0xCD, 0xFF, 0x2A, 0x81 \
+        0xCD, 0xFF, 0x2A, 0x08 \
     }
 
 MFRC522::MIFARE_Key key;
 
 void setup()
 {
-    Serial.begin(9600); // Initialize serial communications with the PC
+    Serial.begin(115200); // Initialize serial communications with the PC
     while (!Serial)
         ;               // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4)
     SPI.begin();        // Init SPI bus
@@ -66,19 +66,19 @@ void loop()
     }
     Serial.println();
 
-    // // Set new UID
-    // byte newUid[] = NEW_UID;
-    // if (mfrc522.MIFARE_SetUid(newUid, (byte)4, true))
-    // {
-    //     Serial.println(F("Wrote new UID to card."));
-    // }
+    // Set new UID
+    byte newUid[] = NEW_UID;
+    if (mfrc522.MIFARE_SetUid(newUid, (byte)4, true))
+    {
+        Serial.println(F("Wrote new UID to card."));
+    }
 
-    // // Halt PICC and re-select it so DumpToSerial doesn't get confused
-    // mfrc522.PICC_HaltA();
-    // if (!mfrc522.PICC_IsNewCardPresent() || !mfrc522.PICC_ReadCardSerial())
-    // {
-    //     return;
-    // }
+    // Halt PICC and re-select it so DumpToSerial doesn't get confused
+    mfrc522.PICC_HaltA();
+    if (!mfrc522.PICC_IsNewCardPresent() || !mfrc522.PICC_ReadCardSerial())
+    {
+        return;
+    }
 
     // Dump the new memory contents
     Serial.println(F("New UID and contents:"));
