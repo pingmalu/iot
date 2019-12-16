@@ -53,7 +53,7 @@ void go_poweroff()
 
 void setup()
 {
-    //给D1引脚高电平，给rf522供电
+    //给D3引脚高电平，给rf522供电
     pinMode(D3, OUTPUT);
     digitalWrite(D3, HIGH);
 
