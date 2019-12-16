@@ -23,6 +23,9 @@
 #include <Servo.h>
 Servo servo;
 
+// 循环次数
+int looptimes = 0;
+
 //打开舵机
 void open()
 {
@@ -40,18 +43,13 @@ void CheckUser(uint64_t id)
 {
     uint64_t user = 0x1;
     // print() & println() can't handle printing long longs. (uint64_t)
+    serialPrintUint64(id, HEX);
     if (user == id)
     {
-        Serial.println("hi malu");
+        Serial.println("Hello Malu!");
+        digitalWrite(LED_BUILTIN, LOW); //把板载led点亮
         open();
     }
-    serialPrintUint64(id, HEX);
-    // if (id[0] == 0x00 && id[1] == 0x00 && id[2] == 0x00 && id[3] == 0x00)
-    // {
-    //     Serial.println("Hello Malu!");
-    //     digitalWrite(LED_BUILTIN, LOW); //把板载led点亮
-    //     open();
-    // }
 }
 
 // 休眠
@@ -97,6 +95,12 @@ void setup()
 
 void loop()
 {
+
+    if (looptimes > 10)
+    {
+        go_poweroff();
+        return;
+    }
     if (irrecv.decode(&results))
     {
         // print() & println() can't handle printing long longs. (uint64_t)
@@ -105,5 +109,10 @@ void loop()
         Serial.println("|");
         irrecv.resume(); // Receive the next value
     }
+    else
+    {
+        Serial.println("not found");
+    }
+    looptimes++;
     delay(100);
 }
