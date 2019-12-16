@@ -29,9 +29,10 @@ int looptimes = 0;
 //打开舵机
 void open()
 {
-    servo.attach(D4);
+    servo.attach(D1);
     //you begin your own personal code for servo here
     Serial.println("open");
+    digitalWrite(LED_BUILTIN, LOW); //把板载led点亮
     servo.write(180);
     delay(1000);
     servo.write(0);
@@ -71,8 +72,8 @@ void setup()
 {
     //********** CHANGE PIN FUNCTION  TO GPIO **********
     //GPIO 1 (TX) swap the pin to a GPIO.
-    pinMode(0, FUNCTION_3);
-    pinMode(2, FUNCTION_3);
+    // pinMode(0, FUNCTION_3);
+    // pinMode(2, FUNCTION_3);
     //GPIO 3 (RX) swap the pin to a GPIO.
     // pinMode(3, FUNCTION_3);
     //**************************************************
@@ -95,8 +96,8 @@ void setup()
 
 void loop()
 {
-
-    if (looptimes > 10)
+    delay(100);
+    if (looptimes > 1)
     {
         go_poweroff();
         return;
@@ -114,5 +115,4 @@ void loop()
         Serial.println("not found");
     }
     looptimes++;
-    delay(100);
 }
