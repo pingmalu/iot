@@ -7,11 +7,27 @@ var board = new five.Board({
         port: 3030
     }),
     timeout: 1e5,
-    repl: false
+    repl: true
 });
 
 board.on("ready", function () {
-    console.log("READY!");
+    console.log("Ready event. Repl instance auto-initialized!");
+
     var led = new five.Led(2);
-    led.blink(500);
+
+    this.repl.inject({
+        // Allow limited on/off control access to the
+        // Led instance from the REPL.
+        on: function () {
+            led.on();
+        },
+        off: function () {
+            led.off();
+        }
+    });
 });
+
+
+// "etherport-client": "^0.1.4",
+// "firmata": "^2.0.0",
+// "johnny-five": "^1.3.1"
