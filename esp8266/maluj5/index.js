@@ -14,6 +14,7 @@ board.on("ready", function () {
     console.log("Ready event. Repl instance auto-initialized!");
 
     var led = new five.Led(2);
+    const servo = new five.Servo(5);
 
     this.repl.inject({
         // Allow limited on/off control access to the
@@ -23,7 +24,13 @@ board.on("ready", function () {
         },
         off: function () {
             led.off();
-        }
+        },
+        g0: function () {
+            servo.to(0);
+        },
+        g1: function () {
+            servo.to(180);
+        },
     });
 });
 
