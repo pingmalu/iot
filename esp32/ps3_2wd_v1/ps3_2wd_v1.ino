@@ -49,10 +49,10 @@ int rightMotor2 = 17;
 
 // PSx摇杆
 int Y_MAX = 255;
-int Y_MID = 128;
+int Y_MID = 127;
 int Y_MIN = 0;
 int X_MAX = 255;
-int X_MID = 128;
+int X_MID = 127;
 int X_MIN = 0;
 int SILL = 2; // 偏移阈值
 
@@ -117,38 +117,7 @@ void shock()
 // 默认灯亮效果
 void defled()
 {
-    Ps3.setLed(3);
-}
-
-// 手柄电量显示
-void battery_info(int i)
-{
-    Serial.print("battery:");
-    Serial.print(i);
-    Serial.print(" ");
-    switch (i)
-    {
-    case 1:
-        Ps3.setLed(1);
-        break;
-    case 2:
-        Ps3.setLed(1);
-        Ps3.setLed(2);
-        break;
-    case 3:
-        Ps3.setLed(1);
-        Ps3.setLed(2);
-        Ps3.setLed(3);
-        break;
-    case 4:
-        Ps3.setLed(1);
-        Ps3.setLed(2);
-        Ps3.setLed(3);
-        Ps3.setLed(4);
-        break;
-    default:
-        break;
-    }
+    Ps3.setLed(1);
 }
 
 // 手柄电量显示v2
@@ -161,15 +130,21 @@ void battery_info_v2(int i)
     {
     case 1:
         cmd.led1 = true;
+        cmd.led2 = false;
+        cmd.led3 = false;
+        cmd.led4 = false;
         break;
     case 2:
         cmd.led1 = true;
         cmd.led2 = true;
+        cmd.led3 = false;
+        cmd.led4 = false;
         break;
     case 3:
         cmd.led1 = true;
         cmd.led2 = true;
         cmd.led3 = true;
+        cmd.led4 = false;
         break;
     case 4:
         cmd.led1 = true;
@@ -177,7 +152,17 @@ void battery_info_v2(int i)
         cmd.led3 = true;
         cmd.led4 = true;
         break;
+    case 5:
+        cmd.led1 = false;
+        cmd.led2 = true;
+        cmd.led3 = true;
+        cmd.led4 = true;
+        break;
     default:
+        cmd.led1 = true;
+        cmd.led2 = false;
+        cmd.led3 = false;
+        cmd.led4 = true;
         break;
     }
     ps3Cmd(cmd);
@@ -210,43 +195,44 @@ void notify()
 
     if (Ps3.data.button.select == 1)
     {
-        LED_MOD = false;
-        TANK_V2_MOD = false;
+        // LED_MOD = false;
+        // TANK_V2_MOD = false;
         // shock(); //震动
         // Serial.println();
+        defled();
         return;
     }
 
-    if (Ps3.data.button.start == 1)
-    {
-        LED_MOD = true;
-        Ps3.setLed(3);
-    }
+    // if (Ps3.data.button.start == 1)
+    // {
+    //     LED_MOD = true;
+    //     Ps3.setLed(3);
+    // }
 
-    if (Ps3.data.button.r3 == 1)
-    {
-        TANK_V2_MOD = true;
-    }
+    // if (Ps3.data.button.r3 == 1)
+    // {
+    //     TANK_V2_MOD = true;
+    // }
 
-    if (Ps3.data.analog.button.r2 > 0)
-    {
-        Serial.print(Ps3.data.analog.button.r2);
-        Serial.println();
-        digitalWrite(LED_PIN1, LOW);
-        analogWrite(LED_PIN2, Ps3.data.analog.button.r2, 255);
-        return;
-    }
+    // if (Ps3.data.analog.button.r2 > 0)
+    // {
+    //     Serial.print(Ps3.data.analog.button.r2);
+    //     Serial.println();
+    //     digitalWrite(LED_PIN1, LOW);
+    //     analogWrite(LED_PIN2, Ps3.data.analog.button.r2, 255);
+    //     return;
+    // }
 
-    if (LED_MOD)
-    {
-        digitalWrite(LED_PIN1, LOW);
-        digitalWrite(LED_PIN2, HIGH);
-    }
-    else
-    {
-        digitalWrite(LED_PIN1, LOW);
-        digitalWrite(LED_PIN2, LOW);
-    }
+    // if (LED_MOD)
+    // {
+    //     digitalWrite(LED_PIN1, LOW);
+    //     digitalWrite(LED_PIN2, HIGH);
+    // }
+    // else
+    // {
+    //     digitalWrite(LED_PIN1, LOW);
+    //     digitalWrite(LED_PIN2, LOW);
+    // }
 
     // Serial.print("TANK_V2_MOD:");
     // Serial.print(TANK_V2_MOD);
@@ -255,60 +241,60 @@ void notify()
     // Serial.print(LED_MOD);
     // Serial.print(" ");
 
-    // 舵机
-    if (Ps3.data.button.r1 == 1)
-    {
-        SVO2 = 165;
-    }
-    else
-    {
-        SVO2 = 100;
-    }
+    // // 舵机
+    // if (Ps3.data.button.r1 == 1)
+    // {
+    //     SVO2 = 165;
+    // }
+    // else
+    // {
+    //     SVO2 = 100;
+    // }
 
-    if (Ps3.data.button.l1 == 1)
-    {
-        SVO1 = pr180(Ps3.data.analog.stick.lx);
-        SVO3 = pr180(Ps3.data.analog.stick.ly);
-    }
-    else
-    {
-        if (Ps3.data.analog.stick.lx > 50)
-        {
-            if (SVO1 < 180)
-                SVO1++;
-        }
-        if (Ps3.data.analog.stick.lx < -50)
-        {
-            if (SVO1 > 0)
-                SVO1--;
-        }
+    // if (Ps3.data.button.l1 == 1)
+    // {
+    //     SVO1 = pr180(Ps3.data.analog.stick.lx);
+    //     SVO3 = pr180(Ps3.data.analog.stick.ly);
+    // }
+    // else
+    // {
+    //     if (Ps3.data.analog.stick.lx > 50)
+    //     {
+    //         if (SVO1 < 180)
+    //             SVO1++;
+    //     }
+    //     if (Ps3.data.analog.stick.lx < -50)
+    //     {
+    //         if (SVO1 > 0)
+    //             SVO1--;
+    //     }
 
-        if (Ps3.data.analog.stick.ly > 50)
-        {
-            if (SVO3 < 99)
-                SVO3++;
-        }
-        if (Ps3.data.analog.stick.ly < -50)
-        {
-            if (SVO3 > 0)
-                SVO3--;
-        }
-    }
+    //     if (Ps3.data.analog.stick.ly > 50)
+    //     {
+    //         if (SVO3 < 99)
+    //             SVO3++;
+    //     }
+    //     if (Ps3.data.analog.stick.ly < -50)
+    //     {
+    //         if (SVO3 > 0)
+    //             SVO3--;
+    //     }
+    // }
 
-    if (Ps3.data.button.r2 == 1)
-    {
-        if (SVO4 < 130)
-            SVO4++;
-    }
-    if (Ps3.data.button.l2 == 1)
-    {
-        if (SVO4 > 45)
-            SVO4--;
-    }
-    myservo1.write(SVO1);
-    myservo2.write(SVO2);
-    myservo3.write(SVO3);
-    myservo4.write(SVO4);
+    // if (Ps3.data.button.r2 == 1)
+    // {
+    //     if (SVO4 < 130)
+    //         SVO4++;
+    // }
+    // if (Ps3.data.button.l2 == 1)
+    // {
+    //     if (SVO4 > 45)
+    //         SVO4--;
+    // }
+    // myservo1.write(SVO1);
+    // myservo2.write(SVO2);
+    // myservo3.write(SVO3);
+    // myservo4.write(SVO4);
     // Serial.print("SVO1:");
     // Serial.print(SVO1);
     // Serial.print(" ");
@@ -359,7 +345,7 @@ void notify()
         RUN_SPEED = pr(Ps3.data.analog.stick.ry);
         LR = pr(Ps3.data.analog.stick.rx);
 
-        if (RUN_SPEED == 128 && LR == 128) // 右摇杆不在控制
+        if (RUN_SPEED == Y_MID && LR == X_MID) // 右摇杆不在控制
         {
             // 左摇杆
             // RUN_SPEED = pr_f(Ps3.data.analog.stick.ly);
