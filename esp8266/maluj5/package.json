@@ -1,15 +1,17 @@
 {
-  "name": "j5",
+  "name": "maluj5",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "author": "malu",
   "license": "ISC",
   "dependencies": {
     "etherport-client": "^0.1.4",
-    "firmata": "^2.0.0"
+    "firmata": "^2.0.0",
+    "johnny-five": "^1.3.1"
   }
 }
