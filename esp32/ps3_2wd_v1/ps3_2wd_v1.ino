@@ -28,8 +28,8 @@
 #define LOG(...)
 #define LOGLN(...)
 #else
-#define LOG(...) LOG(__VA_ARGS__)
-#define LOGLN(...) LOGLN(__VA_ARGS__)
+#define LOG(...) Serial.print(__VA_ARGS__)
+#define LOGLN(...) Serial.println(__VA_ARGS__)
 #endif
 
 int LED_PIN1 = 5;
@@ -374,11 +374,11 @@ void notify()
             LR = pr(Ps3.data.analog.stick.lx);
             if (RUN_SPEED == Y_MID && LR == X_MID) // 右摇杆不在控制
             {
-                mrun.tank_v2(RUN_SPEED, LR);
+                mrun.two(STOP, STOP);
             }
             else
             {
-                mrun.two(STOP, STOP);
+                mrun.tank_v2(RUN_SPEED, LR);
             }
 
             // maluservo(pr180(Ps3.data.analog.stick.lx), SPIN_1);
