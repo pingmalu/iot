@@ -20,7 +20,19 @@
 #include <Ps3Controller.h>
 #include <Servo.h>
 #include <analogWrite.h>
-int LED_PIN1 = 23;
+
+// comment out this line, if you want to show logs:
+#define NDEBUG
+
+#ifdef NDEBUG
+#define LOG(...)
+#define LOGLN(...)
+#else
+#define LOG(...) LOG(__VA_ARGS__)
+#define LOGLN(...) LOGLN(__VA_ARGS__)
+#endif
+
+int LED_PIN1 = 5;
 int LED_PIN2 = 22;
 
 Servo myservolno;
@@ -31,7 +43,7 @@ Servo myservo3;
 Servo myservo4;
 Servo myservoledno;
 // 舵机引脚
-int SPIN_1 = 5;
+int SPIN_1 = 23;
 int SPIN_2 = 18;
 int SPIN_3 = 19;
 int SPIN_4 = 21;
@@ -77,35 +89,35 @@ ps3_cmd_t cmd;
 int pr(int16_t val)
 {
     val = map(val, -128, 127, 0, 255);
-    Serial.print(" [");
-    Serial.print(val);
-    Serial.print("]");
+    LOG(" [");
+    LOG(val);
+    LOG("]");
     return val;
 }
 
 int16_t pr_f(int16_t val)
 {
     val = map(val, -128, 127, 255, 0);
-    Serial.print(" [");
-    Serial.print(val);
-    Serial.print("]");
+    LOG(" [");
+    LOG(val);
+    LOG("]");
     return val;
 }
 
 int16_t pr180(int16_t val)
 {
     val = map(val, -128, 127, 0, 180);
-    Serial.print(" (");
-    Serial.print(val);
-    Serial.print(")");
+    LOG(" (");
+    LOG(val);
+    LOG(")");
     return val;
 }
 
 // 手柄震动
 void shock()
 {
-    Serial.print("shocking");
-    Serial.print(" ");
+    LOG("shocking");
+    LOG(" ");
     // cmd.led1 = true;
     cmd.rumble_left_intensity = 0xff; //强度
     cmd.rumble_right_intensity = 0xff;
@@ -123,9 +135,9 @@ void defled()
 // 手柄电量显示v2
 void battery_info_v2(int i)
 {
-    Serial.print("battery:");
-    Serial.print(i);
-    Serial.print(" ");
+    LOG("battery:");
+    LOG(i);
+    LOG(" ");
     switch (i)
     {
     case 1:
@@ -170,18 +182,18 @@ void battery_info_v2(int i)
 
 void notify()
 {
-    // Serial.print(Ps3.data.status.battery);
-    // Serial.print(" ");
-    // Serial.print(Ps3.data.analog.stick.ry);
-    // Serial.print(" ");
+    // LOG(Ps3.data.status.battery);
+    // LOG(" ");
+    // LOG(Ps3.data.analog.stick.ry);
+    // LOG(" ");
     // 防止信号中断自动前进
     // 4 -1  [128] [128] [128] [128] tank_v2_1:128 tank_v2_2:128 two_L:0 tow_R:0
     // 20 -128  [255] [128] tank_L:255 tank_R:128 one:1023 one:1023 two_L:1023 tow_R:1023
     if (Ps3.data.status.battery == 20)
     {
         mrun.two(STOP, STOP);
-        Serial.print("stop");
-        Serial.println();
+        LOG("stop");
+        LOGLN();
         return;
     }
 
@@ -189,7 +201,7 @@ void notify()
     if (Ps3.data.button.ps == 1)
     {
         battery_info_v2(Ps3.data.status.battery);
-        Serial.println();
+        LOGLN();
         return;
     }
 
@@ -198,11 +210,21 @@ void notify()
         // LED_MOD = false;
         // TANK_V2_MOD = false;
         // shock(); //震动
-        // Serial.println();
+        // LOGLN();
         defled();
         return;
     }
 
+    // 继电器通断
+    if (Ps3.data.button.r1 == 1)
+    {
+        digitalWrite(LED_PIN1, HIGH);
+    }
+
+    if (Ps3.data.button.l1 == 1)
+    {
+        digitalWrite(LED_PIN1, LOW);
+    }
     // if (Ps3.data.button.start == 1)
     // {
     //     LED_MOD = true;
@@ -216,8 +238,8 @@ void notify()
 
     // if (Ps3.data.analog.button.r2 > 0)
     // {
-    //     Serial.print(Ps3.data.analog.button.r2);
-    //     Serial.println();
+    //     LOG(Ps3.data.analog.button.r2);
+    //     LOGLN();
     //     digitalWrite(LED_PIN1, LOW);
     //     analogWrite(LED_PIN2, Ps3.data.analog.button.r2, 255);
     //     return;
@@ -234,12 +256,12 @@ void notify()
     //     digitalWrite(LED_PIN2, LOW);
     // }
 
-    // Serial.print("TANK_V2_MOD:");
-    // Serial.print(TANK_V2_MOD);
-    // Serial.print(" ");
-    // Serial.print("LED_MOD:");
-    // Serial.print(LED_MOD);
-    // Serial.print(" ");
+    // LOG("TANK_V2_MOD:");
+    // LOG(TANK_V2_MOD);
+    // LOG(" ");
+    // LOG("LED_MOD:");
+    // LOG(LED_MOD);
+    // LOG(" ");
 
     // // 舵机
     // if (Ps3.data.button.r1 == 1)
@@ -295,18 +317,18 @@ void notify()
     // myservo2.write(SVO2);
     // myservo3.write(SVO3);
     // myservo4.write(SVO4);
-    // Serial.print("SVO1:");
-    // Serial.print(SVO1);
-    // Serial.print(" ");
-    // Serial.print("SVO2:");
-    // Serial.print(SVO2);
-    // Serial.print(" ");
-    // Serial.print("SVO3:");
-    // Serial.print(SVO3);
-    // Serial.print(" ");
-    // Serial.print("SVO4:");
-    // Serial.print(SVO4);
-    // Serial.print(" ");
+    // LOG("SVO1:");
+    // LOG(SVO1);
+    // LOG(" ");
+    // LOG("SVO2:");
+    // LOG(SVO2);
+    // LOG(" ");
+    // LOG("SVO3:");
+    // LOG(SVO3);
+    // LOG(" ");
+    // LOG("SVO4:");
+    // LOG(SVO4);
+    // LOG(" ");
 
     // 速度初始化
     RUN_SPEED = STOP;
@@ -348,25 +370,25 @@ void notify()
         if (RUN_SPEED == Y_MID && LR == X_MID) // 右摇杆不在控制
         {
             // 左摇杆
-            // RUN_SPEED = pr_f(Ps3.data.analog.stick.ly);
-            // LR = pr_f(Ps3.data.analog.stick.lx);
-            // mrun.tank_v2(RUN_SPEED, LR);
-
-            // maluservo(pr180(Ps3.data.analog.stick.lx), SPIN_1);
-            // delay(1);
-            // myservo3.write(pr180(Ps3.data.analog.stick.lx));
-            mrun.two(STOP, STOP);
-        }
-        else
-        {
-            if (TANK_V2_MOD)
+            RUN_SPEED = pr(Ps3.data.analog.stick.ly);
+            LR = pr(Ps3.data.analog.stick.lx);
+            if (RUN_SPEED == Y_MID && LR == X_MID) // 右摇杆不在控制
             {
                 mrun.tank_v2(RUN_SPEED, LR);
             }
             else
             {
-                mrun.tank(RUN_SPEED, LR);
+                mrun.two(STOP, STOP);
             }
+
+            // maluservo(pr180(Ps3.data.analog.stick.lx), SPIN_1);
+            // delay(1);
+            // myservo3.write(pr180(Ps3.data.analog.stick.lx));
+            // mrun.two(STOP, STOP);
+        }
+        else
+        {
+            mrun.tank(RUN_SPEED, LR);
         }
     }
     else
@@ -407,22 +429,22 @@ void notify()
             mrun.two(RUN_SPEED, RUN_SPEED);
         }
     }
-    Serial.println();
+    LOGLN();
     // delay(10);
 }
 
 // 重连
 void rec()
 {
-    Serial.print("*****************down***************");
-    Serial.println();
+    LOG("*****************down***************");
+    LOGLN();
     Ps3.attach(notify);
     Ps3.begin("FF:87:E0:A6:AC:05");
 }
 
 void setup()
 {
-    Serial.begin(115200);
+    // Serial.begin(115200);
 
     myservolno.attach(SPIN_1); //电机驱动pwm通道占位
     myservorno.attach(SPIN_1); //电机驱动pwm通道占位
@@ -453,7 +475,4 @@ void setup()
 
 void loop()
 {
-    // Serial.print("conn:");
-    // Serial.print(Ps3.data.status.connection);
-    // Serial.print(" \n");
 }
