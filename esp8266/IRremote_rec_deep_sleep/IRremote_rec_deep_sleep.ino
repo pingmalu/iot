@@ -21,6 +21,16 @@
 #include <IRrecv.h>
 #include <IRutils.h>
 #include <Servo.h>
+// comment out this line, if you want to show logs:
+#define NDEBUG
+
+#ifdef NDEBUG
+#define LOG(...)
+#define LOGLN(...)
+#else
+#define LOG(...) Serial.print(__VA_ARGS__)
+#define LOGLN(...) Serial.println(__VA_ARGS__)
+#endif
 Servo servo;
 
 // 循环次数
@@ -31,7 +41,7 @@ void open()
 {
     servo.attach(D1);
     //you begin your own personal code for servo here
-    Serial.println("open");
+    LOGLN("open");
     digitalWrite(LED_BUILTIN, LOW); //把板载led点亮
     servo.write(180);
     delay(1000);
@@ -42,12 +52,12 @@ void open()
 // 匹配用户
 void CheckUser(uint64_t id)
 {
-    uint64_t user = 0x1;
+    uint64_t user = 0x55168EAC0082;
     // print() & println() can't handle printing long longs. (uint64_t)
     serialPrintUint64(id, HEX);
     if (user == id)
     {
-        Serial.println("Hello Malu!");
+        LOGLN("Hello Malu!");
         digitalWrite(LED_BUILTIN, LOW); //把板载led点亮
         open();
     }
@@ -56,7 +66,7 @@ void CheckUser(uint64_t id)
 // 休眠
 void go_poweroff()
 {
-    Serial.println("go to sleep!!!");
+    LOGLN("go to sleep!!!");
     ESP.deepSleep(3e6); // 10 seconds
 }
 
@@ -89,9 +99,9 @@ void setup()
     irrecv.enableIRIn(); // Start the receiver
     while (!Serial)      // Wait for the serial connection to be establised.
         delay(50);
-    Serial.println();
-    Serial.print("IRrecvDemo is now running and waiting for IR message on Pin ");
-    Serial.println(kRecvPin);
+    LOGLN();
+    LOG("IRrecvDemo is now running and waiting for IR message on Pin ");
+    LOGLN(kRecvPin);
 }
 
 void loop()
@@ -107,12 +117,12 @@ void loop()
         // print() & println() can't handle printing long longs. (uint64_t)
         // serialPrintUint64(results.value, HEX);
         CheckUser(results.value);
-        Serial.println("|");
+        LOGLN("|");
         irrecv.resume(); // Receive the next value
     }
     else
     {
-        Serial.println("not found");
+        LOGLN("not found");
     }
     looptimes++;
 }
