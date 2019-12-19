@@ -378,7 +378,7 @@ void notify()
             }
             else
             {
-                mrun.tank_v2(RUN_SPEED, LR);
+                mrun.tank(RUN_SPEED, LR);
             }
 
             // maluservo(pr180(Ps3.data.analog.stick.lx), SPIN_1);
