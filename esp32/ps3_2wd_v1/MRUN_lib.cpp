@@ -37,6 +37,7 @@ void MRUN::config(int m1, int m2, int m3, int m4, int Y_MAX, int Y_MID, int Y_MI
   _X_MIN = X_MIN;
   _SILL = SILL;
   MAX_RUN_SPEED = MAX_SPEED;
+  analogWriteFrequency(40e3); //更改pwm频率为40kHz，去除啸叫
   LOGLN(" config OK");
 }
 

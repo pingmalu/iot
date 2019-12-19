@@ -18,7 +18,7 @@
 
 #include "MRUN_lib.h"
 #include <Ps3Controller.h>
-#include <Servo.h>
+// #include <Servo.h>
 #include <analogWrite.h>
 
 // comment out this line, if you want to show logs:
@@ -35,13 +35,13 @@
 int LED_PIN1 = 5;
 int LED_PIN2 = 22;
 
-Servo myservolno;
-Servo myservorno;
-Servo myservo1;
-Servo myservo2;
-Servo myservo3;
-Servo myservo4;
-Servo myservoledno;
+// Servo myservolno;
+// Servo myservorno;
+// Servo myservo1;
+// Servo myservo2;
+// Servo myservo3;
+// Servo myservo4;
+// Servo myservoledno;
 // 舵机引脚
 int SPIN_1 = 23;
 int SPIN_2 = 18;
@@ -446,13 +446,13 @@ void setup()
 {
     // Serial.begin(115200);
 
-    myservolno.attach(SPIN_1); //电机驱动pwm通道占位
-    myservorno.attach(SPIN_1); //电机驱动pwm通道占位
-    myservo1.attach(SPIN_1);
-    myservo2.attach(SPIN_2);
-    myservo3.attach(SPIN_3);
-    myservo4.attach(SPIN_4);
-    myservoledno.attach(SPIN_1); //LED电机驱动pwm通道占位
+    // myservolno.attach(SPIN_1); //电机驱动pwm通道占位
+    // myservorno.attach(SPIN_1); //电机驱动pwm通道占位
+    // myservo1.attach(SPIN_1);
+    // myservo2.attach(SPIN_2);
+    // myservo3.attach(SPIN_3);
+    // myservo4.attach(SPIN_4);
+    // myservoledno.attach(SPIN_1); //LED电机驱动pwm通道占位
 
     pinMode(LED_PIN1, OUTPUT);
     pinMode(LED_PIN2, OUTPUT);
