@@ -14,7 +14,7 @@ const int Y_PIN = D1;
 const int X_PIN = D2;
 const int Y_PIN_R = D3;
 const int X_PIN_R = D4;
-const int LED_2 = D8;
+const int LED_2 = D5;
 ////////////////////////////--------------------Don't change these Settings-------------------------------------------/////////////////////////////////////
 /* Don't change this stuff(because the phone will be looking for us based on SSID name and port) */ //Note, we are not connecting to WiFi, because we are looking to optimize speed.  You can connect to WiFi if you want
 const char *ssid = "ESPTest";
