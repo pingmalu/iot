@@ -70,6 +70,11 @@ void useGameData(char type, int value)
 {
   yield();
 
+  Serial.print(type);
+  Serial.print("=");
+  Serial.print(value);
+  Serial.println();
+
   int num;
   switch (type)
   {
