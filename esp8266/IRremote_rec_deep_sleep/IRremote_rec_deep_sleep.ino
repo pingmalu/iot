@@ -52,7 +52,8 @@ void open()
 // 匹配用户
 void CheckUser(uint64_t id)
 {
-    uint64_t user = 0x55168EAC0082;
+    // uint64_t user = 0x55168EAC0082;
+    uint64_t user = 0xE0E0A659;
     // print() & println() can't handle printing long longs. (uint64_t)
     serialPrintUint64(id, HEX);
     if (user == id)
