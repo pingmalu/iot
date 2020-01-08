@@ -223,6 +223,25 @@ int getDistance()
     return distance;
 }
 
+/**
+ * 自动探测
+ */
+void auto_run()
+{
+    int dis = 0;
+    dis = getDistance();
+    if (dis > 50)
+    {
+        // 前进
+        mrun.two(MAX_SPEED, MAX_SPEED);
+    }
+    else
+    {
+        // 停止
+        mrun.two(STOP, STOP);
+    }
+}
+
 void notify()
 {
     // LOG(Ps3.data.status.battery);
@@ -310,6 +329,7 @@ void notify()
         BTN_L1 = false;
     }
 
+    // 速度调至最低
     if (Ps3.data.button.start == 1)
     {
         battery_info_v2(2);
@@ -317,6 +337,7 @@ void notify()
         mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
     }
 
+    // r2变速
     if (Ps3.data.analog.button.r2 > 0)
     {
         LOG(Ps3.data.analog.button.r2);
@@ -333,9 +354,18 @@ void notify()
     // 自动超声波避障
     if (Ps3.data.button.l3 == 1)
     {
-
+        // 上一次为释放时才进去
+        if (!BTN_L3)
+        {
+            // 切换开关
+            BTN_L3_TAG = BTN_L3_TAG ? false : true;
+        }
+        BTN_L3 = true;
     }
-
+    else
+    {
+        BTN_L3 = false;
+    }
 
     // if (LED_MOD)
     // {
@@ -451,6 +481,19 @@ void notify()
     else
     {
         LR = STOP;
+    }
+
+    // L3开启自动前进
+    if (RUN_SPEED != STOP || LR != STOP)
+    {
+        // 左右上下按下时退出自动前进
+        BTN_L3_TAG = false;
+    }
+    if (BTN_L3_TAG)
+    {
+        auto_run();
+        LOGLN();
+        return;
     }
 
     if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放
