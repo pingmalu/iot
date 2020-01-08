@@ -92,6 +92,9 @@ bool BTN_R1_TAG = false;
 bool BTN_L1 = false;
 bool BTN_L1_TAG = false;
 
+// 最大速度缓存值
+uint16_t MAX_SPEED_INIT = 0;
+
 int pr(int16_t val)
 {
     val = map(val, -128, 127, 0, 255);
@@ -208,7 +211,8 @@ void notify()
     {
         battery_info_v2(Ps3.data.status.battery);
         LOGLN();
-        mrun.MAX_RUN_SPEED = 1023;
+        MAX_SPEED_INIT = 1023;
+        mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
         return;
     }
 
@@ -219,7 +223,8 @@ void notify()
         // shock(); //震动
         // LOGLN();
         defled();
-        mrun.MAX_RUN_SPEED = 512;
+        MAX_SPEED_INIT = 512;
+        mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
         return;
     }
 
@@ -274,24 +279,22 @@ void notify()
     if (Ps3.data.button.start == 1)
     {
         battery_info_v2(2);
-        mrun.MAX_RUN_SPEED = 450;
-        //     LED_MOD = true;
-        //     Ps3.setLed(3);
+        MAX_SPEED_INIT = 400;
+        mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
     }
 
-    // if (Ps3.data.button.r3 == 1)
-    // {
-    //     TANK_V2_MOD = true;
-    // }
-
-    // if (Ps3.data.analog.button.r2 > 0)
-    // {
-    //     LOG(Ps3.data.analog.button.r2);
-    //     LOGLN();
-    //     digitalWrite(LED_PIN1, LOW);
-    //     analogWrite(LED_PIN2, Ps3.data.analog.button.r2, 255);
-    //     return;
-    // }
+    if (Ps3.data.analog.button.r2 > 0)
+    {
+        LOG(Ps3.data.analog.button.r2);
+        LOGLN();
+        uint16_t SPEED_TMP1 = MAX_SPEED_INIT + (Ps3.data.analog.button.r2 * 3);
+        SPEED_TMP1 = (SPEED_TMP1 >= 1023) ? 1023 : SPEED_TMP1;
+        mrun.MAX_RUN_SPEED = SPEED_TMP1;
+    }
+    else
+    {
+        mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
+    }
 
     // if (LED_MOD)
     // {
@@ -528,7 +531,8 @@ void setup()
     mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
 
     // 初始最大速度
-    mrun.MAX_RUN_SPEED = 512;
+    MAX_SPEED_INIT = 512;
+    mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
 }
 
 void loop()
