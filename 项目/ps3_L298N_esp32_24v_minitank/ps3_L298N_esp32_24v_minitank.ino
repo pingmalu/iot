@@ -86,6 +86,12 @@ int LR = 0;        // 转向速度
 
 ps3_cmd_t cmd;
 
+// 按键历史值
+bool BTN_R1 = false;
+bool BTN_R1_TAG = false;
+bool BTN_L1 = false;
+bool BTN_L1_TAG = false;
+
 int pr(int16_t val)
 {
     val = map(val, -128, 127, 0, 255);
@@ -220,12 +226,49 @@ void notify()
     // 继电器通断
     if (Ps3.data.button.r1 == 1)
     {
-        digitalWrite(LED_PIN1, HIGH);
+        // 上一次为释放时才进去
+        if (!BTN_R1)
+        {
+            // 切换开关
+            BTN_R1_TAG = BTN_R1_TAG ? false : true;
+            if (BTN_R1_TAG)
+            {
+                digitalWrite(LED_PIN1, HIGH);
+            }
+            else
+            {
+                digitalWrite(LED_PIN1, LOW);
+            }
+        }
+        BTN_R1 = true;
+    }
+    else
+    {
+        BTN_R1 = false;
     }
 
+    // 继电器通断
     if (Ps3.data.button.l1 == 1)
     {
-        digitalWrite(LED_PIN1, LOW);
+        // 上一次为释放时才进去
+        if (!BTN_L1)
+        {
+            // 切换开关
+            BTN_L1_TAG = BTN_L1_TAG ? false : true;
+            if (BTN_L1_TAG)
+            {
+                digitalWrite(LED_PIN2, HIGH);
+            }
+            else
+            {
+                digitalWrite(LED_PIN2, LOW);
+            }
+        }
+        BTN_L1 = true;
+    }
+    else
+    {
+        BTN_L1 = false;
     }
 
     if (Ps3.data.button.start == 1)
