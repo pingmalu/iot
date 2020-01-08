@@ -102,6 +102,10 @@ bool BTN_L3_TAG = false;
 // 最大速度缓存值
 uint16_t MAX_SPEED_INIT = 0;
 
+// 自动前进初始时间
+unsigned long starttime;
+bool AUTO_RUNING_MODE = false;
+
 int pr(int16_t val)
 {
     val = map(val, -128, 127, 0, 255);
