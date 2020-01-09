@@ -19,12 +19,12 @@ int flame_detected;       //定义一个变量
 void go_poweroff()
 {
     LOGLN("go to sleep!!!");
-    ESP.deepSleep(3e6); // 10 seconds
+    ESP.deepSleep(10e6); // 10 seconds
 }
 
 void setup() //初始化
 {
-    Serial.begin(9600);
+    Serial.begin(115200);
     pinMode(buzzer_PIN, OUTPUT);      //将8号引脚设置为输出信号
     pinMode(LED_BUILTIN, OUTPUT);     //将13号引脚设置为输出信号
     pinMode(flame_sensor_PIN, INPUT); //将4号引脚设置为输入信号
