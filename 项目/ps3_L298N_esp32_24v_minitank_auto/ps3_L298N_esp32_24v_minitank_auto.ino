@@ -234,15 +234,41 @@ void auto_run()
 {
     int dis = 0;
     dis = getDistance();
-    if (dis > 50)
+    if (dis > 150)
     {
-        // 前进
-        mrun.two(MAX_SPEED, MAX_SPEED);
+        if (dis > 100)
+        {
+            if (dis > 50)
+            {
+                mrun.two(250, 250);
+            }
+            else
+            {
+                mrun.two(350, 350);
+            }
+        }
+        else
+        {
+            mrun.two(MAX_SPEED, MAX_SPEED);
+        }
     }
     else
     {
-        // 停止
-        mrun.two(STOP, STOP);
+        mrun.two(350, -350);
+        // if (!AUTO_RUNING_MODE)
+        // {
+        //     mrun.two(MAX_SPEED, -MAX_SPEED);
+        //     AUTO_RUNING_MODE = true;
+        //     starttime = millis();
+        // }
+        // else
+        // {
+        //     if ((millis() - starttime) > 1000)
+        //     { // 1秒后
+        //         // 停止
+        //         mrun.two(STOP, STOP);
+        //     }
+        // }
     }
 }
 
