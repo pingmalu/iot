@@ -11,9 +11,9 @@
 #define LOGLN(...) Serial.println(__VA_ARGS__)
 #endif
 
-int buzzer_PIN = 5;       //设置蜂鸣器的数字引脚为8
-int flame_sensor_PIN = 4; //设置火焰传感器的数字引脚为4
-int flame_detected;       //定义一个变量
+uint8_t buzzer_PIN = 5;       //设置蜂鸣器的数字引脚为8
+uint8_t flame_sensor_PIN = 4; //设置火焰传感器的数字引脚为4
+uint8_t flame_detected;       //定义一个变量
 
 // 休眠
 void go_poweroff()
