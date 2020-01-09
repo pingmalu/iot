@@ -1,8 +1,26 @@
 #include <Arduino.h>
 
+// comment out this line, if you want to show logs:
+#define NDEBUG
+
+#ifdef NDEBUG
+#define LOG(...)
+#define LOGLN(...)
+#else
+#define LOG(...) Serial.print(__VA_ARGS__)
+#define LOGLN(...) Serial.println(__VA_ARGS__)
+#endif
+
 int buzzer_PIN = 5;       //设置蜂鸣器的数字引脚为8
 int flame_sensor_PIN = 4; //设置火焰传感器的数字引脚为4
 int flame_detected;   //定义一个变量
+
+// 休眠
+void go_poweroff()
+{
+    LOGLN("go to sleep!!!");
+    ESP.deepSleep(3e6); // 10 seconds
+}
 
 void setup() //初始化
 {
@@ -19,18 +37,18 @@ void loop()
     //读取火焰传感器的数字输出并将其存储在变量“flame_detected”中。
     if (flame_detected == 1)
     {
-        Serial.println("Flame detected...! take action immediately.");
+        LOGLN("Flame detected...! take action immediately.");
         digitalWrite(buzzer_PIN, HIGH);
         tone(buzzer_PIN, 1000); //将8号数字引脚的输出设置为1000Hz频率，蜂鸣器触发
-        Serial.println("Bi~");
         digitalWrite(LED_BUILTIN, HIGH);
     }
     else
     {
-        Serial.println("No flame detected. stay cool");
+        LOGLN("No flame detected. stay cool");
         digitalWrite(buzzer_PIN, LOW);
         noTone(buzzer_PIN);
         digitalWrite(LED_BUILTIN, LOW);
     }
     delay(1000);
+    // go_poweroff();
 }
