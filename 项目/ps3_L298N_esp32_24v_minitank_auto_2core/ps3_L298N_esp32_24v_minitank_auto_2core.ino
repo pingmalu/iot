@@ -94,9 +94,9 @@ MRUN mrun;
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
 
-#define SPEED_MAX 1023;
-#define SPEED_MID 512;
-#define SPEED_MIN 400;
+#define SPEED_MAX 1023
+#define SPEED_MID 512
+#define SPEED_MIN 400
 
 ps3_cmd_t cmd;
 
