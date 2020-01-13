@@ -38,7 +38,7 @@
 #endif
 
 // 超声波针脚定义
-int EchoPin = 12; // 收到反射回来的超声波
+int EchoPin = 14; // 收到反射回来的超声波
 int TrigPin = 13; // 发出超声波
 
 int LED_PIN1 = 5;
@@ -251,25 +251,29 @@ void start_distance(void *parameter)
     while (1)
     {
         AUTO_RUNING_DISTANCE = getDistance();
-        delay(10);
+        Serial.print(AUTO_RUNING_DISTANCE);
+        Serial.println();
+        delay(100);
     }
 }
 
 void stop_subprocess()
 {
+    Serial.print("stop_sub ");
     vTaskDelete(Task1);
 }
 
 void start_subprocess()
 {
+    Serial.print("start_sub ");
     xTaskCreatePinnedToCore(
         start_distance, /* Function to implement the task */
         "Task1",        /* Name of the task */
         10000,          /* Stack size in words */
         NULL,           /* Task input parameter */
-        0,              /* Priority of the task */
+        2,              /* Priority of the task */
         &Task1,         /* Task handle. */
-        0);             /* Core where the task should run */
+        1);             /* Core where the task should run */
 }
 
 /**
@@ -277,27 +281,27 @@ void start_subprocess()
  */
 void auto_run()
 {
-    if (AUTO_RUNING_DISTANCE > 150)
+    if (AUTO_RUNING_DISTANCE > 30)
     {
-        if (AUTO_RUNING_DISTANCE > 100)
+        if (AUTO_RUNING_DISTANCE > 50)
         {
-            if (AUTO_RUNING_DISTANCE > 50)
+            if (AUTO_RUNING_DISTANCE > 100)
             {
-                mrun.two(250, 250);
+                mrun.two(300, 300);
             }
             else
             {
-                mrun.two(350, 350);
+                mrun.two(250, 250);
             }
         }
         else
         {
-            mrun.two(MAX_SPEED, MAX_SPEED);
+            mrun.two(200, 200);
         }
     }
     else
     {
-        mrun.two(350, -350);
+        mrun.two(250, -250);
         // if (!AUTO_RUNING_MODE)
         // {
         //     mrun.two(MAX_SPEED, -MAX_SPEED);
@@ -454,14 +458,10 @@ void notify()
             if (AUTO_RUNING_MODE)
             {
                 start_subprocess();
-                LOGLN();
-                return;
             }
             else
             {
                 stop_subprocess();
-                LOGLN();
-                return;
             }
         }
         BTN_L3 = true;
