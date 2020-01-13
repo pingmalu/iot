@@ -1,6 +1,10 @@
 /*
  * ps3手柄控制4轮驱动小车
  * ps3蓝牙库 https://github.com/jvpernis/esp32-ps3/tree/develop
+ * v2 L3键开启AUTO_RUNING_MODE
+ *    L1 R1 开灯
+ *    R2 加速
+ *    L1 R1 L2 R2 start 切换前后
  * v1 ps3蓝牙控制坦克，机械手臂，LED大灯
  *    PS键显示电量
  *    select键关灯，关闭TANK_V2_MOD，手柄震动
@@ -89,6 +93,10 @@ MRUN mrun;
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
+
+#define SPEED_MAX 1023;
+#define SPEED_MID 512;
+#define SPEED_MIN 400;
 
 ps3_cmd_t cmd;
 
@@ -347,7 +355,7 @@ void notify()
         Serial.println(xPortGetCoreID());
         battery_info_v2(Ps3.data.status.battery);
         LOGLN();
-        MAX_SPEED_INIT = 1023;
+        MAX_SPEED_INIT = SPEED_MAX;
         mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
         return;
     }
@@ -359,7 +367,7 @@ void notify()
         // shock(); //震动
         // LOGLN();
         defled();
-        MAX_SPEED_INIT = 512;
+        MAX_SPEED_INIT = SPEED_MID;
         mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
         return;
     }
@@ -416,7 +424,7 @@ void notify()
     if (Ps3.data.button.start == 1)
     {
         battery_info_v2(2);
-        MAX_SPEED_INIT = 400;
+        MAX_SPEED_INIT = SPEED_MIN;
         mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
     }
 
@@ -634,11 +642,13 @@ void notify()
         {
             if (RUN_SPEED > STOP)
             {
-                mrun.two(MAX_SPEED, STOP);
+                // mrun.two(MAX_SPEED, STOP);
+                mrun.two(MAX_SPEED, STOP + MAX_SPEED_INIT - SPEED_MIN);
             }
             else if (RUN_SPEED < STOP)
             {
-                mrun.two(STOP, -MAX_SPEED);
+                // mrun.two(STOP, -MAX_SPEED);
+                mrun.two(STOP - MAX_SPEED_INIT + SPEED_MIN, -MAX_SPEED);
             }
             else
             {
@@ -649,11 +659,13 @@ void notify()
         {
             if (RUN_SPEED > STOP)
             {
-                mrun.two(STOP, MAX_SPEED);
+                // mrun.two(STOP, MAX_SPEED);
+                mrun.two(STOP + MAX_SPEED_INIT - SPEED_MIN, MAX_SPEED);
             }
             else if (RUN_SPEED < STOP)
             {
-                mrun.two(-MAX_SPEED, STOP);
+                // mrun.two(-MAX_SPEED, STOP);
+                mrun.two(-MAX_SPEED, STOP - MAX_SPEED_INIT + SPEED_MIN);
             }
             else
             {
@@ -714,7 +726,7 @@ void setup()
     mrun.EEP_UP_DWON_TAG = EEP_UP_DWON_TAG;
 
     // 初始最大速度
-    MAX_SPEED_INIT = 512;
+    MAX_SPEED_INIT = SPEED_MID;
     mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
 }
 
