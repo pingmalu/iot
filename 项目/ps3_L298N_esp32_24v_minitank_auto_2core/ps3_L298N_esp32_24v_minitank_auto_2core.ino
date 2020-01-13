@@ -20,6 +20,7 @@
 #include <Ps3Controller.h>
 // #include <Servo.h>
 #include <analogWrite.h>
+#include <EEPROM.h>
 
 // comment out this line, if you want to show logs:
 #define NDEBUG
@@ -93,11 +94,15 @@ ps3_cmd_t cmd;
 
 // 按键历史值
 bool BTN_R1 = false;
-bool BTN_R1_TAG = false;
+bool BTN_R1_TAG = false; // LED_PIN1开关
 bool BTN_L1 = false;
-bool BTN_L1_TAG = false;
+bool BTN_L1_TAG = false; // LED_PIN2开关
 bool BTN_L3 = false;
-bool BTN_L3_TAG = false;
+bool BTN_L3_TAG = false; // 自动运行开关
+bool BTN_UPDWON = false;
+
+// EEPROM缓冲值
+bool EEP_UP_DWON_TAG = false; // 前后切换
 
 // 最大速度缓存值
 uint16_t MAX_SPEED_INIT = 0;
@@ -293,6 +298,22 @@ void notify()
         return;
     }
 
+    // 切换前后
+    if (Ps3.data.button.l1 == 1 && Ps3.data.button.r1 == 1 && Ps3.data.button.l2 == 1 && Ps3.data.button.r2 == 1 && Ps3.data.button.start == 1)
+    {
+        if (!BTN_UPDWON)
+        {
+            EEP_UP_DWON_TAG = EEP_UP_DWON_TAG ? false : true;
+            mrun.EEP_UP_DWON_TAG = EEP_UP_DWON_TAG;
+            EEPROM.write(0, EEP_UP_DWON_TAG ? 1 : 0); // 0:false  1:true
+        }
+        BTN_UPDWON = true;
+    }
+    else
+    {
+        BTN_UPDWON = false;
+    }
+
     //显示手柄电量
     if (Ps3.data.button.ps == 1)
     {
@@ -401,24 +422,6 @@ void notify()
         BTN_L3 = false;
     }
 
-    // if (LED_MOD)
-    // {
-    //     digitalWrite(LED_PIN1, LOW);
-    //     digitalWrite(LED_PIN2, HIGH);
-    // }
-    // else
-    // {
-    //     digitalWrite(LED_PIN1, LOW);
-    //     digitalWrite(LED_PIN2, LOW);
-    // }
-
-    // LOG("TANK_V2_MOD:");
-    // LOG(TANK_V2_MOD);
-    // LOG(" ");
-    // LOG("LED_MOD:");
-    // LOG(LED_MOD);
-    // LOG(" ");
-
     // // 舵机
     // if (Ps3.data.button.r1 == 1)
     // {
@@ -493,11 +496,11 @@ void notify()
     // 按键群
     if (Ps3.data.button.up == 1 || Ps3.data.button.triangle == 1)
     {
-        RUN_SPEED = -MAX_SPEED;
+        RUN_SPEED = EEP_UP_DWON_TAG ? MAX_SPEED : -MAX_SPEED;
     }
     else if (Ps3.data.button.down == 1 || Ps3.data.button.cross == 1)
     {
-        RUN_SPEED = MAX_SPEED;
+        RUN_SPEED = EEP_UP_DWON_TAG ? -MAX_SPEED : MAX_SPEED;
     }
     else
     {
@@ -532,8 +535,16 @@ void notify()
 
     if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放
     {
-        RUN_SPEED = pr(Ps3.data.analog.stick.ly);
-        LR = pr(Ps3.data.analog.stick.rx);
+        if (EEP_UP_DWON_TAG)
+        {
+            RUN_SPEED = pr_f(Ps3.data.analog.stick.ly);
+            LR = pr_f(Ps3.data.analog.stick.rx);
+        }
+        else
+        {
+            RUN_SPEED = pr(Ps3.data.analog.stick.ly);
+            LR = pr(Ps3.data.analog.stick.rx);
+        }
         if (RUN_SPEED == Y_MID && LR == X_MID) // 右摇杆不在控制
         {
             mrun.two(STOP, STOP);
@@ -649,7 +660,12 @@ void setup()
     pinMode(rightMotor1, OUTPUT);
     pinMode(rightMotor2, OUTPUT);
 
+    //获取前后切换值
+    EEPROM.begin(1); // 使用EEPROM时，首先调用EEPROM.begin(size)，size为需要读写的数据字节最大地址+1，取值1~4096
+    EEP_UP_DWON_TAG = EEPROM.read(0) == 0 ? false : true;
+
     mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
+    mrun.EEP_UP_DWON_TAG = EEP_UP_DWON_TAG;
 
     // 初始最大速度
     MAX_SPEED_INIT = 512;

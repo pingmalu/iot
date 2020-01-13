@@ -23,6 +23,7 @@ public:
   void tank(int y=0,int x=0);
   void tank_v2(int y=0,int x=0);
   int MAX_RUN_SPEED;
+  bool EEP_UP_DWON_TAG;
 
 private:
   int _m1;

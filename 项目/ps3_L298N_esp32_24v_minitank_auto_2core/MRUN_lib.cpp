@@ -37,6 +37,7 @@ void MRUN::config(int m1, int m2, int m3, int m4, int Y_MAX, int Y_MID, int Y_MI
   _X_MIN = X_MIN;
   _SILL = SILL;
   MAX_RUN_SPEED = MAX_SPEED;
+  EEP_UP_DWON_TAG = false;
   analogWriteFrequency(80000); //更改pwm频率为40kHz，去除啸叫
   LOGLN(" config OK");
 }
@@ -276,7 +277,15 @@ void MRUN::tank(int y, int x)
 
   if (_RUN_SPEED == 0 && _LR != 0)
   { // 原地左右
-    two(-_LR, _LR);
+    if (EEP_UP_DWON_TAG)
+    {
+
+      two(_LR, -_LR);
+    }
+    else
+    {
+      two(-_LR, _LR);
+    }
   }
   else
   {
@@ -379,7 +388,14 @@ void MRUN::tank_v2(int y, int x)
   {
     if (_RUN_SPEED == 0 && _LR != 0) // 原地左右
     {
-      two(-_LR, _LR);
+      if (EEP_UP_DWON_TAG)
+      {
+        two(_LR, -_LR);
+      }
+      else
+      {
+        two(-_LR, _LR);
+      }
     }
     else if (_RUN_SPEED != 0 && _LR == 0) // 原地前后
     {
