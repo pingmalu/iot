@@ -110,10 +110,10 @@ uint16_t MAX_SPEED_INIT = 0;
 // 自动前进初始时间
 unsigned long starttime;
 bool AUTO_RUNING_MODE = false;
+float AUTO_RUNING_DISTANCE = 0.0f;
 
-// define two task
-void Task1(void *pvParameters);
-void Task2(void *pvParameters);
+// define task
+TaskHandle_t Task1;
 
 int pr(int16_t val)
 {
@@ -236,18 +236,44 @@ int getDistance()
     return distance;
 }
 
+void start_distance(void *parameter)
+{
+    Serial.print("start_distance() running on core ");
+    Serial.println(xPortGetCoreID());
+    while (1)
+    {
+        AUTO_RUNING_DISTANCE = getDistance();
+        delay(10);
+    }
+}
+
+void stop_subprocess()
+{
+    vTaskDelete(Task1);
+}
+
+void start_subprocess()
+{
+    xTaskCreatePinnedToCore(
+        start_distance, /* Function to implement the task */
+        "Task1",        /* Name of the task */
+        10000,          /* Stack size in words */
+        NULL,           /* Task input parameter */
+        0,              /* Priority of the task */
+        &Task1,         /* Task handle. */
+        0);             /* Core where the task should run */
+}
+
 /**
  * 自动探测
  */
 void auto_run()
 {
-    int dis = 0;
-    dis = getDistance();
-    if (dis > 150)
+    if (AUTO_RUNING_DISTANCE > 150)
     {
-        if (dis > 100)
+        if (AUTO_RUNING_DISTANCE > 100)
         {
-            if (dis > 50)
+            if (AUTO_RUNING_DISTANCE > 50)
             {
                 mrun.two(250, 250);
             }
@@ -317,6 +343,8 @@ void notify()
     //显示手柄电量
     if (Ps3.data.button.ps == 1)
     {
+        Serial.print("notify() running on core ");
+        Serial.println(xPortGetCoreID());
         battery_info_v2(Ps3.data.status.battery);
         LOGLN();
         MAX_SPEED_INIT = 1023;
@@ -413,7 +441,20 @@ void notify()
         if (!BTN_L3)
         {
             // 切换开关
-            BTN_L3_TAG = BTN_L3_TAG ? false : true;
+            // BTN_L3_TAG = BTN_L3_TAG ? false : true;
+            AUTO_RUNING_MODE = AUTO_RUNING_MODE ? false : true;
+            if (AUTO_RUNING_MODE)
+            {
+                start_subprocess();
+                LOGLN();
+                return;
+            }
+            else
+            {
+                stop_subprocess();
+                LOGLN();
+                return;
+            }
         }
         BTN_L3 = true;
     }
@@ -524,9 +565,14 @@ void notify()
     if (RUN_SPEED != STOP || LR != STOP)
     {
         // 左右上下按下时退出自动前进
-        BTN_L3_TAG = false;
+        // BTN_L3_TAG = false;
+        if (AUTO_RUNING_MODE)
+        {
+            AUTO_RUNING_MODE = false;
+            stop_subprocess();
+        }
     }
-    if (BTN_L3_TAG)
+    if (AUTO_RUNING_MODE)
     {
         auto_run();
         LOGLN();
@@ -634,7 +680,7 @@ void rec()
 
 void setup()
 {
-    // Serial.begin(115200);
+    Serial.begin(115200);
 
     // myservolno.attach(SPIN_1); //电机驱动pwm通道占位
     // myservorno.attach(SPIN_1); //电机驱动pwm通道占位
