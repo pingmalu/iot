@@ -123,6 +123,9 @@ float AUTO_RUNING_DISTANCE = 0.0f;
 // define task
 TaskHandle_t Task1;
 
+uint8_t EEP_SPEED_L = 0;
+uint8_t EEP_SPEED_R = 0;
+
 int pr(int16_t val)
 {
     val = map(val, -128, 127, 0, 255);
@@ -337,13 +340,43 @@ void notify()
     }
 
     // 切换前后
-    if (Ps3.data.button.l1 == 1 && Ps3.data.button.r1 == 1 && Ps3.data.button.l2 == 1 && Ps3.data.button.r2 == 1 && Ps3.data.button.start == 1)
+    if (Ps3.data.button.l1 == 1 && Ps3.data.button.r1 == 1 && Ps3.data.button.l2 == 1 && Ps3.data.button.r2 == 1 && (Ps3.data.button.start == 1 || Ps3.data.button.circle == 1 || Ps3.data.button.square == 1))
     {
+
         if (!BTN_UPDWON)
         {
-            EEP_UP_DWON_TAG = EEP_UP_DWON_TAG ? false : true;
-            mrun.EEP_UP_DWON_TAG = EEP_UP_DWON_TAG;
-            EEPROM.write(0, EEP_UP_DWON_TAG ? 1 : 0); // 0:false  1:true
+            if (Ps3.data.button.start == 1)
+            {
+                EEP_UP_DWON_TAG = EEP_UP_DWON_TAG ? false : true;
+                mrun.EEP_UP_DWON_TAG = EEP_UP_DWON_TAG;
+                EEPROM.write(0, EEP_UP_DWON_TAG ? 1 : 0); // 0:false  1:true
+            }
+
+            // 直线偏移矫正
+            if (Ps3.data.button.circle == 1)
+            {
+                if (EEP_SPEED_R > 0)
+                {
+                    EEP_SPEED_R--;
+                }
+                else if (EEP_SPEED_L < 255)
+                {
+                    EEP_SPEED_L++;
+                }
+            }
+            else if (Ps3.data.button.square == 1)
+            {
+                if (EEP_SPEED_L > 0)
+                {
+                    EEP_SPEED_L--;
+                }
+                else if (EEP_SPEED_R < 255)
+                {
+                    EEP_SPEED_R++;
+                }
+            }
+            EEPROM.write(1, EEP_SPEED_L);
+            EEPROM.write(2, EEP_SPEED_R);
             EEPROM.commit();
         }
         BTN_UPDWON = true;
@@ -675,7 +708,7 @@ void notify()
         }
         else
         {
-            mrun.two(RUN_SPEED, RUN_SPEED);
+            mrun.two(RUN_SPEED - EEP_SPEED_L, RUN_SPEED - EEP_SPEED_R);
         }
     }
     LOGLN();
@@ -720,8 +753,10 @@ void setup()
     pinMode(rightMotor2, OUTPUT);
 
     //获取前后切换值
-    EEPROM.begin(1); // 使用EEPROM时，首先调用EEPROM.begin(size)，size为需要读写的数据字节最大地址+1，取值1~4096
+    EEPROM.begin(3); // 使用EEPROM时，首先调用EEPROM.begin(size)，size为需要读写的数据字节最大地址+1，取值1~4096
     EEP_UP_DWON_TAG = EEPROM.read(0) == 0 ? false : true;
+    EEP_SPEED_L = EEPROM.read(1);
+    EEP_SPEED_R = EEPROM.read(2);
 
     mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
     mrun.EEP_UP_DWON_TAG = EEP_UP_DWON_TAG;
