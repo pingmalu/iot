@@ -344,6 +344,7 @@ void notify()
             EEP_UP_DWON_TAG = EEP_UP_DWON_TAG ? false : true;
             mrun.EEP_UP_DWON_TAG = EEP_UP_DWON_TAG;
             EEPROM.write(0, EEP_UP_DWON_TAG ? 1 : 0); // 0:false  1:true
+            EEPROM.commit();
         }
         BTN_UPDWON = true;
     }
