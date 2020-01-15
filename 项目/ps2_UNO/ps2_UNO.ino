@@ -178,13 +178,13 @@ void setup()
 
     // LED灯引脚初始化
     pinMode(LED_PIN1, OUTPUT);
-    pinMode(LED_PIN2, OUTPUT)
+    pinMode(LED_PIN2, OUTPUT);
 
-        // 舵机引脚初始化
-        // myservo1.attach(SERVO_PIN_1);
-        // myservo2.attach(SERVO_PIN_2);
+    // 舵机引脚初始化
+    // myservo1.attach(SERVO_PIN_1);
+    // myservo2.attach(SERVO_PIN_2);
 
-        mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
+    mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
 
     starttime = millis();
 }
