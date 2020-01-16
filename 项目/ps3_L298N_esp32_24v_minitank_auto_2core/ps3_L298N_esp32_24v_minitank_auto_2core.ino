@@ -247,16 +247,52 @@ int getDistance()
     return distance;
 }
 
-void start_distance(void *parameter)
+void auto_run(void *parameter)
 {
-    Serial.print("start_distance() running on core ");
+    Serial.print("auto_run() running on core ");
     Serial.println(xPortGetCoreID());
     while (1)
     {
         AUTO_RUNING_DISTANCE = getDistance();
         Serial.print(AUTO_RUNING_DISTANCE);
         Serial.println();
-        delay(100);
+        if (AUTO_RUNING_DISTANCE > 30)
+        {
+            if (AUTO_RUNING_DISTANCE > 50)
+            {
+                if (AUTO_RUNING_DISTANCE > 100)
+                {
+                    mrun.two(300, 300);
+                }
+                else
+                {
+                    mrun.two(250, 250);
+                }
+            }
+            else
+            {
+                mrun.two(200, 200);
+            }
+        }
+        else
+        {
+            mrun.two(250, -250);
+            delay(2000);
+            // if (!AUTO_RUNING_MODE)
+            // {
+            //     mrun.two(MAX_SPEED, -MAX_SPEED);
+            //     AUTO_RUNING_MODE = true;
+            //     starttime = millis();
+            // }
+            // else
+            // {
+            //     if ((millis() - starttime) > 1000)
+            //     { // 1秒后
+            //         // 停止
+            //         mrun.two(STOP, STOP);
+            //     }
+            // }
+        }
     }
 }
 
@@ -270,56 +306,13 @@ void start_subprocess()
 {
     Serial.print("start_sub ");
     xTaskCreatePinnedToCore(
-        start_distance, /* Function to implement the task */
-        "Task1",        /* Name of the task */
-        10000,          /* Stack size in words */
-        NULL,           /* Task input parameter */
-        2,              /* Priority of the task */
-        &Task1,         /* Task handle. */
-        1);             /* Core where the task should run */
-}
-
-/**
- * 自动探测
- */
-void auto_run()
-{
-    if (AUTO_RUNING_DISTANCE > 30)
-    {
-        if (AUTO_RUNING_DISTANCE > 50)
-        {
-            if (AUTO_RUNING_DISTANCE > 100)
-            {
-                mrun.two(300, 300);
-            }
-            else
-            {
-                mrun.two(250, 250);
-            }
-        }
-        else
-        {
-            mrun.two(200, 200);
-        }
-    }
-    else
-    {
-        mrun.two(250, -250);
-        // if (!AUTO_RUNING_MODE)
-        // {
-        //     mrun.two(MAX_SPEED, -MAX_SPEED);
-        //     AUTO_RUNING_MODE = true;
-        //     starttime = millis();
-        // }
-        // else
-        // {
-        //     if ((millis() - starttime) > 1000)
-        //     { // 1秒后
-        //         // 停止
-        //         mrun.two(STOP, STOP);
-        //     }
-        // }
-    }
+        auto_run, /* Function to implement the task */
+        "Task1",  /* Name of the task */
+        10000,    /* Stack size in words */
+        NULL,     /* Task input parameter */
+        2,        /* Priority of the task */
+        &Task1,   /* Task handle. */
+        1);       /* Core where the task should run */
 }
 
 void notify()
@@ -615,12 +608,12 @@ void notify()
             stop_subprocess();
         }
     }
-    if (AUTO_RUNING_MODE)
-    {
-        auto_run();
-        LOGLN();
-        return;
-    }
+    // if (AUTO_RUNING_MODE)
+    // {
+    //     auto_run();
+    //     LOGLN();
+    //     return;
+    // }
 
     if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放
     {
