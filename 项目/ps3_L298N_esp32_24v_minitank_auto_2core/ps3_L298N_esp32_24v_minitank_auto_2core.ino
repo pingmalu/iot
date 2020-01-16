@@ -380,6 +380,7 @@ void notify()
             EEPROM.commit();
         }
         BTN_UPDWON = true;
+        return;
     }
     else
     {
@@ -708,7 +709,14 @@ void notify()
         }
         else
         {
-            mrun.two(RUN_SPEED - EEP_SPEED_L, RUN_SPEED - EEP_SPEED_R);
+            if (RUN_SPEED > 0)
+            {
+                mrun.two(RUN_SPEED - EEP_SPEED_L, RUN_SPEED - EEP_SPEED_R);
+            }
+            else
+            {
+                mrun.two(RUN_SPEED + EEP_SPEED_L, RUN_SPEED + EEP_SPEED_R);
+            }
         }
     }
     LOGLN();
