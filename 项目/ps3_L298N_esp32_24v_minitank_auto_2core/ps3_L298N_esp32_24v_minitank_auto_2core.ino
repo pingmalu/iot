@@ -308,13 +308,17 @@ void auto_run(void *parameter)
         {
             mrun.two(250, -250);
             ledinfo(1);
-            delay(500);
+            delay(333);
             ledinfo(20);
-            delay(500);
+            delay(333);
             ledinfo(30);
-            delay(500);
+            delay(333);
             ledinfo(40);
-            delay(500);
+            delay(333);
+            ledinfo(30);
+            delay(333);
+            ledinfo(20);
+            delay(333);
             // if (!AUTO_RUNING_MODE)
             // {
             //     mrun.two(MAX_SPEED, -MAX_SPEED);
