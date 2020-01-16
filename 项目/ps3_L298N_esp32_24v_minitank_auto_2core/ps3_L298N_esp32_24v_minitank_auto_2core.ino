@@ -166,14 +166,14 @@ void shock()
     ps3Cmd(cmd);
 }
 
-// 默认灯亮效果
-void defled()
-{
-    Ps3.setLed(1);
-}
+// // 默认灯亮效果
+// void defled()
+// {
+//     Ps3.setLed(1);
+// }
 
-// 手柄电量显示v2
-void battery_info_v2(int i)
+// 手柄LED显示
+void ledinfo(int i)
 {
     LOG("battery:");
     LOG(i);
@@ -205,6 +205,36 @@ void battery_info_v2(int i)
         cmd.led4 = true;
         break;
     case 5:
+        cmd.led1 = false;
+        cmd.led2 = true;
+        cmd.led3 = true;
+        cmd.led4 = true;
+        break;
+    case 20:
+        cmd.led1 = false;
+        cmd.led2 = true;
+        cmd.led3 = false;
+        cmd.led4 = false;
+        break;
+    case 30:
+        cmd.led1 = false;
+        cmd.led2 = false;
+        cmd.led3 = true;
+        cmd.led4 = false;
+        break;
+    case 40:
+        cmd.led1 = false;
+        cmd.led2 = false;
+        cmd.led3 = false;
+        cmd.led4 = true;
+        break;
+    case 21:
+        cmd.led1 = false;
+        cmd.led2 = true;
+        cmd.led3 = true;
+        cmd.led4 = false;
+        break;
+    case 22:
         cmd.led1 = false;
         cmd.led2 = true;
         cmd.led3 = true;
@@ -277,7 +307,14 @@ void auto_run(void *parameter)
         else
         {
             mrun.two(250, -250);
-            delay(2000);
+            ledinfo(1);
+            delay(500);
+            ledinfo(20);
+            delay(500);
+            ledinfo(30);
+            delay(500);
+            ledinfo(40);
+            delay(500);
             // if (!AUTO_RUNING_MODE)
             // {
             //     mrun.two(MAX_SPEED, -MAX_SPEED);
@@ -381,27 +418,39 @@ void notify()
     }
 
     //显示手柄电量
+    if (Ps3.data.button.l2 == 1 && Ps3.data.button.r2 == 1)
+    {
+        ledinfo(Ps3.data.status.battery);
+        return;
+    }
+
+    //高速
     if (Ps3.data.button.ps == 1)
     {
         Serial.print("notify() running on core ");
         Serial.println(xPortGetCoreID());
-        battery_info_v2(Ps3.data.status.battery);
         LOGLN();
+        ledinfo(22);
         MAX_SPEED_INIT = SPEED_MAX;
         mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
         return;
     }
-
+    //中速
     if (Ps3.data.button.select == 1)
     {
-        // LED_MOD = false;
-        // TANK_V2_MOD = false;
         // shock(); //震动
         // LOGLN();
-        defled();
+        ledinfo(21);
         MAX_SPEED_INIT = SPEED_MID;
         mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
         return;
+    }
+    // 低速
+    if (Ps3.data.button.start == 1)
+    {
+        ledinfo(20);
+        MAX_SPEED_INIT = SPEED_MIN;
+        mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
     }
 
     // 继电器通断
@@ -450,14 +499,6 @@ void notify()
     else
     {
         BTN_L1 = false;
-    }
-
-    // 速度调至最低
-    if (Ps3.data.button.start == 1)
-    {
-        battery_info_v2(2);
-        MAX_SPEED_INIT = SPEED_MIN;
-        mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
     }
 
     // r2加速
