@@ -460,13 +460,28 @@ void notify()
         mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
     }
 
-    // r2变速
+    // r2加速
     if (Ps3.data.analog.button.r2 > 0)
     {
         LOG(Ps3.data.analog.button.r2);
         LOGLN();
         uint16_t SPEED_TMP1 = MAX_SPEED_INIT + (Ps3.data.analog.button.r2 * 3);
         SPEED_TMP1 = (SPEED_TMP1 >= 1023) ? 1023 : SPEED_TMP1;
+        mrun.MAX_RUN_SPEED = SPEED_TMP1;
+    }
+    else
+    {
+        mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
+    }
+
+    // l2减速
+    if (Ps3.data.analog.button.l2 > 0)
+    {
+        LOG(Ps3.data.analog.button.l2);
+        LOGLN();
+        // uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (Ps3.data.analog.button.l2);
+        uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (MAX_SPEED_INIT * (Ps3.data.analog.button.l2 / 255));
+        SPEED_TMP1 = (SPEED_TMP1 < 0) ? 0 : SPEED_TMP1;
         mrun.MAX_RUN_SPEED = SPEED_TMP1;
     }
     else
