@@ -287,53 +287,52 @@ void auto_run(void *parameter)
     {
         if ((millis() - starttime) > 9000)
         {
-            mrun.two(250, 300);
-            delay(300);
             mrun.two(-400, 400);
-            delay(900);
+            delay(1000);
             mrun.two(STOP, STOP);
             starttime = millis();
-            delay(1900);
+            delay(900);
         }
         AUTO_RUNING_DISTANCE = getDistance();
-        Serial.print(AUTO_RUNING_DISTANCE);
-        Serial.println();
+        // Serial.print(AUTO_RUNING_DISTANCE);
+        // Serial.println();
+        delay(10);
         if (AUTO_RUNING_DISTANCE > 50)
         {
             if (AUTO_RUNING_DISTANCE > 80)
             {
-                if (AUTO_RUNING_DISTANCE > 120)
+                if (AUTO_RUNING_DISTANCE > 100)
                 {
-                    mrun.two(-300, -300);
+                    mrun.two(-400, -400);
                 }
                 else
                 {
-                    mrun.two(-250, -250);
+                    mrun.two(-350, -350);
                 }
             }
             else
             {
-                mrun.two(-200, -200);
+                mrun.two(-300, -300);
             }
         }
         else
         {
             mrun.two(400, -400);
             ledinfo(1);
-            delay(100);
+            delay(130);
             ledinfo(20);
-            delay(100);
+            delay(130);
             ledinfo(30);
-            delay(100);
+            delay(130);
             ledinfo(40);
-            delay(100);
+            delay(130);
             ledinfo(30);
-            delay(100);
+            delay(130);
             ledinfo(20);
-            delay(100);
+            delay(130);
             mrun.two(STOP, STOP);
             ledinfo(1);
-            delay(1333);
+            delay(1033);
             // if (!AUTO_RUNING_MODE)
             // {
             //     mrun.two(MAX_SPEED, -MAX_SPEED);
@@ -532,8 +531,12 @@ void notify()
         LOG(Ps3.data.analog.button.l2);
         LOGLN();
         // Serial.print(Ps3.data.analog.button.l2);
-        uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (Ps3.data.analog.button.l2);
-        // uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (MAX_SPEED_INIT * (Ps3.data.analog.button.l2 / 510));
+        // uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (Ps3.data.analog.button.l2);
+        uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (int16_t)(MAX_SPEED_INIT * (Ps3.data.analog.button.l2 / 510.00));
+        // Serial.print(" ");
+        // Serial.print(Ps3.data.analog.button.l2 / 510.00);
+        // Serial.print(" ");
+        // Serial.print(MAX_SPEED_INIT * (Ps3.data.analog.button.l2 / 510.00));
         // Serial.print(" ");
         SPEED_TMP1 = (SPEED_TMP1 < 0) ? 0 : SPEED_TMP1;
         // Serial.print(SPEED_TMP1);
