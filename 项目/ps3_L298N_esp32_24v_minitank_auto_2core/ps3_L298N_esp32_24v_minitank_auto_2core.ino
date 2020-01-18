@@ -293,33 +293,36 @@ void auto_run(void *parameter)
             {
                 if (AUTO_RUNING_DISTANCE > 100)
                 {
-                    mrun.two(300, 300);
+                    mrun.two(-300, -300);
                 }
                 else
                 {
-                    mrun.two(250, 250);
+                    mrun.two(-250, -250);
                 }
             }
             else
             {
-                mrun.two(200, 200);
+                mrun.two(-200, -200);
             }
         }
         else
         {
-            mrun.two(250, -250);
+            mrun.two(400, -400);
             ledinfo(1);
-            delay(333);
+            delay(100);
             ledinfo(20);
-            delay(333);
+            delay(100);
             ledinfo(30);
-            delay(333);
+            delay(100);
             ledinfo(40);
-            delay(333);
+            delay(100);
             ledinfo(30);
-            delay(333);
+            delay(100);
             ledinfo(20);
-            delay(333);
+            delay(100);
+            mrun.two(STOP, STOP);
+            ledinfo(1);
+            delay(1333);
             // if (!AUTO_RUNING_MODE)
             // {
             //     mrun.two(MAX_SPEED, -MAX_SPEED);
@@ -678,12 +681,12 @@ void notify()
             stop_subprocess();
         }
     }
-    // if (AUTO_RUNING_MODE)
-    // {
-    //     auto_run();
-    //     LOGLN();
-    //     return;
-    // }
+    if (AUTO_RUNING_MODE)
+    {
+        // auto_run();
+        // LOGLN();
+        return;
+    }
 
     if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放
     {
