@@ -282,16 +282,27 @@ void auto_run(void *parameter)
 {
     Serial.print("auto_run() running on core ");
     Serial.println(xPortGetCoreID());
+    starttime = millis();
     while (1)
     {
+        if ((millis() - starttime) > 9000)
+        {
+            mrun.two(250, 300);
+            delay(300);
+            mrun.two(-400, 400);
+            delay(900);
+            mrun.two(STOP, STOP);
+            starttime = millis();
+            delay(1900);
+        }
         AUTO_RUNING_DISTANCE = getDistance();
         Serial.print(AUTO_RUNING_DISTANCE);
         Serial.println();
-        if (AUTO_RUNING_DISTANCE > 30)
+        if (AUTO_RUNING_DISTANCE > 50)
         {
-            if (AUTO_RUNING_DISTANCE > 50)
+            if (AUTO_RUNING_DISTANCE > 80)
             {
-                if (AUTO_RUNING_DISTANCE > 100)
+                if (AUTO_RUNING_DISTANCE > 120)
                 {
                     mrun.two(-300, -300);
                 }
@@ -520,9 +531,13 @@ void notify()
     {
         LOG(Ps3.data.analog.button.l2);
         LOGLN();
-        // uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (Ps3.data.analog.button.l2);
-        uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (MAX_SPEED_INIT * (Ps3.data.analog.button.l2 / 255));
+        // Serial.print(Ps3.data.analog.button.l2);
+        uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (Ps3.data.analog.button.l2);
+        // uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (MAX_SPEED_INIT * (Ps3.data.analog.button.l2 / 510));
+        // Serial.print(" ");
         SPEED_TMP1 = (SPEED_TMP1 < 0) ? 0 : SPEED_TMP1;
+        // Serial.print(SPEED_TMP1);
+        // Serial.println();
         mrun.MAX_RUN_SPEED = SPEED_TMP1;
     }
     else
