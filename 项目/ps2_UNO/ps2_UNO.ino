@@ -14,7 +14,7 @@
 #endif
 #include <PS2X_lib.h> //for v1.6
 #include "MRUN_lib.h"
-#include <Servo.h> // 舵机控制
+// #include <Servo.h> // 舵机控制
 
 int LED_PIN1 = 9;
 int LED_PIN2 = 8;
