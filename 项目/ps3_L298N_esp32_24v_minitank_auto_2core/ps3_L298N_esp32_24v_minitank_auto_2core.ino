@@ -108,6 +108,7 @@ bool BTN_L1_TAG = false; // LED_PIN2开关
 bool BTN_L3 = false;
 bool BTN_L3_TAG = false; // 自动运行开关
 bool BTN_UPDWON = false;
+bool BTN_PS_TAG = false; // 小宝模式开关
 
 // EEPROM缓冲值
 bool EEP_UP_DWON_TAG = false; // 前后切换
@@ -281,44 +282,57 @@ void auto_run(void *parameter)
 {
     Serial.print("auto_run() running on core ");
     Serial.println(xPortGetCoreID());
+    starttime = millis();
     while (1)
     {
-        AUTO_RUNING_DISTANCE = getDistance();
-        Serial.print(AUTO_RUNING_DISTANCE);
-        Serial.println();
-        if (AUTO_RUNING_DISTANCE > 30)
+        if ((millis() - starttime) > 9000)
         {
-            if (AUTO_RUNING_DISTANCE > 50)
+            mrun.two(-400, 400);
+            delay(1000);
+            mrun.two(STOP, STOP);
+            starttime = millis();
+            delay(900);
+        }
+        AUTO_RUNING_DISTANCE = getDistance();
+        // Serial.print(AUTO_RUNING_DISTANCE);
+        // Serial.println();
+        delay(10);
+        if (AUTO_RUNING_DISTANCE > 50)
+        {
+            if (AUTO_RUNING_DISTANCE > 80)
             {
                 if (AUTO_RUNING_DISTANCE > 100)
                 {
-                    mrun.two(300, 300);
+                    mrun.two(-400, -400);
                 }
                 else
                 {
-                    mrun.two(250, 250);
+                    mrun.two(-350, -350);
                 }
             }
             else
             {
-                mrun.two(200, 200);
+                mrun.two(-300, -300);
             }
         }
         else
         {
-            mrun.two(250, -250);
+            mrun.two(400, -400);
             ledinfo(1);
-            delay(333);
+            delay(130);
             ledinfo(20);
-            delay(333);
+            delay(130);
             ledinfo(30);
-            delay(333);
+            delay(130);
             ledinfo(40);
-            delay(333);
+            delay(130);
             ledinfo(30);
-            delay(333);
+            delay(130);
             ledinfo(20);
-            delay(333);
+            delay(130);
+            mrun.two(STOP, STOP);
+            ledinfo(1);
+            delay(1033);
             // if (!AUTO_RUNING_MODE)
             // {
             //     mrun.two(MAX_SPEED, -MAX_SPEED);
@@ -374,7 +388,7 @@ void notify()
     }
 
     // 切换前后
-    if (Ps3.data.button.l1 == 1 && Ps3.data.button.r1 == 1 && Ps3.data.button.l2 == 1 && Ps3.data.button.r2 == 1 && (Ps3.data.button.start == 1 || Ps3.data.button.circle == 1 || Ps3.data.button.square == 1))
+    if (Ps3.data.button.l1 == 1 && Ps3.data.button.r1 == 1 && Ps3.data.button.l2 == 1 && Ps3.data.button.r2 == 1 && (Ps3.data.button.start == 1 || Ps3.data.button.circle == 1 || Ps3.data.button.square == 1 || Ps3.data.button.ps == 1))
     {
 
         if (!BTN_UPDWON)
@@ -384,6 +398,12 @@ void notify()
                 EEP_UP_DWON_TAG = EEP_UP_DWON_TAG ? false : true;
                 mrun.EEP_UP_DWON_TAG = EEP_UP_DWON_TAG;
                 EEPROM.write(0, EEP_UP_DWON_TAG ? 1 : 0); // 0:false  1:true
+            }
+
+            if (Ps3.data.button.ps == 1)
+            {
+                BTN_PS_TAG = BTN_PS_TAG ? false : true;
+                EEPROM.write(3, BTN_PS_TAG ? 1 : 0); // 0:false  1:true
             }
 
             // 直线偏移矫正
@@ -429,7 +449,7 @@ void notify()
     }
 
     //高速
-    if (Ps3.data.button.ps == 1)
+    if (Ps3.data.button.ps == 1 && BTN_PS_TAG)
     {
         Serial.print("notify() running on core ");
         Serial.println(xPortGetCoreID());
@@ -505,13 +525,22 @@ void notify()
         BTN_L1 = false;
     }
 
-    // r2加速
-    if (Ps3.data.analog.button.r2 > 0)
+    // l2减速
+    if (Ps3.data.analog.button.l2 > 0)
     {
-        LOG(Ps3.data.analog.button.r2);
+        LOG(Ps3.data.analog.button.l2);
         LOGLN();
-        uint16_t SPEED_TMP1 = MAX_SPEED_INIT + (Ps3.data.analog.button.r2 * 3);
-        SPEED_TMP1 = (SPEED_TMP1 >= 1023) ? 1023 : SPEED_TMP1;
+        // Serial.print(Ps3.data.analog.button.l2);
+        // uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (Ps3.data.analog.button.l2);
+        uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (int16_t)(MAX_SPEED_INIT * (Ps3.data.analog.button.l2 / 510.00));
+        // Serial.print(" ");
+        // Serial.print(Ps3.data.analog.button.l2 / 510.00);
+        // Serial.print(" ");
+        // Serial.print(MAX_SPEED_INIT * (Ps3.data.analog.button.l2 / 510.00));
+        // Serial.print(" ");
+        SPEED_TMP1 = (SPEED_TMP1 < 0) ? 0 : SPEED_TMP1;
+        // Serial.print(SPEED_TMP1);
+        // Serial.println();
         mrun.MAX_RUN_SPEED = SPEED_TMP1;
     }
     else
@@ -519,19 +548,21 @@ void notify()
         mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
     }
 
-    // l2减速
-    if (Ps3.data.analog.button.l2 > 0)
+    // r2加速
+    if (mrun.MAX_RUN_SPEED == MAX_SPEED_INIT)
     {
-        LOG(Ps3.data.analog.button.l2);
-        LOGLN();
-        // uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (Ps3.data.analog.button.l2);
-        uint16_t SPEED_TMP1 = MAX_SPEED_INIT - (MAX_SPEED_INIT * (Ps3.data.analog.button.l2 / 255));
-        SPEED_TMP1 = (SPEED_TMP1 < 0) ? 0 : SPEED_TMP1;
-        mrun.MAX_RUN_SPEED = SPEED_TMP1;
-    }
-    else
-    {
-        mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
+        if (Ps3.data.analog.button.r2 > 0 && BTN_PS_TAG)
+        {
+            LOG(Ps3.data.analog.button.r2);
+            LOGLN();
+            uint16_t SPEED_TMP1 = MAX_SPEED_INIT + (Ps3.data.analog.button.r2 * 3);
+            SPEED_TMP1 = (SPEED_TMP1 >= 1023) ? 1023 : SPEED_TMP1;
+            mrun.MAX_RUN_SPEED = SPEED_TMP1;
+        }
+        else
+        {
+            mrun.MAX_RUN_SPEED = MAX_SPEED_INIT;
+        }
     }
 
     // 自动超声波避障
@@ -668,12 +699,12 @@ void notify()
             stop_subprocess();
         }
     }
-    // if (AUTO_RUNING_MODE)
-    // {
-    //     auto_run();
-    //     LOGLN();
-    //     return;
-    // }
+    if (AUTO_RUNING_MODE)
+    {
+        // auto_run();
+        // LOGLN();
+        return;
+    }
 
     if (RUN_SPEED == STOP && LR == STOP) // 在按键全部释放
     {
@@ -814,10 +845,11 @@ void setup()
     pinMode(rightMotor2, OUTPUT);
 
     //获取前后切换值
-    EEPROM.begin(3); // 使用EEPROM时，首先调用EEPROM.begin(size)，size为需要读写的数据字节最大地址+1，取值1~4096
+    EEPROM.begin(4); // 使用EEPROM时，首先调用EEPROM.begin(size)，size为需要读写的数据字节最大地址+1，取值1~4096
     EEP_UP_DWON_TAG = EEPROM.read(0) == 0 ? false : true;
     EEP_SPEED_L = EEPROM.read(1);
     EEP_SPEED_R = EEPROM.read(2);
+    BTN_PS_TAG = EEPROM.read(3) == 0 ? false : true;
 
     mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
     mrun.EEP_UP_DWON_TAG = EEP_UP_DWON_TAG;

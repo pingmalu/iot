@@ -38,7 +38,7 @@ void MRUN::config(int m1, int m2, int m3, int m4, int Y_MAX, int Y_MID, int Y_MI
   _SILL = SILL;
   MAX_RUN_SPEED = MAX_SPEED;
   EEP_UP_DWON_TAG = false;
-  analogWriteFrequency(80000); //更改pwm频率为40kHz，去除啸叫
+  analogWriteFrequency(20e6); //更改pwm频率为40kHz，去除啸叫
   LOGLN(" config OK");
 }
 
