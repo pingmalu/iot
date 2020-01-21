@@ -1,5 +1,23 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
+#include "MRUN_lib.h"
+
+// 电机驱动引脚
+int leftMotor1 = 2; // 前后轮子
+int leftMotor2 = 4;
+int rightMotor1 = 16; // 左右轮子
+int rightMotor2 = 17;
+
+// PSx摇杆
+int Y_MAX = 255;
+int Y_MID = 127;
+int Y_MIN = 0;
+int X_MAX = 255;
+int X_MID = 127;
+int X_MIN = 0;
+int SILL = 2; // 偏移阈值
+
+MRUN mrun;
 
 const char *ssid = "16988";
 const char *password = "bric16988";
@@ -13,6 +31,8 @@ void setup()
 {
     Serial.begin(115200);
     Serial.println();
+
+    mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
 
     Serial.printf("Connecting to %s ", ssid);
     WiFi.begin(ssid, password);
@@ -43,13 +63,21 @@ void loop()
         if (len > 0)
         {
             Serial.printf("UDP packet contents: %s\n", packet);
-            if (strcmp(packet, "off") == 0) // 如果收到on
+            if (strcmp(packet, "S1:0") == 0) // 如果收到S1:0
             {
-                digitalWrite(LED_BUILTIN, HIGH);
+                digitalWrite(LED_BUILTIN, HIGH); // OFF
             }
-            else if (strcmp(packet, "on") == 0) // 如果收到Button
+            else if (strcmp(packet, "S1:1") == 0)
             {
                 digitalWrite(LED_BUILTIN, LOW);
+            }
+            else if (strcmp(packet, "UP:1") == 0)
+            {
+                mrun.two(500, 500);
+            }
+            else if (strcmp(packet, "UP:0") == 0)
+            {
+                mrun.two(0, 0);
             }
             // int32_t bigEndianValue;
             // memcpy(&bigEndianValue, &packet[36], 4);
