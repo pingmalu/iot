@@ -3,10 +3,10 @@
 #include "MRUN_lib.h"
 
 // 电机驱动引脚
-int leftMotor1 = 2; // 前后轮子
-int leftMotor2 = 4;
-int rightMotor1 = 16; // 左右轮子
-int rightMotor2 = 17;
+int leftMotor1 = D1; // 前后轮子
+int leftMotor2 = D3;
+int rightMotor1 = D2; // 左右轮子
+int rightMotor2 = D4;
 
 // PSx摇杆
 int Y_MAX = 255;
@@ -18,6 +18,18 @@ int X_MIN = 0;
 int SILL = 2; // 偏移阈值
 
 MRUN mrun;
+
+#define SPEED_MAX 1023
+#define SPEED_MID 512
+#define SPEED_MIN 400
+#define MAX_SPEED 1023
+#define STOP 0
+
+int RUN_SPEED = STOP; // 推进速度
+int LR = STOP;        // 转向速度
+
+// 最大速度缓存值
+uint16_t MAX_SPEED_INIT = 0;
 
 const char *ssid = "16988";
 const char *password = "bric16988";
@@ -45,8 +57,10 @@ void setup()
     Udp.begin(port);
     Serial.printf("Listener started at IP % s, at port % d\n", WiFi.localIP().toString().c_str(), port);
 
-    pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH);
+    // pinMode(LED_BUILTIN, OUTPUT);
+    // digitalWrite(LED_BUILTIN, HIGH);
+    pinMode(D8, OUTPUT);
+    pinMode(D7, OUTPUT);
 }
 
 int orientation_X;
@@ -65,20 +79,98 @@ void loop()
             Serial.printf("UDP packet contents: %s\n", packet);
             if (strcmp(packet, "S1:0") == 0) // 如果收到S1:0
             {
-                digitalWrite(LED_BUILTIN, HIGH); // OFF
+                digitalWrite(D7, HIGH); // OFF
             }
             else if (strcmp(packet, "S1:1") == 0)
             {
-                digitalWrite(LED_BUILTIN, LOW);
+                digitalWrite(D7, LOW);
             }
-            else if (strcmp(packet, "UP:1") == 0)
+
+            if (strcmp(packet, "S2:0") == 0) // 如果收到S2:0
             {
-                mrun.two(500, 500);
+                digitalWrite(D8, HIGH); // OFF
             }
-            else if (strcmp(packet, "UP:0") == 0)
+            else if (strcmp(packet, "S2:1") == 0)
             {
-                mrun.two(0, 0);
+                digitalWrite(D8, LOW);
             }
+
+            // 速度初始化
+            RUN_SPEED = STOP;
+            LR = STOP;
+
+            if (strcmp(packet, "UP:1") == 0)
+            {
+                RUN_SPEED = MAX_SPEED;
+            }
+            else if (strcmp(packet, "DOWN:1") == 0)
+            {
+                RUN_SPEED = -MAX_SPEED;
+            }
+            else if (strcmp(packet, "UP:0") == 0 || strcmp(packet, "DOWN:0") == 0)
+            {
+                RUN_SPEED = STOP;
+            }
+
+            if (strcmp(packet, "LEFT:1") == 0 || strcmp(packet, "A:1") == 0)
+            {
+                LR = MAX_SPEED;
+            }
+            else if (strcmp(packet, "RIGHT:1") == 0 || strcmp(packet, "B:1") == 0)
+            {
+                LR = -MAX_SPEED;
+            }
+            else if (strcmp(packet, "LEFT:0") == 0 || strcmp(packet, "RIGHT:0") == 0 || strcmp(packet, "A:0") == 0 || strcmp(packet, "B:0") == 0)
+            {
+                LR = STOP;
+            }
+
+            if (LR < 0)
+            {
+                if (RUN_SPEED > STOP)
+                {
+                    // mrun.two(MAX_SPEED, STOP);
+                    mrun.two(MAX_SPEED, STOP + MAX_SPEED_INIT - SPEED_MIN);
+                }
+                else if (RUN_SPEED < STOP)
+                {
+                    // mrun.two(STOP, -MAX_SPEED);
+                    mrun.two(STOP - MAX_SPEED_INIT + SPEED_MIN, -MAX_SPEED);
+                }
+                else
+                {
+                    mrun.two(MAX_SPEED, -MAX_SPEED);
+                }
+            }
+            else if (LR > 0)
+            {
+                if (RUN_SPEED > STOP)
+                {
+                    // mrun.two(STOP, MAX_SPEED);
+                    mrun.two(STOP + MAX_SPEED_INIT - SPEED_MIN, MAX_SPEED);
+                }
+                else if (RUN_SPEED < STOP)
+                {
+                    // mrun.two(-MAX_SPEED, STOP);
+                    mrun.two(-MAX_SPEED, STOP - MAX_SPEED_INIT + SPEED_MIN);
+                }
+                else
+                {
+                    mrun.two(-MAX_SPEED, MAX_SPEED);
+                }
+            }
+            else
+            {
+                if (RUN_SPEED > 0)
+                {
+                    mrun.two(RUN_SPEED, RUN_SPEED);
+                }
+                else
+                {
+                    mrun.two(RUN_SPEED, RUN_SPEED);
+                }
+            }
+
             // int32_t bigEndianValue;
             // memcpy(&bigEndianValue, &packet[36], 4);
             // orientation_X = ntohf(bigEndianValue);
@@ -95,10 +187,10 @@ void loop()
     }
 }
 
-float ntohf(uint32_t nf)
-{
-    float x;
-    nf = ntohl(nf);
-    memcpy(&x, &nf, sizeof(float));
-    return x;
-}
+// float ntohf(uint32_t nf)
+// {
+//     float x;
+//     nf = ntohl(nf);
+//     memcpy(&x, &nf, sizeof(float));
+//     return x;
+// }
