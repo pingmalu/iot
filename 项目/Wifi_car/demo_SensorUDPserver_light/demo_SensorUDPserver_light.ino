@@ -96,8 +96,8 @@ void loop()
             }
 
             // 速度初始化
-            RUN_SPEED = STOP;
-            LR = STOP;
+            // RUN_SPEED = STOP;
+            // LR = STOP;
 
             if (strcmp(packet, "UP:1") == 0)
             {
