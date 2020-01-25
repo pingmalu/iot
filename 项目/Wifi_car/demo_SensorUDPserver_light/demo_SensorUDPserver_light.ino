@@ -39,6 +39,8 @@ unsigned int port = 9999;
 char packet[UDP_TX_PACKET_MAX_SIZE];
 char null_packet[UDP_TX_PACKET_MAX_SIZE];
 
+int EMPTY_PACKAGE_NUM = 0; // 空包阈值，防止信号中断抽风
+
 void setup()
 {
     Serial.begin(115200);
@@ -76,6 +78,7 @@ void loop()
 
         if (len > 0)
         {
+            EMPTY_PACKAGE_NUM = 0;
             Serial.printf("UDP packet contents: %s\n", packet);
             if (strcmp(packet, "S1:0") == 0) // 如果收到S1:0
             {
@@ -187,6 +190,30 @@ void loop()
             // }else{
             //     digitalWrite(D4, 0);
             // }
+        }
+        else
+        {
+            if (EMPTY_PACKAGE_NUM > 3e4)
+            {
+                mrun.two(STOP, STOP);
+                return;
+            }
+            else
+            {
+                EMPTY_PACKAGE_NUM++;
+            }
+        }
+    }
+    else
+    {
+        if (EMPTY_PACKAGE_NUM > 3e4)
+        {
+            mrun.two(STOP, STOP);
+            return;
+        }
+        else
+        {
+            EMPTY_PACKAGE_NUM++;
         }
     }
 }
