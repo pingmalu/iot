@@ -47,26 +47,20 @@ void MRUN::one(int v, int M1, int M2)
   if (v_abs < START_SPEED) // 小于启动速度，不要发送PWM
   {
     digitalWrite(M1, LOW);
-    // digitalWrite(M2, LOW);
-    analogWrite(M2, 0);
+    digitalWrite(M2, LOW);
     return;
   }
   if (v > 0)
   {
-    digitalWrite(M1, LOW);
-    analogWrite(M2, 1000);
+    analogWrite(M1, LOW);
+    analogWrite(M2, v_abs);
     LOG(" one:");
     LOG(v_abs);
   }
   else if (v < 0)
   {
-    // digitalWrite(M1, HIGH);
-    analogWrite(M1, 10);
-    digitalWrite(M2, 450);
-    // analogWrite(M2, MAX_SPEED);
-    LOG(M1);
-    LOG("|");
-    LOG(M2);
+    digitalWrite(M1, HIGH);
+    analogWrite(M2, v_abs);
     LOG(" xne:");
     LOG(-v_abs);
   }

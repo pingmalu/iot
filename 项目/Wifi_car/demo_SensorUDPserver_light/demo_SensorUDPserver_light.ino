@@ -161,13 +161,17 @@ void loop()
             }
             else
             {
-                if (RUN_SPEED > 0)
+                if (RUN_SPEED > STOP)
+                {
+                    mrun.two(RUN_SPEED, RUN_SPEED);
+                }
+                else if (RUN_SPEED < STOP)
                 {
                     mrun.two(RUN_SPEED, RUN_SPEED);
                 }
                 else
                 {
-                    mrun.two(RUN_SPEED, RUN_SPEED);
+                    mrun.two(STOP, STOP);
                 }
             }
 
