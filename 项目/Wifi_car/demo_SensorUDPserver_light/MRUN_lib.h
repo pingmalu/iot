@@ -5,8 +5,9 @@
 #ifndef MRUN_lib_h
 #define MRUN_lib_h
 
+#include <ESP8266WiFi.h>
 // #if ARDUINO > 22
-#include "Arduino.h"
+// #include "Arduino.h"
 // #else
 // #include "WProgram.h"
 // #endif

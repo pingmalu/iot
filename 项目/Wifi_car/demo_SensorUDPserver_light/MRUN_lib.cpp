@@ -3,7 +3,7 @@
  * 
  */
 #include "MRUN_lib.h"
-#include <Arduino.h>
+// #include <Arduino.h>
 // #include "pins_arduino.h"
 
 // comment out this line, if you want to show logs:
@@ -54,15 +54,20 @@ void MRUN::one(int v, int M1, int M2)
   if (v > 0)
   {
     digitalWrite(M1, LOW);
-    analogWrite(M2, v_abs);
+    analogWrite(M2, 1000);
     LOG(" one:");
     LOG(v_abs);
   }
   else if (v < 0)
   {
-    digitalWrite(M1, HIGH);
-    analogWrite(M2, MAX_SPEED - v_abs);
-    LOG(" one:");
+    // digitalWrite(M1, HIGH);
+    analogWrite(M1, 10);
+    digitalWrite(M2, 450);
+    // analogWrite(M2, MAX_SPEED);
+    LOG(M1);
+    LOG("|");
+    LOG(M2);
+    LOG(" xne:");
     LOG(-v_abs);
   }
   else

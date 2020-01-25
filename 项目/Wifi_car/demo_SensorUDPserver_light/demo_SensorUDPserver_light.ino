@@ -3,10 +3,10 @@
 #include "MRUN_lib.h"
 
 // 电机驱动引脚
-int leftMotor1 = D1; // 前后轮子
-int leftMotor2 = D3;
-int rightMotor1 = D2; // 左右轮子
-int rightMotor2 = D4;
+int leftMotor1 = 0; // 前后轮子
+int leftMotor2 = 5;
+int rightMotor1 = 2; // 左右轮子
+int rightMotor2 = 4;
 
 // PSx摇杆
 int Y_MAX = 255;
@@ -31,8 +31,8 @@ int LR = STOP;        // 转向速度
 // 最大速度缓存值
 uint16_t MAX_SPEED_INIT = 0;
 
-const char *ssid = "16988";
-const char *password = "bric16988";
+const char *ssid = "M2";
+const char *password = "50360891111";
 
 WiFiUDP Udp;
 unsigned int port = 9999;
