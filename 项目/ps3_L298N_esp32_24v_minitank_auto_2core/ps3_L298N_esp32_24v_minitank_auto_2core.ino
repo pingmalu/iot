@@ -287,8 +287,8 @@ void auto_run(void *parameter)
     {
         if ((millis() - starttime) > 9000)
         {
-            mrun.two(-400, 400);
-            delay(1000);
+            mrun.two(-750, 750);
+            delay(400);
             mrun.two(STOP, STOP);
             starttime = millis();
             delay(900);
@@ -297,39 +297,42 @@ void auto_run(void *parameter)
         // Serial.print(AUTO_RUNING_DISTANCE);
         // Serial.println();
         delay(10);
-        if (AUTO_RUNING_DISTANCE > 50)
+        if (AUTO_RUNING_DISTANCE > 40)
         {
-            if (AUTO_RUNING_DISTANCE > 80)
+            if (AUTO_RUNING_DISTANCE > 75)
             {
                 if (AUTO_RUNING_DISTANCE > 100)
                 {
-                    mrun.two(-400, -400);
+                    // ~
+                    mrun.two(-500, -500);
                 }
                 else
                 {
-                    mrun.two(-350, -350);
+                    // 75-100
+                    mrun.two(-400, -400);
                 }
             }
             else
             {
-                mrun.two(-300, -300);
+                // 40-75
+                mrun.two(-370, -370);
             }
         }
         else
         {
-            mrun.two(400, -400);
+            mrun.two(700, -700);
             ledinfo(1);
-            delay(130);
+            delay(60);
             ledinfo(20);
-            delay(130);
+            delay(60);
             ledinfo(30);
-            delay(130);
+            delay(60);
             ledinfo(40);
-            delay(130);
+            delay(60);
             ledinfo(30);
-            delay(130);
+            delay(60);
             ledinfo(20);
-            delay(130);
+            delay(60);
             mrun.two(STOP, STOP);
             ledinfo(1);
             delay(1033);
