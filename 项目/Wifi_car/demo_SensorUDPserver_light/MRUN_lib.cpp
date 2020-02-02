@@ -91,6 +91,7 @@ void MRUN::two(int vl, int vr)
   LOG(vl);
   LOG(" tow_R:");
   LOG(vr);
+  LOGLN();
 }
 
 void MRUN::car(int y, int x)

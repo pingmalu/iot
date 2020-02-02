@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 // comment out this line, if you want to show logs:
-// #define NDEBUG
+#define NDEBUG
 
 #ifdef NDEBUG
 #define LOG(...)
