@@ -63,6 +63,7 @@ void setup()
     // digitalWrite(LED_BUILTIN, HIGH);
     pinMode(D8, OUTPUT);
     pinMode(D7, OUTPUT);
+    mrun.MAX_RUN_SPEED = 1023;
 }
 
 int orientation_X;
