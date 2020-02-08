@@ -43,7 +43,7 @@ int MotorA2 = D6;
 #define MAX_SPEED 1023
 #define MID_SPEED 512
 #define LOW_SPEED 312
-#define START_SPEED 80
+#define START_SPEED 40
 
 /******************************************************************
    select modes of PS2 controller:
@@ -114,11 +114,26 @@ void loop()
 
     ps2x.read_gamepad(false, 0); //read controller and set large motor to spin at 'vibrate' speed
 
+    if (ps2x.Button(PSB_R2))
+    {
+        MAX_RUN_SPEED = MAX_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_R2))
+    {
+        MAX_RUN_SPEED = MID_SPEED;
+    }
+
+    // 高速锁定切换
+    if (ps2x.ButtonReleased(PSB_L3))
+    {
+        MAX_RUN_SPEED = MAX_RUN_SPEED > MID_SPEED ? MID_SPEED : MAX_SPEED;
+    }
+
     // 左边按键群
     if (ps2x.Button(PSB_PAD_UP))
     { //will be TRUE as long as button is pressed
         // LOGLN("Up held this hard: ");
-        RUN_SPEED = MID_SPEED;
+        RUN_SPEED = MAX_RUN_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_PAD_UP))
     {
@@ -129,7 +144,7 @@ void loop()
     if (ps2x.Button(PSB_PAD_DOWN))
     {
         // LOGLN("DOWN held this hard: ");
-        RUN_SPEED = -MID_SPEED;
+        RUN_SPEED = -MAX_RUN_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_PAD_DOWN))
     {
@@ -163,7 +178,7 @@ void loop()
     if (ps2x.Button(PSB_TRIANGLE))
     { //will be TRUE as long as button is pressed
         // LOGLN("Triangle pressed");
-        RUN_SPEED = MID_SPEED;
+        RUN_SPEED = MAX_RUN_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_TRIANGLE))
     {
@@ -174,7 +189,7 @@ void loop()
     if (ps2x.Button(PSB_CROSS))
     {
         // LOGLN("PSB_CROSS pressed");
-        RUN_SPEED = -MID_SPEED;
+        RUN_SPEED = -MAX_RUN_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_CROSS))
     {
