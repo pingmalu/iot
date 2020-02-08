@@ -41,6 +41,8 @@ int MotorA2 = D6;
 #define STOP 0
 // analogWrite(pin, value)  UNO:0-255  D1 ESP8266:0-1023
 #define MAX_SPEED 1023
+#define MID_SPEED 512
+#define LOW_SPEED 312
 #define START_SPEED 80
 
 /******************************************************************
@@ -56,8 +58,7 @@ PS2X ps2x; // create PS2 Controller Class
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
-int MAX_RUN_SPEED = 512;
-
+int MAX_RUN_SPEED = MID_SPEED;
 unsigned long starttime;
 unsigned long looptime;
 
@@ -116,93 +117,101 @@ void loop()
     // 左边按键群
     if (ps2x.Button(PSB_PAD_UP))
     { //will be TRUE as long as button is pressed
-        LOGLN("Up held this hard: ");
-        RUN_SPEED = MAX_SPEED;
+        // LOGLN("Up held this hard: ");
+        RUN_SPEED = MID_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_PAD_UP))
     {
-        LOGLN("Up Button Released!");
+        // LOGLN("Up Button Released!");
         RUN_SPEED = STOP;
     }
 
     if (ps2x.Button(PSB_PAD_DOWN))
     {
-        LOGLN("DOWN held this hard: ");
-        RUN_SPEED = -MAX_SPEED;
+        // LOGLN("DOWN held this hard: ");
+        RUN_SPEED = -MID_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_PAD_DOWN))
     {
-        LOGLN("DOWN Button Released!");
+        // LOGLN("DOWN Button Released!");
         RUN_SPEED = STOP;
     }
 
     if (ps2x.Button(PSB_PAD_RIGHT))
     {
-        LOGLN("Right held this hard: ");
+        // LOGLN("Right held this hard: ");
         LR = -MAX_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_PAD_RIGHT))
     {
-        LOGLN("Right Button Released!");
+        // LOGLN("Right Button Released!");
         LR = STOP;
     }
 
     if (ps2x.Button(PSB_PAD_LEFT))
     {
-        LOGLN("LEFT held this hard: ");
+        // LOGLN("LEFT held this hard: ");
         LR = MAX_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_PAD_LEFT))
     {
-        LOGLN("LEFT Button Released!");
+        // LOGLN("LEFT Button Released!");
         LR = STOP;
     }
 
     // 右边按键群
     if (ps2x.Button(PSB_TRIANGLE))
     { //will be TRUE as long as button is pressed
-        LOGLN("Triangle pressed");
-        RUN_SPEED = MAX_SPEED;
+        // LOGLN("Triangle pressed");
+        RUN_SPEED = MID_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_TRIANGLE))
     {
-        LOGLN("Triangle Button Released!");
+        // LOGLN("Triangle Button Released!");
         RUN_SPEED = STOP;
     }
 
     if (ps2x.Button(PSB_CROSS))
     {
-        LOGLN("PSB_CROSS pressed");
-        RUN_SPEED = -MAX_SPEED;
+        // LOGLN("PSB_CROSS pressed");
+        RUN_SPEED = -MID_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_CROSS))
     {
-        LOGLN("PSB_CROSS Button Released!");
+        // LOGLN("PSB_CROSS Button Released!");
         RUN_SPEED = STOP;
     }
 
     if (ps2x.Button(PSB_CIRCLE)) // 右
     {
-        LOGLN("PSB_CIRCLE pressed");
+        // LOGLN("PSB_CIRCLE pressed");
         LR = -MAX_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_CIRCLE))
     {
-        LOGLN("PSB_CIRCLE Button Released!");
+        // LOGLN("PSB_CIRCLE Button Released!");
         LR = STOP;
     }
 
     if (ps2x.Button(PSB_SQUARE)) // 左
     {
-        LOGLN("PSB_SQUARE pressed");
+        // LOGLN("PSB_SQUARE pressed");
         LR = MAX_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_SQUARE))
     {
-        LOGLN("PSB_SQUARE Button Released!");
+        // LOGLN("PSB_SQUARE Button Released!");
         LR = STOP;
     }
 
+    if (ps2x.Button(PSB_R2))
+    {
+        MAX_RUN_SPEED = MAX_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_R2))
+    {
+        MAX_RUN_SPEED = MID_SPEED;
+    }
     // // 翻斗
     // if (ps2x.Button(PSB_R1)) // 右
     // {
@@ -216,6 +225,12 @@ void loop()
     //     LOGLN("PSB_R1 Button Released!");
     //     myservo1.write(170);
     // }
+    if (RUN_SPEED == STOP)
+    {
+        RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, MAX_RUN_SPEED, -MAX_RUN_SPEED);
+    }
+    LOG("RUN:");
+    LOG(RUN_SPEED);
     int v_abs = abs(RUN_SPEED);
     v_abs = constrain(v_abs, 0, MAX_RUN_SPEED);
     if (v_abs < START_SPEED) // 小于启动速度，不要发送PWM
@@ -241,16 +256,19 @@ void loop()
 
     if (LR > STOP)
     {
-        myservo1.write(40);
+        LR = 50;
     }
     else if (LR < STOP)
     {
-        myservo1.write(130);
+        LR = 120;
     }
     else
     {
-        myservo1.write(90);
+        LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 50, 120);
     }
+    LOG(" LR:");
+    LOG(LR);
+    myservo1.write(LR);
     LOGLN();
     delay(10);
     return;
