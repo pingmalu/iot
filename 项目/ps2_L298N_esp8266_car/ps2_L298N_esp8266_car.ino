@@ -152,27 +152,27 @@ void loop()
         RUN_SPEED = STOP;
     }
 
-    if (ps2x.Button(PSB_PAD_RIGHT))
-    {
-        // LOGLN("Right held this hard: ");
-        LR = -MAX_SPEED;
-    }
-    else if (ps2x.ButtonReleased(PSB_PAD_RIGHT))
-    {
-        // LOGLN("Right Button Released!");
-        LR = STOP;
-    }
+    // if (ps2x.Button(PSB_PAD_RIGHT))
+    // {
+    //     // LOGLN("Right held this hard: ");
+    //     LR = -MAX_SPEED;
+    // }
+    // else if (ps2x.ButtonReleased(PSB_PAD_RIGHT))
+    // {
+    //     // LOGLN("Right Button Released!");
+    //     LR = STOP;
+    // }
 
-    if (ps2x.Button(PSB_PAD_LEFT))
-    {
-        // LOGLN("LEFT held this hard: ");
-        LR = MAX_SPEED;
-    }
-    else if (ps2x.ButtonReleased(PSB_PAD_LEFT))
-    {
-        // LOGLN("LEFT Button Released!");
-        LR = STOP;
-    }
+    // if (ps2x.Button(PSB_PAD_LEFT))
+    // {
+    //     // LOGLN("LEFT held this hard: ");
+    //     LR = MAX_SPEED;
+    // }
+    // else if (ps2x.ButtonReleased(PSB_PAD_LEFT))
+    // {
+    //     // LOGLN("LEFT Button Released!");
+    //     LR = STOP;
+    // }
 
     // 右边按键群
     if (ps2x.Button(PSB_TRIANGLE))
