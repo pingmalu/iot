@@ -29,15 +29,15 @@
 Servo myservo1; // 创建舵机对象
 
 // NODEMCU版本引脚
-int MotorA1 = 7; // 前后轮子
-int MotorA2 = 6;
+int MotorA1 = 4; // 前后轮子
+int MotorA2 = 3;
 // 接收机引脚
 #define PS2_DAT 13 //14
 #define PS2_CMD 12 //15
 #define PS2_CS 11  //16
 #define PS2_CLK 10 //17
 // 舵机引脚
-#define SERVO_PIN_1 9
+#define SERVO_PIN_1 7
 #define STOP 0
 // analogWrite(pin, value)  UNO:0-255  D1 ESP8266:0-1023
 #define MAX_SPEED 255
@@ -86,6 +86,7 @@ void setup()
 
     // 去除pwm啸叫
     // analogWriteFreq(40e3);
+    TCCR2B = TCCR2B & 0xF8 | 1;
 
     int error = 0;
     do
