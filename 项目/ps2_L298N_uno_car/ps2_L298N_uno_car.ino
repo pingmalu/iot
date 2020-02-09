@@ -29,21 +29,21 @@
 Servo myservo1; // 创建舵机对象
 
 // NODEMCU版本引脚
-int MotorA1 = D5; // 前后轮子
-int MotorA2 = D6;
+int MotorA1 = 7; // 前后轮子
+int MotorA2 = 6;
 // 接收机引脚
-#define PS2_DAT D1 //14
-#define PS2_CMD D2 //15
-#define PS2_CS D3  //16
-#define PS2_CLK D4 //17
+#define PS2_DAT 13 //14
+#define PS2_CMD 12 //15
+#define PS2_CS 11  //16
+#define PS2_CLK 10 //17
 // 舵机引脚
-#define SERVO_PIN_1 D0
+#define SERVO_PIN_1 9
 #define STOP 0
 // analogWrite(pin, value)  UNO:0-255  D1 ESP8266:0-1023
-#define MAX_SPEED 1023
-#define MID_SPEED 512
-#define LOW_SPEED 312
-#define START_SPEED 40
+#define MAX_SPEED 255
+#define MID_SPEED 128
+#define LOW_SPEED 64
+#define START_SPEED 20
 
 /******************************************************************
    select modes of PS2 controller:
@@ -62,18 +62,30 @@ int MAX_RUN_SPEED = MID_SPEED;
 unsigned long starttime;
 unsigned long looptime;
 
-void go_poweroff()
-{
-    LOGLN("go to sleep!!!");
-    ESP.deepSleep(30000e6);
-}
+// void go_poweroff()
+// {
+//     Serial.print("go to sleep!!!");
+//     delay(1000);
 
+// #ifdef ESP8266
+//     ESP.deepSleep(30000e6);
+// #else
+//     pinMode(13, OUTPUT);   // UNO板载LED关闭
+//     digitalWrite(13, LOW); // UNO板载LED关闭
+//     // 采用“Power-down”睡眠模式
+//     set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+//     // 启用睡眠模式
+//     sleep_enable();
+//     // 进入睡眠模式
+//     sleep_cpu();
+// #endif
+// }
 void setup()
 {
     Serial.begin(115200);
 
     // 去除pwm啸叫
-    analogWriteFreq(40e3);
+    // analogWriteFreq(40e3);
 
     int error = 0;
     do
@@ -90,7 +102,7 @@ void setup()
             LOG(" ");
             if (millis() > 600000) // 启动时检测不到手柄连接器，超过600秒，进入睡眠
             {
-                go_poweroff();
+                // go_poweroff();
             }
             delay(100);
         }
@@ -250,8 +262,8 @@ void loop()
     v_abs = constrain(v_abs, 0, MAX_RUN_SPEED);
     if (v_abs < START_SPEED) // 小于启动速度，不要发送PWM
     {
-        digitalWrite(MotorA1, LOW);
-        digitalWrite(MotorA2, LOW);
+        digitalWrite(MotorA1, HIGH);
+        digitalWrite(MotorA2, HIGH);
     }
     else if (RUN_SPEED > STOP)
     {
@@ -271,15 +283,15 @@ void loop()
 
     if (LR > STOP)
     {
-        LR = 50;
+        LR = 75;
     }
     else if (LR < STOP)
     {
-        LR = 120;
+        LR = 130;
     }
     else
     {
-        LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 50, 120);
+        LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 75, 130);
     }
     LOG(" LR:");
     LOG(LR);
