@@ -42,34 +42,39 @@
  *       https://github.com/blinker-iot/blinker-doc/wiki
  * 
  * *****************************************************************/
-#define BLINKER_PRO_ESP
+// #define BLINKER_PRO_ESP
 
-// #define BLINKER_WIFI
+#define BLINKER_WIFI
 #define BLINKER_MIOT_MULTI_OUTLET
 
 #include <Blinker.h>
 
 char auth[] = "84af7d8367a1";
-// char ssid[] = "";
-// char pswd[] = "";
-char type[] = "xxx";
+char ssid[] = "16988";
+char pswd[] = "bric16988";
+// char type[] = "outlet";
 
-bool oState[5] = { false };
+bool oState[5] = {false};
 
-void miotPowerState(const String & state, uint8_t num)
+void miotPowerState(const String &state, uint8_t num)
 {
     BLINKER_LOG("need set outlet: ", num, ", power state: ", state);
 
-    if (state == BLINKER_CMD_ON) {
-        digitalWrite(LED_BUILTIN, HIGH);
+    if (state == BLINKER_CMD_ON)
+    {
+        digitalWrite(LED_BUILTIN, LOW);
+        digitalWrite(D5, LOW); // OFF
+
 
         BlinkerMIOT.powerState("on", num);
         BlinkerMIOT.print();
 
         oState[num] = true;
     }
-    else if (state == BLINKER_CMD_OFF) {
-        digitalWrite(LED_BUILTIN, LOW);
+    else if (state == BLINKER_CMD_OFF)
+    {
+        digitalWrite(LED_BUILTIN, HIGH);
+        digitalWrite(D5, HIGH); // OFF
 
         BlinkerMIOT.powerState("off", num);
         BlinkerMIOT.print();
@@ -88,35 +93,35 @@ void miotPowerState(const String & state, uint8_t num)
 
 void miotQuery(int32_t queryCode, uint8_t num)
 {
-    BLINKER_LOG("AliGenie Query outlet: ", num,", codes: ", queryCode);
+    BLINKER_LOG("AliGenie Query outlet: ", num, ", codes: ", queryCode);
 
     switch (queryCode)
     {
-        case BLINKER_CMD_QUERY_ALL_NUMBER :
-            BLINKER_LOG("MIOT Query All");
-            BlinkerMIOT.powerState(oState[num] ? "on" : "off", num);
-            BlinkerMIOT.print();
-            break;
-        case BLINKER_CMD_QUERY_POWERSTATE_NUMBER :
-            BLINKER_LOG("MIOT Query Power State");
-            BlinkerMIOT.powerState(oState[num] ? "on" : "off", num);
-            BlinkerMIOT.print();
-            break;
-        default :
-            BlinkerMIOT.powerState(oState[num] ? "on" : "off", num);
-            BlinkerMIOT.print();
-            break;
+    case BLINKER_CMD_QUERY_ALL_NUMBER:
+        BLINKER_LOG("MIOT Query All");
+        BlinkerMIOT.powerState(oState[num] ? "on" : "off", num);
+        BlinkerMIOT.print();
+        break;
+    case BLINKER_CMD_QUERY_POWERSTATE_NUMBER:
+        BLINKER_LOG("MIOT Query Power State");
+        BlinkerMIOT.powerState(oState[num] ? "on" : "off", num);
+        BlinkerMIOT.print();
+        break;
+    default:
+        BlinkerMIOT.powerState(oState[num] ? "on" : "off", num);
+        BlinkerMIOT.print();
+        break;
     }
 }
 
-void dataRead(const String & data)
+void dataRead(const String &data)
 {
     BLINKER_LOG("Blinker readString: ", data);
 
     Blinker.vibrate();
-    
+
     uint32_t BlinkerTime = millis();
-    
+
     Blinker.print("millis", BlinkerTime);
 }
 
@@ -128,10 +133,10 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
 
-    // Blinker.begin(auth, ssid, pswd);
-    Blinker.begin(auth, type);
+    Blinker.begin(auth, ssid, pswd);
+    // Blinker.begin(auth, type);
     Blinker.attachData(dataRead);
-    
+
     BlinkerMIOT.attachPowerState(miotPowerState);
     BlinkerMIOT.attachQuery(miotQuery);
 }
