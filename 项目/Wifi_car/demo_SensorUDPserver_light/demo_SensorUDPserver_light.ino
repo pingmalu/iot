@@ -1,5 +1,7 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
+#include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
 #include "MRUN_lib.h"
 
 // 电机驱动引脚
@@ -28,11 +30,19 @@ MRUN mrun;
 int RUN_SPEED = STOP; // 推进速度
 int LR = STOP;        // 转向速度
 
+// 获取mac地址
+uint8_t MAC_array_STA[6];
+uint8_t MAC_array_AP[6];
+char MAC_char_STA[18];
+char MAC_char_AP[18];
+
 // 最大速度缓存值
 uint16_t MAX_SPEED_INIT = 0;
 
 const char *ssid = "M2";
 const char *password = "50360891111";
+
+String bod_type = "Nodemcu%20base%20v1";
 
 WiFiUDP Udp;
 unsigned int port = 9999;
@@ -46,6 +56,19 @@ void setup()
     Serial.begin(115200);
     Serial.println();
 
+    // 获取mac地址
+    WiFi.macAddress(MAC_array_STA);
+    WiFi.softAPmacAddress(MAC_array_AP);
+    for (int i = 0; i < sizeof(MAC_array_STA); ++i)
+    {
+        sprintf(MAC_char_STA, "%s%02x:", MAC_char_STA, MAC_array_STA[i]);
+        sprintf(MAC_char_AP, "%s%02x:", MAC_char_AP, MAC_array_AP[i]);
+    }
+    Serial.printf("MAC STA: ");
+    Serial.println(MAC_char_STA);
+    Serial.printf("MAC AP: ");
+    Serial.println(MAC_char_AP);
+
     mrun.config(leftMotor1, leftMotor2, rightMotor1, rightMotor2, Y_MAX, Y_MID, Y_MIN, X_MAX, X_MID, X_MIN, SILL);
 
     Serial.printf("Connecting to %s ", ssid);
@@ -56,6 +79,48 @@ void setup()
         Serial.print(".");
     }
     Serial.println("Connection Successful");
+
+    WiFiClient client;
+
+    HTTPClient http;
+
+    Serial.print("[HTTP] begin...\n");
+    String mac_add(MAC_char_AP);
+    String mac_add_new = mac_add.substring(0, 17);
+    String ip_add(WiFi.localIP().toString());
+    Serial.print("http://siglephp.herokuapp.com/iot?msg={%22mac%22:%22" + mac_add_new + "%22,%22ip%22:%22" + ip_add + "%22,%22tag%22:%22" + bod_type + "%22}\n");
+    if (http.begin(client, "http://siglephp.herokuapp.com/iot?msg={%22mac%22:%22" + mac_add_new + "%22,%22ip%22:%22" + ip_add + "%22,%22tag%22:%22" + bod_type + "%22}"))
+    { // HTTP
+
+        Serial.print("[HTTP] GET...\n");
+        // start connection and send HTTP header
+        int httpCode = http.GET();
+
+        // httpCode will be negative on error
+        if (httpCode > 0)
+        {
+            // HTTP header has been send and Server response header has been handled
+            Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+
+            // file found at server
+            if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
+            {
+                String payload = http.getString();
+                Serial.println(payload);
+            }
+        }
+        else
+        {
+            Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+        }
+
+        http.end();
+    }
+    else
+    {
+        Serial.printf("[HTTP} Unable to connect\n");
+    }
+
     Udp.begin(port);
     Serial.printf("Listener started at IP % s, at port % d\n", WiFi.localIP().toString().c_str(), port);
 
