@@ -50,9 +50,10 @@
 #include <Blinker.h>
 
 char auth[] = "84af7d8367a1";
-char ssid[] = "16988";
-char pswd[] = "bric16988";
+char ssid[] = "M2";
+char pswd[] = "xh";
 // char type[] = "outlet";
+#define D5 14
 
 bool oState[5] = {false};
 
@@ -63,7 +64,7 @@ void miotPowerState(const String &state, uint8_t num)
     if (state == BLINKER_CMD_ON)
     {
         digitalWrite(LED_BUILTIN, LOW);
-        digitalWrite(D5, LOW); // OFF
+        digitalWrite(D5, HIGH); // OFF
 
 
         BlinkerMIOT.powerState("on", num);
@@ -74,7 +75,7 @@ void miotPowerState(const String &state, uint8_t num)
     else if (state == BLINKER_CMD_OFF)
     {
         digitalWrite(LED_BUILTIN, HIGH);
-        digitalWrite(D5, HIGH); // OFF
+        digitalWrite(D5, LOW); // OFF
 
         BlinkerMIOT.powerState("off", num);
         BlinkerMIOT.print();
@@ -131,6 +132,8 @@ void setup()
     BLINKER_DEBUG.stream(Serial);
 
     pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(D5, OUTPUT);
+    digitalWrite(D5, HIGH);
     digitalWrite(LED_BUILTIN, LOW);
 
     Blinker.begin(auth, ssid, pswd);
