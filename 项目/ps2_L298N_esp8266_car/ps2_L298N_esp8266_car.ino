@@ -141,6 +141,29 @@ void loop()
         RUN_SPEED = STOP;
     }
 
+    // 兼容bug手柄
+    if (ps2x.Button(PSB_L1))
+    { //will be TRUE as long as button is pressed
+        // LOGLN("Up held this hard: ");
+        RUN_SPEED = MAX_RUN_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_L1))
+    {
+        // LOGLN("Up Button Released!");
+        RUN_SPEED = STOP;
+    }
+    if (ps2x.Button(PSB_L2))
+    { //will be TRUE as long as button is pressed
+        // LOGLN("Up held this hard: ");
+        RUN_SPEED = MAX_RUN_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_L2))
+    {
+        // LOGLN("Up Button Released!");
+        RUN_SPEED = STOP;
+    }
+
+
     if (ps2x.Button(PSB_PAD_DOWN))
     {
         // LOGLN("DOWN held this hard: ");
