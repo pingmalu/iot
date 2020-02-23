@@ -46,7 +46,7 @@ int Y_MIN = 0;
 int X_MAX = 255;
 int X_MID = 128;
 int X_MIN = 0;
-int SILL = 10; // 偏移阈值
+int SILL = 40; // 偏移阈值
 
 // 舵机角度值
 int lx;
@@ -148,6 +148,10 @@ void go_poweroff()
 void setup()
 {
     Serial.begin(115200);
+
+   // 去除pwm啸叫
+    // analogWriteFreq(40e3);
+    TCCR2B = TCCR2B & 0xF8 | 1;
 
     int error = 0;
     do

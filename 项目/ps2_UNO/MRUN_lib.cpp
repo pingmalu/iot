@@ -13,7 +13,7 @@
 
 #ifndef ESP8266
 #define MAX_SPEED 255
-#define START_SPEED 20
+#define START_SPEED 50
 #define LR_MIN_SPEED 200 // 粘滞转向最低推进速度
 #else
 #define MAX_SPEED 1023
