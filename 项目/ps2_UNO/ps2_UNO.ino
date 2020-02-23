@@ -149,7 +149,7 @@ void setup()
 {
     Serial.begin(115200);
 
-   // 去除pwm啸叫
+    // 去除pwm啸叫
     // analogWriteFreq(40e3);
     TCCR2B = TCCR2B & 0xF8 | 1;
 
@@ -223,6 +223,16 @@ void loop()
         Serial.println("Up Button Released!");
         RUN_SPEED = STOP;
     }
+    if (ps2x.Button(PSB_L2))
+    { //will be TRUE as long as button is pressed
+        Serial.println("Up held this hard: ");
+        RUN_SPEED = MAX_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_L2))
+    {
+        Serial.println("Up Button Released!");
+        RUN_SPEED = STOP;
+    }
 
     if (ps2x.Button(PSB_PAD_DOWN))
     {
@@ -230,6 +240,16 @@ void loop()
         RUN_SPEED = -MAX_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_PAD_DOWN))
+    {
+        Serial.println("DOWN Button Released!");
+        RUN_SPEED = STOP;
+    }
+    if (ps2x.Button(PSB_R2))
+    {
+        Serial.println("DOWN held this hard: ");
+        RUN_SPEED = -MAX_SPEED;
+    }
+    else if (ps2x.ButtonReleased(PSB_R2))
     {
         Serial.println("DOWN Button Released!");
         RUN_SPEED = STOP;
@@ -349,25 +369,29 @@ void loop()
     {
         if (TANK_MOD)
         {
-            RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 254), 0, 254, MAX_SPEED, -MAX_SPEED);
-            LR = map(constrain((int)ps2x.Analog(PSS_RY), 0, 254), 0, 254, MAX_SPEED, -MAX_SPEED);
-            mrun.two(RUN_SPEED, LR);
+            // RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 254), 0, 254, MAX_SPEED, -MAX_SPEED);
+            // LR = map(constrain((int)ps2x.Analog(PSS_RY), 0, 254), 0, 254, MAX_SPEED, -MAX_SPEED);
+            // mrun.two(RUN_SPEED, LR);
+            RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, 255, 0);
+            LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 0, 255);
+            mrun.tank_v2(RUN_SPEED, LR);
         }
         else
         {
-            RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_RY), 0, 255), 0, 255, 255, 0);
+            RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 255, 0);
             LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 0, 255);
 
-            if (RUN_SPEED == 128 && LR == 128) // R摇杆不在控制
-            {
-                RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 255, 0);
-                LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 0, 255);
-                mrun.tank_v2(RUN_SPEED, LR);
-            }
-            else
-            {
-                mrun.tank(RUN_SPEED, LR);
-            }
+            mrun.tank(RUN_SPEED, LR);
+            // if (RUN_SPEED == 128 && LR == 128) // R摇杆不在控制
+            // {
+            //     RUN_SPEED = map(constrain((int)ps2x.Analog(PSS_LY), 0, 255), 0, 255, 255, 0);
+            //     LR = map(constrain((int)ps2x.Analog(PSS_LX), 0, 255), 0, 255, 0, 255);
+            //     mrun.tank_v2(RUN_SPEED, LR);
+            // }
+            // else
+            // {
+            //     mrun.tank(RUN_SPEED, LR);
+            // }
         }
     }
     else
