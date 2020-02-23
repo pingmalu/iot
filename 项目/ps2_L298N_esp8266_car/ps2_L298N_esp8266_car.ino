@@ -124,7 +124,7 @@ void loop()
     }
 
     // 高速锁定切换
-    if (ps2x.ButtonReleased(PSB_L3))
+    if (ps2x.ButtonReleased(PSB_SELECT))
     {
         MAX_RUN_SPEED = MAX_RUN_SPEED > MID_SPEED ? MID_SPEED : MAX_SPEED;
     }
@@ -145,7 +145,7 @@ void loop()
     if (ps2x.Button(PSB_L1))
     { //will be TRUE as long as button is pressed
         // LOGLN("Up held this hard: ");
-        RUN_SPEED = MAX_RUN_SPEED;
+        RUN_SPEED = -MAX_RUN_SPEED;
     }
     else if (ps2x.ButtonReleased(PSB_L1))
     {
