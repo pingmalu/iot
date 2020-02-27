@@ -294,15 +294,15 @@ void loop()
 
     if (LR > STOP)
     {
-        LR = 50;
+        LR = 60;
     }
     else if (LR < STOP)
     {
-        LR = 120;
+        LR = 130;
     }
     else
     {
-        LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 50, 120);
+        LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 60, 130);
     }
     LOG(" LR:");
     LOG(LR);
