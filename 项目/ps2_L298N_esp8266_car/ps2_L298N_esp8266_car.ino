@@ -14,6 +14,7 @@
 
 #include <PS2X_lib.h> //for v1.6
 #include <Servo.h>    // 舵机控制
+#include <EEPROM.h>
 
 // comment out this line, if you want to disable logs:
 // #define DEBUG
@@ -58,6 +59,9 @@ PS2X ps2x; // create PS2 Controller Class
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
+int LR_MIN = 60;   // 最左值
+int LR_MAX = 130;  // 最右值
+int EEPROM_0;
 int MAX_RUN_SPEED = MID_SPEED;
 unsigned long starttime;
 unsigned long looptime;
@@ -71,7 +75,8 @@ void go_poweroff()
 void setup()
 {
     Serial.begin(115200);
-
+    EEPROM.begin(1);
+    EEPROM_0 = EEPROM.read(0);
     // 去除pwm啸叫
     analogWriteFreq(40e3);
 
@@ -146,6 +151,34 @@ void loop()
     { //will be TRUE as long as button is pressed
         // LOGLN("Up held this hard: ");
         RUN_SPEED = -MAX_RUN_SPEED;
+        // 调整EEPROM初始值
+        if (ps2x.Button(PSB_R1))
+        {
+            if (ps2x.ButtonReleased(PSB_SQUARE))
+            { // 左
+                if (EEPROM_0 > 108)
+                {
+                    EEPROM_0--;
+                }
+                EEPROM.write(0, EEPROM_0);
+                EEPROM.commit();
+            }
+            else if (ps2x.ButtonReleased(PSB_CIRCLE))
+            { // 右
+                if (EEPROM_0 < 148)
+                {
+                    EEPROM_0++;
+                }
+                EEPROM.write(0, EEPROM_0);
+                EEPROM.commit();
+            }
+            else if (ps2x.ButtonReleased(PSB_TRIANGLE))
+            {
+                EEPROM_0 = 128;
+                EEPROM.write(0, EEPROM_0);
+                EEPROM.commit();
+            }
+        }
     }
     else if (ps2x.ButtonReleased(PSB_L1))
     {
@@ -162,7 +195,6 @@ void loop()
         // LOGLN("Up Button Released!");
         RUN_SPEED = STOP;
     }
-
 
     if (ps2x.Button(PSB_PAD_DOWN))
     {
@@ -294,15 +326,15 @@ void loop()
 
     if (LR > STOP)
     {
-        LR = 60;
+        LR = LR_MIN + EEPROM_0 - 128;
     }
     else if (LR < STOP)
     {
-        LR = 130;
+        LR = LR_MAX + EEPROM_0 - 128;
     }
     else
     {
-        LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, 60, 130);
+        LR = map(constrain((int)ps2x.Analog(PSS_RX), 0, 255), 0, 255, LR_MIN + EEPROM_0 - 128, LR_MAX + EEPROM_0 - 128);
     }
     LOG(" LR:");
     LOG(LR);
