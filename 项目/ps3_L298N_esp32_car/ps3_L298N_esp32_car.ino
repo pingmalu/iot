@@ -52,6 +52,8 @@ int LR_MAX = 130;  // 最右值
 int EEPROM_0;
 int MAX_RUN_SPEED = MID_SPEED;
 
+bool square_tag = false;
+
 void setup()
 {
     Serial.begin(115200);
@@ -104,12 +106,20 @@ void notify()
     {
         if (Ps3.data.button.square == 1)
         { // 左
-            if (EEPROM_0 > 108)
+            if (!square_tag)
             {
-                EEPROM_0--;
+                if (EEPROM_0 > 108)
+                {
+                    EEPROM_0--;
+                }
+                EEPROM.write(0, EEPROM_0);
+                EEPROM.commit();
             }
-            EEPROM.write(0, EEPROM_0);
-            EEPROM.commit();
+            square_tag = true;
+        }
+        else if (Ps3.data.button.square != 1)
+        {
+            square_tag = false;
         }
         else if (Ps3.data.button.circle == 1)
         { // 右
