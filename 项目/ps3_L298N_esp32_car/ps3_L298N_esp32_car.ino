@@ -55,6 +55,8 @@ int MAX_RUN_SPEED = MID_SPEED;
 bool square_tag = false;
 bool circle_tag = false;
 
+ps3_cmd_t cmd;
+
 void setup()
 {
     Serial.begin(115200);
@@ -89,9 +91,12 @@ void rec()
 
 void notify()
 {
-    // 速度初始化
-    RUN_SPEED = STOP;
-    LR = STOP;
+    //显示手柄电量
+    if (Ps3.data.button.ps == 1)
+    {
+        ledinfo(Ps3.data.status.battery);
+        return;
+    }
 
     // 电池异常停止
     if (Ps3.data.status.battery == 20)
@@ -101,6 +106,10 @@ void notify()
         LOGLN("stop");
         return;
     }
+
+    // 速度初始化
+    RUN_SPEED = STOP;
+    LR = STOP;
 
     // 调整EEPROM初始值
     if (Ps3.data.button.l1 == 1 && Ps3.data.button.r1 == 1)
@@ -231,4 +240,82 @@ void notify()
     LOGLN();
     // delay(10);
     return;
+}
+
+// 手柄LED显示
+void ledinfo(int i)
+{
+    LOG("battery:");
+    LOG(i);
+    LOG(" ");
+    switch (i)
+    {
+    case 1:
+        cmd.led1 = true;
+        cmd.led2 = false;
+        cmd.led3 = false;
+        cmd.led4 = false;
+        break;
+    case 2:
+        cmd.led1 = true;
+        cmd.led2 = true;
+        cmd.led3 = false;
+        cmd.led4 = false;
+        break;
+    case 3:
+        cmd.led1 = true;
+        cmd.led2 = true;
+        cmd.led3 = true;
+        cmd.led4 = false;
+        break;
+    case 4:
+        cmd.led1 = true;
+        cmd.led2 = true;
+        cmd.led3 = true;
+        cmd.led4 = true;
+        break;
+    case 5:
+        cmd.led1 = false;
+        cmd.led2 = true;
+        cmd.led3 = true;
+        cmd.led4 = true;
+        break;
+    case 20:
+        cmd.led1 = false;
+        cmd.led2 = true;
+        cmd.led3 = false;
+        cmd.led4 = false;
+        break;
+    case 30:
+        cmd.led1 = false;
+        cmd.led2 = false;
+        cmd.led3 = true;
+        cmd.led4 = false;
+        break;
+    case 40:
+        cmd.led1 = false;
+        cmd.led2 = false;
+        cmd.led3 = false;
+        cmd.led4 = true;
+        break;
+    case 21:
+        cmd.led1 = false;
+        cmd.led2 = true;
+        cmd.led3 = true;
+        cmd.led4 = false;
+        break;
+    case 22:
+        cmd.led1 = false;
+        cmd.led2 = true;
+        cmd.led3 = true;
+        cmd.led4 = true;
+        break;
+    default:
+        cmd.led1 = true;
+        cmd.led2 = false;
+        cmd.led3 = false;
+        cmd.led4 = true;
+        break;
+    }
+    ps3Cmd(cmd);
 }
