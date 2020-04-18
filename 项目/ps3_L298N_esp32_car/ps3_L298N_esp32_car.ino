@@ -34,10 +34,10 @@ Servo myservo1; // 创建舵机对象
 
 // 前后轮子引脚
 int MotorA1 = 2;
-int MotorA2 = 4;
+int MotorA2 = 17;
 
 // 舵机引脚
-#define SERVO_PIN_1 23
+#define SERVO_PIN_1 4
 #define STOP 0
 // analogWrite(pin, value)  UNO:0-255  D1 ESP8266:0-1023
 #define MAX_SPEED 1023
@@ -65,6 +65,9 @@ void setup()
     // 去除pwm啸叫
     analogWriteFrequency(20e6); //更改pwm频率为20kHz，去除啸叫
 
+    // 舵机引脚初始化
+    myservo1.attach(SERVO_PIN_1,2); // pwd让位,给analogWrite函数让出tunnel
+
     Ps3.attach(notify);
     Ps3.attachOnDisconnect(rec);
     Ps3.begin("FF:87:E0:A6:AC:05");
@@ -73,8 +76,6 @@ void setup()
     pinMode(MotorA1, OUTPUT);
     pinMode(MotorA2, OUTPUT);
 
-    // 舵机引脚初始化
-    myservo1.attach(SERVO_PIN_1);
 }
 
 void loop()
