@@ -53,6 +53,7 @@ int EEPROM_0;
 int MAX_RUN_SPEED = MID_SPEED;
 
 bool square_tag = false;
+bool circle_tag = false;
 
 void setup()
 {
@@ -117,20 +118,30 @@ void notify()
             }
             square_tag = true;
         }
-        else if (Ps3.data.button.square != 1)
+        else
         {
             square_tag = false;
         }
-        else if (Ps3.data.button.circle == 1)
+
+        if (Ps3.data.button.circle == 1)
         { // 右
-            if (EEPROM_0 < 148)
+            if (!circle_tag)
             {
-                EEPROM_0++;
+                if (EEPROM_0 < 148)
+                {
+                    EEPROM_0++;
+                }
+                EEPROM.write(0, EEPROM_0);
+                EEPROM.commit();
             }
-            EEPROM.write(0, EEPROM_0);
-            EEPROM.commit();
+            circle_tag = true;
         }
-        else if (Ps3.data.button.triangle == 1)
+        else
+        {
+            circle_tag = false;
+        }
+
+        if (Ps3.data.button.triangle == 1)
         {
             EEPROM_0 = 128;
             EEPROM.write(0, EEPROM_0);
