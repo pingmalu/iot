@@ -20,7 +20,7 @@
 #include <Servo.h>
 
 // comment out this line, if you want to disable logs:
-// #define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
 #define LOG(...) Serial.print(__VA_ARGS__)
@@ -70,6 +70,10 @@ void setup()
 
     // 舵机引脚初始化
     myservo1.attach(SERVO_PIN_1);
+}
+
+void loop()
+{
 }
 
 // 重连
@@ -144,7 +148,7 @@ void notify()
 
     if (RUN_SPEED == STOP)
     {
-        RUN_SPEED = map(constrain((int)Ps3.data.analog.stick.ly, 0, 255), 0, 255, MAX_RUN_SPEED, -MAX_RUN_SPEED);
+        RUN_SPEED = map(constrain(Ps3.data.analog.stick.ly, -128, 127), -128, 127, MAX_RUN_SPEED, -MAX_RUN_SPEED);
     }
     LOG("RUN:");
     LOG(RUN_SPEED);
@@ -181,7 +185,7 @@ void notify()
     }
     else
     {
-        LR = map(constrain((int)Ps3.data.analog.stick.rx, 0, 255), 0, 255, LR_MIN + EEPROM_0 - 128, LR_MAX + EEPROM_0 - 128);
+        LR = map(constrain((int)Ps3.data.analog.stick.rx, -128, 127), -128, 127, LR_MIN + EEPROM_0 - 128, LR_MAX + EEPROM_0 - 128);
     }
     LOG(" LR:");
     LOG(LR);
@@ -189,8 +193,4 @@ void notify()
     LOGLN();
     // delay(10);
     return;
-}
-
-void loop()
-{
 }
