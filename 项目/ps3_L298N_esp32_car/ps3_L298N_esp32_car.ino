@@ -100,7 +100,7 @@ void notify()
     }
 
     // 调整EEPROM初始值
-    if (Ps3.data.analog.button.l1 == 1 && Ps3.data.analog.button.r1 == 1)
+    if (Ps3.data.button.l1 == 1 && Ps3.data.button.r1 == 1)
     {
         if (Ps3.data.button.square == 1)
         { // 左
@@ -139,11 +139,11 @@ void notify()
 
     if (Ps3.data.button.right == 1 || Ps3.data.button.circle == 1)
     {
-        LR = MAX_SPEED;
+        LR = -MAX_SPEED;
     }
     else if (Ps3.data.button.left == 1 || Ps3.data.button.square == 1)
     {
-        LR = -MAX_SPEED;
+        LR = MAX_SPEED;
     }
 
     if (RUN_SPEED == STOP)
@@ -185,7 +185,7 @@ void notify()
     }
     else
     {
-        LR = map(constrain((int)Ps3.data.analog.stick.rx, -128, 127), -128, 127, LR_MIN + EEPROM_0 - 128, LR_MAX + EEPROM_0 - 128);
+        LR = map(constrain(Ps3.data.analog.stick.rx, -128, 127), -128, 127, LR_MIN + EEPROM_0 - 128, LR_MAX + EEPROM_0 - 128);
     }
     LOG(" LR:");
     LOG(LR);
