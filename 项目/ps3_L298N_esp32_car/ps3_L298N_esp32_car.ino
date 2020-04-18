@@ -149,6 +149,23 @@ void notify()
         }
     }
 
+    // 加速 减速
+    if (Ps3.data.button.r2 == 1 || Ps3.data.button.l2 == 1)
+    {
+        if (Ps3.data.button.r2 == 1)
+        {
+            MAX_RUN_SPEED = MAX_SPEED;
+        }
+        else
+        {
+            MAX_RUN_SPEED = LOW_SPEED;
+        }
+    }
+    else
+    {
+        MAX_RUN_SPEED = MID_SPEED;
+    }
+
     if (Ps3.data.button.up == 1 || Ps3.data.button.triangle == 1)
     {
         RUN_SPEED = MAX_RUN_SPEED;
