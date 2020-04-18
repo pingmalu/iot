@@ -37,7 +37,7 @@ int MotorA1 = 2;
 int MotorA2 = 17;
 
 // 舵机引脚
-#define SERVO_PIN_1 4
+#define SERVO_PIN_1 13
 #define STOP 0
 // analogWrite(pin, value)  UNO:0-255  D1 ESP8266:0-1023
 #define MAX_SPEED 1023
