@@ -47,8 +47,8 @@ int MotorA2 = 17;
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
-int LR_MIN = 60;   // 最左值
-int LR_MAX = 130;  // 最右值
+int LR_MIN = 70;   // 最左值
+int LR_MAX = 120;  // 最右值
 int EEPROM_0;
 int MAX_RUN_SPEED = MID_SPEED;
 
@@ -63,7 +63,7 @@ void setup()
     EEPROM.begin(1);
     EEPROM_0 = EEPROM.read(0);
     // 去除pwm啸叫
-    analogWriteFrequency(20e6); //更改pwm频率为20kHz，去除啸叫
+    analogWriteFrequency(80e6); //更改pwm频率为20kHz，去除啸叫
 
     // 舵机引脚初始化
     myservo1.attach(SERVO_PIN_1,2); // pwd让位,给analogWrite函数让出tunnel
