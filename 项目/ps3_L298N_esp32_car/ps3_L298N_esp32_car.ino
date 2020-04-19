@@ -47,8 +47,8 @@ int MotorA2 = 17;
 
 int RUN_SPEED = 0; // 推进速度
 int LR = 0;        // 转向速度
-int LR_MIN = 70;   // 最左值
-int LR_MAX = 120;  // 最右值
+int LR_MIN = 80;   // 最左值
+int LR_MAX = 110;  // 最右值
 int EEPROM_0;
 int MAX_RUN_SPEED = MID_SPEED;
 
