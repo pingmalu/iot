@@ -55,6 +55,13 @@ int MAX_RUN_SPEED = MID_SPEED;
 bool square_tag = false;
 bool circle_tag = false;
 
+int BTN_SELECT = false;
+int BTN_SELECT_MODE = false;
+int BTN_START = false;
+int BTN_START_MODE = false;
+int LED_PIN1 = 4;
+int LED_PIN2 = 16;
+
 ps3_cmd_t cmd;
 
 void setup()
@@ -66,7 +73,7 @@ void setup()
     analogWriteFrequency(80e6); //更改pwm频率为20kHz，去除啸叫
 
     // 舵机引脚初始化
-    myservo1.attach(SERVO_PIN_1,2); // pwd让位,给analogWrite函数让出tunnel
+    myservo1.attach(SERVO_PIN_1, 2); // pwd让位,给analogWrite函数让出tunnel
 
     Ps3.attach(notify);
     Ps3.attachOnDisconnect(rec);
@@ -76,6 +83,8 @@ void setup()
     pinMode(MotorA1, OUTPUT);
     pinMode(MotorA2, OUTPUT);
 
+    pinMode(LED_PIN1, OUTPUT);
+    pinMode(LED_PIN2, OUTPUT);
 }
 
 void loop()
@@ -106,6 +115,54 @@ void notify()
         analogWrite(MotorA2, LOW, 1023);
         LOGLN("stop");
         return;
+    }
+
+    // LED灯1
+    if (Ps3.data.button.select == 1)
+    {
+        // 上一次为释放时才进去
+        if (!BTN_SELECT)
+        {
+            // 切换开关
+            BTN_SELECT_MODE = BTN_SELECT_MODE ? false : true;
+            if (BTN_SELECT_MODE)
+            {
+                digitalWrite(LED_PIN1, HIGH);
+            }
+            else
+            {
+                digitalWrite(LED_PIN1, LOW);
+            }
+        }
+        BTN_SELECT = true;
+    }
+    else
+    {
+        BTN_SELECT = false;
+    }
+
+    // LED灯2
+    if (Ps3.data.button.start == 1)
+    {
+        // 上一次为释放时才进去
+        if (!BTN_START)
+        {
+            // 切换开关
+            BTN_START_MODE = BTN_START_MODE ? false : true;
+            if (BTN_START_MODE)
+            {
+                digitalWrite(LED_PIN2, HIGH);
+            }
+            else
+            {
+                digitalWrite(LED_PIN2, LOW);
+            }
+        }
+        BTN_START = true;
+    }
+    else
+    {
+        BTN_START = false;
     }
 
     // 速度初始化
