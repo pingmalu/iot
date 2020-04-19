@@ -282,15 +282,15 @@ void notify()
 
     if (LR > STOP)
     {
-        LR = LR_MIN + EEPROM_0 - 128;
+        LR = LR_MAX + EEPROM_0 - 128;
     }
     else if (LR < STOP)
     {
-        LR = LR_MAX + EEPROM_0 - 128;
+        LR = LR_MIN + EEPROM_0 - 128;
     }
     else
     {
-        LR = map(constrain(Ps3.data.analog.stick.rx, -128, 127), -128, 127, LR_MIN + EEPROM_0 - 128, LR_MAX + EEPROM_0 - 128);
+        LR = map(constrain(Ps3.data.analog.stick.rx, -128, 127), -128, 127, LR_MAX + EEPROM_0 - 128, LR_MIN + EEPROM_0 - 128);
     }
     LOG(" LR:");
     LOG(LR);
