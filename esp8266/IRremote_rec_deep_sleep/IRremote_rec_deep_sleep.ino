@@ -108,11 +108,12 @@ void setup()
 void loop()
 {
     delay(100);
-    if (looptimes > 1)
-    {
-        go_poweroff();
-        return;
-    }
+    // 到时间进入休眠
+    // if (looptimes > 1)
+    // {
+    //     go_poweroff();
+    //     return;
+    // }
     if (irrecv.decode(&results))
     {
         // print() & println() can't handle printing long longs. (uint64_t)
@@ -125,5 +126,6 @@ void loop()
     {
         LOGLN("not found");
     }
-    looptimes++;
+    // 休眠计时器
+    // looptimes++;
 }
